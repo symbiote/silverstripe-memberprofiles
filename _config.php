@@ -1,0 +1,4 @@
+<?php
+/**
+ * @package silverstripe-memberprofiles
+ */
