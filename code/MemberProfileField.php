@@ -18,4 +18,24 @@ class MemberProfileField extends DataObject {
 		'ProfilePage' => 'MemberProfilePage'
 	);
 
+	/**
+	 * @uses   MemberProfileField::getDefaultTitle
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->CustomTitle ? $this->CustomTitle : $this->getDefaultTitle();
+	}
+
+	/**
+	 * Get the default title for this field, derived from {@link Member::getMemberFormFields}.
+	 *
+	 * @return string
+	 */
+	public function getDefaultTitle() {
+		$fields = singleton('Member')->getMemberFormFields();
+		$field  = $fields->dataFieldByName($this->MemberField);
+
+		return $field->Title();
+	}
+
 }
