@@ -140,18 +140,53 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	public function RegisterForm() {
+		return new Form (
+			$this,
+			'RegisterForm',
+			$this->getProfileFields(),
+			new FieldSet (
+				new FormAction('register', _t('MemberProfiles.REGISTER', 'Register'))
+			)
+		);
 	}
 
 	public function register($data, $form) {
 	}
 
 	public function ProfileForm() {
+		return new Form (
+			$this,
+			'ProfileForm',
+			$this->getProfileFields(),
+			new FieldSet (
+				new FormAction('save', _t('MemberProfiles.SAVE', 'Save'))
+			)
+		);
 	}
 
-	public function edit($data, $form) {
+	public function save($data, $form) {
 	}
 
-	protected function getFormFields() {
+	/**
+	 * @return FieldSet
+	 */
+	protected function getProfileFields() {
+		$profileFields = $this->Fields();
+		$memberFields  = singleton('Member')->getMemberFormFields();
+		$fields        = new FieldSet();
+
+		foreach($profileFields as $profileField) {
+			$name        = $profileField->MemberField;
+			$memberField = $memberFields->dataFieldByName($name);
+
+			$field = clone $memberField;
+			$field->setTitle($profileField->Title);
+			$field->setRightTitle($profileField->Note);
+			$fields->push($field);
+		}
+
+		$this->extend('updateProfileFields', $fields);
+		return $fields;
 	}
 
 }
