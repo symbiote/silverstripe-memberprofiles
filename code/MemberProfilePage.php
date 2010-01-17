@@ -140,9 +140,47 @@ class MemberProfilePage_Controller extends Page_Controller {
 		'ProfileForm'
 	);
 
+	/**
+	 * @uses   MemberProfilePage_Controller::indexRegister
+	 * @uses   MemberProfilePage_Controller::indexProfile
+	 * @return array
+	 */
 	public function index() {
+		return Member::currentUserID() ? $this->indexProfile() : $this->indexRegister();
 	}
 
+	protected function indexRegister() {
+		if(!$this->AllowRegistration) return Security::permissionFailure($this, _t (
+			'MemberProfiles.CANNOTREGPLEASELOGIN',
+			'You cannot register on this profile page. Please login to edit your profile.'
+		));
+
+		return array (
+			'Form' => $this->RegisterForm()
+		);
+	}
+
+	protected function indexProfile() {
+		$member = Member::currentUser();
+
+		foreach($this->Groups() as $group) {
+			if(!$member->inGroup($group)) {
+				return Security::permissionFailure($this);
+			}
+		}
+
+		$form = $this->ProfileForm();
+		$form->loadDataFrom($member);
+
+		return array (
+			'Form'  => $form
+		);
+	}
+
+	/**
+	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @return Form
+	 */
 	public function RegisterForm() {
 		return new Form (
 			$this,
@@ -157,6 +195,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 	public function register($data, $form) {
 	}
 
+	/**
+	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @return Form
+	 */
 	public function ProfileForm() {
 		return new Form (
 			$this,
@@ -168,7 +210,25 @@ class MemberProfilePage_Controller extends Page_Controller {
 		);
 	}
 
-	public function save($data, $form) {
+	/**
+	 * Updates an existing Member's profile.
+	 */
+	public function save(array $data, Form $form) {
+		$member = Member::currentUser();
+		$form->saveInto($member);
+
+		try {
+			$member->write();
+		} catch(ValidationException $e) {
+			$form->sessionMessage($e->getResult()->message(), 'bad');
+			return Director::redirectBack();
+		}
+
+		$form->sessionMessage (
+			_t('MemberProfiles.PROFILEUPDATED', 'Your profile has been updated.'),
+			'good'
+		);
+		return Director::redirectBack();
 	}
 
 	/**
