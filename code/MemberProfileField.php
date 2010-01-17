@@ -36,7 +36,7 @@ class MemberProfileField extends DataObject {
 		$fields = singleton('Member')->getMemberFormFields();
 		$field  = $fields->dataFieldByName($this->MemberField);
 
-		return $field->Title();
+		return $field->Title() ? $field->Title() : $field->Name();
 	}
 
 }
