@@ -38,28 +38,32 @@ class MemberProfilePage extends Page {
 			'Fields',
 			'MemberProfileField',
 			array (
-				'DefaultTitle' => _t('MemberProfiles.TITLE', 'Title'),
-				'Display'      => _t('MemberProfiles.DISPLAY', 'Display'),
-				'CustomTitle'  => _t('MemberProfiles.CUSTOMTITLE', 'Custom Title'),
-				'Note'         => _t('MemberProfiles.NOTE', 'Note'),
-				'CustomError'  => _t('MemberProfiles.CUSTOMERRMESSAGE', 'Custom Error Message'),
-				'Unique'       => _t('MemberProfiles.UNIQUE', 'Unique'),
-				'Required'     => _t('MemberProfiles.REQUIRED', 'Required')
+				'DefaultTitle'           => _t('MemberProfiles.TITLE', 'Title'),
+				'RegistrationVisibility' => _t('MemberProfiles.REGISTRATIONVIS', ' Registration Visibility'),
+				'ProfileVisibility'      => _t('MemberProfiles.PROFILEVIS', 'Profile Visibility'),
+				'CustomTitle'            => _t('MemberProfiles.CUSTOMTITLE', 'Custom Title'),
+				'Note'                   => _t('MemberProfiles.NOTE', 'Note'),
+				'CustomError'            => _t('MemberProfiles.CUSTOMERRMESSAGE', 'Custom Error Message'),
+				'Unique'                 => _t('MemberProfiles.UNIQUE', 'Unique'),
+				'Required'               => _t('MemberProfiles.REQUIRED', 'Required')
 			),
 			array (
-				'DefaultTitle' => 'ReadonlyField',
-				'Display'      => new DropdownField('Display', '', array (
-					'All'          => _t('MemberProfiles.FULLCONTROL', 'Full control'),
-					'Profile'      => _t('MemberProfiles.SHOWPROFILE', 'Editing in profile'),
-					'Registration' => _t('MemberProfiles.SHOWREG', 'Editing on registration'),
-					'Readonly'     => _t('MemberProfiles.READONLY', 'Readonly in profile'),
-					'Hidden'       => _t('MemberProfiles.HIDDEN', 'Do not show')
-				)),
-				'CustomTitle'  => 'TextField',
-				'Note'         => 'TextField',
-				'CustomError'  => 'TextField',
-				'Unique'       => 'CheckboxField',
-				'Required'     => 'CheckboxField'
+				'DefaultTitle'           => 'ReadonlyField',
+				'RegistrationVisibility' => new DropdownField (
+					'RegistrationVisibility',
+					'',
+					$showOptions = array (
+						'Edit'     => _t('MemberProfiles.ALLOWEDIT', 'Allow Editing'),
+						'Readonly' => _t('MemberProfiles.READONLY', 'Show readonly'),
+						'Hidden'   => _t('MemberProfiles.HIDDEN', 'Do not show')
+					)
+				),
+				'ProfileVisibility' => new DropdownField('ProfileVisibility', '', $showOptions),
+				'CustomTitle'       => 'TextField',
+				'Note'              => 'TextField',
+				'CustomError'       => 'TextField',
+				'Unique'            => 'CheckboxField',
+				'Required'          => 'CheckboxField'
 			),
 			'ProfilePageID',
 			$this->ID
