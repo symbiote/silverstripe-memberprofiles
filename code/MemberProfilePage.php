@@ -147,7 +147,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		return new Form (
 			$this,
 			'RegisterForm',
-			$this->getProfileFields(),
+			$this->getProfileFields('Registration'),
 			new FieldSet (
 				new FormAction('register', _t('MemberProfiles.REGISTER', 'Register'))
 			)
@@ -161,7 +161,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		return new Form (
 			$this,
 			'ProfileForm',
-			$this->getProfileFields(),
+			$this->getProfileFields('Profile'),
 			new FieldSet (
 				new FormAction('save', _t('MemberProfiles.SAVE', 'Save'))
 			)
@@ -172,20 +172,29 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
+	 * @param  string $context
 	 * @return FieldSet
 	 */
-	protected function getProfileFields() {
+	protected function getProfileFields($context) {
 		$profileFields = $this->Fields();
 		$memberFields  = singleton('Member')->getMemberFormFields();
 		$fields        = new FieldSet();
 
 		foreach($profileFields as $profileField) {
+			$visibility  = $profileField->{$context . 'Visibility'};
 			$name        = $profileField->MemberField;
 			$memberField = $memberFields->dataFieldByName($name);
+
+			if($visibility == 'Hidden') continue;
 
 			$field = clone $memberField;
 			$field->setTitle($profileField->Title);
 			$field->setRightTitle($profileField->Note);
+	
+			if($visibility == 'Readonly') {
+				$field = $field->performReadonlyTransformation();
+			}
+	
 			$fields->push($field);
 		}
 
