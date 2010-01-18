@@ -188,7 +188,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this->getProfileFields('Registration'),
 			new FieldSet (
 				new FormAction('register', _t('MemberProfiles.REGISTER', 'Register'))
-			)
+			),
+			new MemberProfileValidator($this->Fields())
 		);
 	}
 
@@ -206,7 +207,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this->getProfileFields('Profile'),
 			new FieldSet (
 				new FormAction('save', _t('MemberProfiles.SAVE', 'Save'))
-			)
+			),
+			new MemberProfileValidator($this->Fields(), Member::currentUser())
 		);
 	}
 
