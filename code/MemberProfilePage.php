@@ -194,6 +194,21 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	public function register($data, $form) {
+		$member = new Member();
+		$form->saveInto($member);
+
+		try {
+			$member->write();
+		} catch(ValidationException $e) {
+			$form->sessionMessage($e->getResult()->message(), 'bad');
+			return Director::redirectBack();
+		}
+
+		foreach($this->Groups() as $group) $member->Groups()->add($group);
+
+		return array (
+			'Title' => _t('MemberProfiles.REGSUCCESS', 'Registration Successful')
+		);
 	}
 
 	/**
