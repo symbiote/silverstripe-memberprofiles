@@ -254,7 +254,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	protected function getProfileFields($context) {
 		$profileFields = $this->Fields();
-		$memberFields  = singleton('Member')->getMemberFormFields();
+		$member        = Member::currentUser() ? Member::currentUser() : singleton('Member');
+		$memberFields  = $member->getMemberFormFields();
 		$fields        = new FieldSet();
 
 		foreach($profileFields as $profileField) {
