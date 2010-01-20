@@ -104,7 +104,7 @@ class MemberProfilePage extends Page {
 	public function getProfileFields() {
 		$set        = $this->Fields();
 		$fields     = singleton('Member')->getMemberFormFields()->dataFields();
-		$setNames   = array_keys($set->map('MemberField'));
+		$setNames   = $set->map('ID', 'MemberField');
 		$fieldNames = array_keys($fields);
 
 		foreach($set as $field) {
@@ -262,16 +262,16 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$name        = $profileField->MemberField;
 			$memberField = $memberFields->dataFieldByName($name);
 
-			if($visibility == 'Hidden') continue;
+			if(!$memberField || $visibility == 'Hidden') continue;
 
 			$field = clone $memberField;
 			$field->setTitle($profileField->Title);
 			$field->setRightTitle($profileField->Note);
-	
+
 			if($visibility == 'Readonly') {
 				$field = $field->performReadonlyTransformation();
 			}
-	
+
 			$fields->push($field);
 		}
 
