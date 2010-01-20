@@ -182,7 +182,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return Form
 	 */
 	public function RegisterForm() {
-		return new Form (
+		$form = new Form (
 			$this,
 			'RegisterForm',
 			$this->getProfileFields('Registration'),
@@ -191,6 +191,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 			),
 			new MemberProfileValidator($this->Fields())
 		);
+
+		if(class_exists('SpamProtectorManager')) {
+			SpamProtectorManager::update_form($form);
+		}
+
+		return $form;
 	}
 
 	public function register($data, $form) {
