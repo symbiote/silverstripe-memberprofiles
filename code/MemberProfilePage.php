@@ -326,6 +326,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$field->setTitle($profileField->Title);
 			$field->setRightTitle($profileField->Note);
 
+			if($profileField->CustomError) {
+				$field->setCustomValidationMessage($profileField->CustomError);
+			}
+
 			if($visibility == 'Readonly') {
 				$field = $field->performReadonlyTransformation();
 			}
