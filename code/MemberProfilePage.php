@@ -5,8 +5,14 @@
 class MemberProfilePage extends Page {
 
 	public static $db = array (
-		'AllowRegistration' => 'Boolean',
-		'EmailValidation'   => 'Boolean'
+		'ProfileTitle'             => 'Varchar(255)',
+		'RegistrationTitle'        => 'Varchar(255)',
+		'AfterRegistrationTitle'   => 'Varchar(255)',
+		'ProfileContent'           => 'HTMLText',
+		'RegistrationContent'      => 'HTMLText',
+		'AfterRegistrationContent' => 'HTMLText',
+		'AllowRegistration'        => 'Boolean',
+		'EmailValidation'          => 'Boolean'
 	);
 
 	public static $has_many = array (
@@ -18,23 +24,44 @@ class MemberProfilePage extends Page {
 	);
 
 	public static $defaults = array (
-		'AllowRegistration' => true,
-		'EmailValidation'   => true
+		'ProfileTitle'             => 'Edit Profile',
+		'RegistrationTitle'        => 'Register / Log In',
+		'AfterRegistrationTitle'   => 'Registration Successful',
+		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
+		'AllowRegistration'        => true,
+		'EmailValidation'          => true
 	);
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root.Content', $profile = new Tab('Profile'), 'Metadata');
-		$fields->addFieldToTab('Root.Content', $settings = new Tab('Settings'), 'Metadata');
+		$fields->addFieldToTab('Root.Content', $profileContent = new Tab('Profile'), 'Metadata');
+		$fields->addFieldToTab('Root.Content', $regContent = new Tab('Registration'), 'Metadata');
+		$fields->addFieldToTab('Root.Content', $afterReg = new Tab('AfterRegistration'), 'Metadata');
 
-		$profile->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
-		$settings->setTitle(_t('MemberProfiles.SETTINGS', 'Settings'));
+		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
+		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
+		$afterReg->setTitle(_t('MemberProfiles.AFTERRED', 'After Registration'));
 
-		$profile->push(new HeaderField (
+		foreach(array('Profile', 'Registration', 'AfterRegistration') as $tab) {
+			$fields->addFieldToTab (
+				"Root.Content.$tab",
+				new TextField("{$tab}Title", _t('MemberProfiles.TITLE', 'Title'))
+			);
+
+			$fields->addFieldToTab (
+				"Root.Content.$tab",
+				new HtmlEditorField("{$tab}Content", _t('MemberProfiles.CONTENT', 'Content'))
+			);
+		}
+
+		$fields->removeFieldFromTab('Root.Content.Main', 'Title');
+		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
+
+		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
 			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
 		));
-		$profile->push($fieldsTable = new TableField (
+		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new TableField (
 			'Fields',
 			'MemberProfileField',
 			array (
@@ -72,20 +99,39 @@ class MemberProfilePage extends Page {
 		$fieldsTable->setPermissions(array('show', 'edit'));
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
 
-		$settings->push(new HeaderField (
-			'RegSettingsHeader', _t('MemberProfiles.REGSETTINGS', 'Registration Settings'))
+		$fields->addFieldToTab (
+			'Root.Behaviour',
+			new HeaderField (
+				'RegSettingsHeader', _t('MemberProfiles.REGSETTINGS', 'Registration Settings')
+			),
+			'ClassName'
 		);
-		$settings->push(new CheckboxField (
-			'AllowRegistration', _t('MemberProfiles.ALLOWREG', 'Allow registration via this page'))
+		$fields->addFieldToTab (
+			'Root.Behaviour',
+			new CheckboxField (
+				'AllowRegistration', _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
+			),
+			'ClassName'
 		);
-		$settings->push(new CheckboxField (
-			'EmailValidation', _t('MemberProfiles.EMAILVALID', 'Require email validation')
-		));
+		$fields->addFieldToTab (
+			'Root.Behaviour',
+			new CheckboxField (
+				'EmailValidation', _t('MemberProfiles.EMAILVALID', 'Require email validation')
+			),
+			'ClassName'
+		);
+		$fields->addFieldToTab (
+			'Root.Behaviour',
+			new HeaderField (
+				'PageSettingsHeader', _t('MemberProfiles.PAGESETTINGS', 'Page Settings')
+			),
+			'ClassName'
+		);
 
-		$settings->push(new HeaderField (
+		$fields->addFieldToTab('Root.Content.Main', new HeaderField (
 			'GroupSettingsHeader', _t('MemberProfiles.GROUPSETTINGS', 'Group Settings')
 		));
-		$settings->push(new LiteralField (
+		$fields->addFieldToTab('Root.Content.Main', new LiteralField (
 			'GroupsNote',
 			_t (
 				'MemberProfiles.GROUPSNOTE',
@@ -94,7 +140,7 @@ class MemberProfilePage extends Page {
 				'in order to edit their profile on this page.</p>'
 			)
 		));
-		$settings->push(new CheckboxSetField (
+		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField (
 			'Groups', '', DataObject::get('Group')->map()
 		));
 
@@ -156,7 +202,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 		));
 
 		return array (
-			'Form' => $this->RegisterForm()
+			'Title'   => $this->RegisterTitle,
+			'Content' => $this->RegisterContent,
+			'Form'    => $this->RegisterForm()
 		);
 	}
 
@@ -173,6 +221,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$form->loadDataFrom($member);
 
 		return array (
+			'Title'   => $this->ProfileTitle,
+			'Content' => $this->ProfileContent,
 			'Form'  => $form
 		);
 	}
@@ -213,7 +263,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		foreach($this->Groups() as $group) $member->Groups()->add($group);
 
 		return array (
-			'Title' => _t('MemberProfiles.REGSUCCESS', 'Registration Successful')
+			'Title'   => $this->AfterRegistrationTitle,
+			'Content' => $this->AfterRegistrationContent,
 		);
 	}
 
