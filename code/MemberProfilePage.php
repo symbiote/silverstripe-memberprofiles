@@ -1,5 +1,11 @@
 <?php
 /**
+ * A MemberProfilePage allows the administratior to set up a page with a subset of the
+ * fields available on the member object, then allow members to register and edit
+ * their profile using these fields.
+ *
+ * It also supports email validation.
+ *
  * @package silverstripe-memberprofiles
  */
 class MemberProfilePage extends Page {
@@ -12,7 +18,13 @@ class MemberProfilePage extends Page {
 		'RegistrationContent'      => 'HTMLText',
 		'AfterRegistrationContent' => 'HTMLText',
 		'AllowRegistration'        => 'Boolean',
-		'EmailValidation'          => 'Boolean'
+
+		'EmailValidation'     => 'Boolean',
+		'EmailFrom'           => 'Varchar(255)',
+		'EmailSubject'        => 'Varchar(255)',
+		'EmailTemplate'       => 'Text',
+		'ConfirmationTitle'   => 'Varchar(255)',
+		'ConfirmationContent' => 'HTMLText'
 	);
 
 	public static $has_many = array (
@@ -29,16 +41,20 @@ class MemberProfilePage extends Page {
 		'AfterRegistrationTitle'   => 'Registration Successful',
 		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
 		'AllowRegistration'        => true,
-		'EmailValidation'          => true
+		'EmailValidation'          => true,
+		'ConfirmationTitle'        => 'Account Confirmed',
+		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
 	);
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
+		$fields->addFieldToTab('Root', $validation = new Tab('Validation'), 'Behaviour');
 		$fields->addFieldToTab('Root.Content', $profileContent = new Tab('Profile'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $regContent = new Tab('Registration'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $afterReg = new Tab('AfterRegistration'), 'Metadata');
 
+		$validation->setTitle(_t('MemberProfiles.VALIDATION', 'Validation'));
 		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
 		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
 		$afterReg->setTitle(_t('MemberProfiles.AFTERRED', 'After Registration'));
@@ -99,6 +115,41 @@ class MemberProfilePage extends Page {
 		$fieldsTable->setPermissions(array('show', 'edit'));
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
 
+		$validation->push(new HeaderField (
+			'EmailValidHeader', _t('MemberProfiles.EMAILVALIDATION', 'Email Validation')
+		));
+		$validation->push(new CheckboxField (
+			'EmailValidation', _t('MemberProfiles.EMAILVALID', 'Require email validation')
+		));
+		$validation->push(new TextField (
+			'EmailSubject', _t('MemberProfiles.VALIDEMAILSUBJECT', 'Validation email subject')
+		));
+		$validation->push(new TextField (
+			'EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')
+		));
+		$validation->push(new TextareaField (
+			'EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')
+		));
+		$validation->push(new LiteralField (
+			'TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE
+		));
+		$validation->push(new HeaderField (
+			'ConfirmationContentHeader', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content')
+		));
+		$validation->push(new LiteralField (
+			'ConfirmationNote',
+			'<p>' . _t (
+				'MemberProfiles.CONFIRMNOTE',
+				'This content is displayed when a user confirms their account.'
+			) . '</p>'
+		));
+		$validation->push(new TextField (
+			'ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')
+		));
+		$validation->push(new HtmlEditorField (
+			'ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content')
+		));
+
 		$fields->addFieldToTab (
 			'Root.Behaviour',
 			new HeaderField (
@@ -110,13 +161,6 @@ class MemberProfilePage extends Page {
 			'Root.Behaviour',
 			new CheckboxField (
 				'AllowRegistration', _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
-			),
-			'ClassName'
-		);
-		$fields->addFieldToTab (
-			'Root.Behaviour',
-			new CheckboxField (
-				'EmailValidation', _t('MemberProfiles.EMAILVALID', 'Require email validation')
 			),
 			'ClassName'
 		);
@@ -147,6 +191,30 @@ class MemberProfilePage extends Page {
 		return $fields;
 	}
 
+	/**
+	 * Get either the default or custom email template.
+	 *
+	 * @return string
+	 */
+	public function getEmailTemplate() {
+		return ($t = $this->getField('EmailTemplate')) ? $t : MemberConfirmationEmail::DEFAULT_TEMPLATE;
+	}
+
+	/**
+	 * Get either the default or custom email subject line.
+	 *
+	 * @return string
+	 */
+	public function getEmailSubject() {
+		return ($s = $this->getField('EmailSubject')) ? $s : MemberConfirmationEmail::DEFAULT_SUBJECT;
+	}
+
+	/**
+	 * Get a set of all the {@link MemberProfileFields} available, automatically synced with the
+	 * state of the Member object.
+	 *
+	 * @return DataObjectSet
+	 */
 	public function getProfileFields() {
 		$set        = $this->Fields();
 		$fields     = singleton('Member')->getMemberFormFields()->dataFields();
@@ -183,7 +251,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 	public static $allowed_actions = array (
 		'index',
 		'RegisterForm',
-		'ProfileForm'
+		'ProfileForm',
+		'confirm'
 	);
 
 	/**
@@ -195,6 +264,11 @@ class MemberProfilePage_Controller extends Page_Controller {
 		return Member::currentUserID() ? $this->indexProfile() : $this->indexRegister();
 	}
 
+	/**
+	 * Allow users to register if registration is enabled.
+	 *
+	 * @return array
+	 */
 	protected function indexRegister() {
 		if(!$this->AllowRegistration) return Security::permissionFailure($this, _t (
 			'MemberProfiles.CANNOTREGPLEASELOGIN',
@@ -208,6 +282,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 		);
 	}
 
+	/**
+	 * Allows users to edit their profile if they are in the groups this page is
+	 * restricted to.
+	 *
+	 * @return array
+	 */
 	protected function indexProfile() {
 		$member = Member::currentUser();
 
@@ -249,6 +329,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 		return $form;
 	}
 
+	/**
+	 * Handles validation and saving new Member objects, as well as sending out validation emails.
+	 */
 	public function register($data, $form) {
 		$member = new Member();
 		$form->saveInto($member);
@@ -261,6 +344,16 @@ class MemberProfilePage_Controller extends Page_Controller {
 		}
 
 		foreach($this->Groups() as $group) $member->Groups()->add($group);
+
+		if($this->EmailValidation) {
+			$email = new MemberConfirmationEmail($this, $member);
+			$email->send();
+
+			$member->NeedsValidation = true;
+			$member->write();
+		} else {
+			$member->logIn();
+		}
 
 		return array (
 			'Title'   => $this->AfterRegistrationTitle,
@@ -303,6 +396,45 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'good'
 		);
 		return Director::redirectBack();
+	}
+
+	/**
+	 * Allows the user to confirm their account by clicking on the validation link in
+	 * the confirmation email.
+	 *
+	 * @param  HTTPRequest $request
+	 * @return array
+	 */
+	public function confirm($request) {
+		if(Member::currentUser()) {
+			return Security::permissionFailure ($this, _t (
+				'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
+				'You cannot confirm account while you are logged in.'
+			));
+		}
+
+		if (
+			!$this->EmailValidation
+			|| (!$id = $request->param('ID')) || (!$key = $request->getVar('key')) || !is_numeric($id)
+			|| !$member = DataObject::get_by_id('Member', $id)
+		) {
+			$this->httpError(404);
+		}
+
+		if($member->ValidationKey != $key || !$member->NeedsValidation) {
+			$this->httpError(403, 'You cannot validate this member.');
+		}
+
+		$member->NeedsValidation = false;
+		$member->ValidationKey   = null;
+		$member->write();
+
+		$member->logIn();
+
+		return array (
+			'Title'   => $this->ConfirmationTitle,
+			'Content' => $this->ConfirmationContent
+		);
 	}
 
 	/**
