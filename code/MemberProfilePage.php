@@ -74,6 +74,42 @@ class MemberProfilePage extends Page {
 		$fields->removeFieldFromTab('Root.Content.Main', 'Title');
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
 
+		if(!function_exists('member_profile_page_get_tablefields')) {
+			/**
+			 * Gets the table fields for editing a specific {@link MemberProfileField} instance.
+			 *
+			 * @param  MemberProfileField $record
+			 * @return FieldSet
+			 */
+			function get_profile_table_fields($record) {
+				$fields = new FieldSet (
+					new ReadonlyField('DefaultTitle'),
+					new DropdownField (
+						'RegistrationVisibility',
+						'',
+						$showOptions = array (
+							'Edit'     => _t('MemberProfiles.ALLOWEDIT', 'Allow Editing'),
+							'Readonly' => _t('MemberProfiles.READONLY', 'Show readonly'),
+							'Hidden'   => _t('MemberProfiles.HIDDEN', 'Do not show')
+						)
+					),
+					new DropdownField('ProfileVisibility', '', $showOptions),
+					new TextField('CustomTitle'),
+					new TextField('Note'),
+					new TextField('CustomError'),
+					$unique   = new CheckboxField('Unique'),
+					$required = new CheckboxField('Required')
+				);
+
+				if($record) {
+					if($record->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
+					if($record->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
+				}
+
+				return $fields;
+			}
+		}
+
 		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
 			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
 		));
@@ -90,24 +126,7 @@ class MemberProfilePage extends Page {
 				'Unique'                 => _t('MemberProfiles.UNIQUE', 'Unique'),
 				'Required'               => _t('MemberProfiles.REQUIRED', 'Required')
 			),
-			array (
-				'DefaultTitle'           => 'ReadonlyField',
-				'RegistrationVisibility' => new DropdownField (
-					'RegistrationVisibility',
-					'',
-					$showOptions = array (
-						'Edit'     => _t('MemberProfiles.ALLOWEDIT', 'Allow Editing'),
-						'Readonly' => _t('MemberProfiles.READONLY', 'Show readonly'),
-						'Hidden'   => _t('MemberProfiles.HIDDEN', 'Do not show')
-					)
-				),
-				'ProfileVisibility' => new DropdownField('ProfileVisibility', '', $showOptions),
-				'CustomTitle'       => 'TextField',
-				'Note'              => 'TextField',
-				'CustomError'       => 'TextField',
-				'Unique'            => 'CheckboxField',
-				'Required'          => 'CheckboxField'
-			),
+			'get_profile_table_fields',
 			'ProfilePageID',
 			$this->ID
 		));
