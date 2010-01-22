@@ -13,6 +13,13 @@ class MemberProfileExtension extends DataObjectDecorator {
 		));
 	}
 
+	public function canLogIn($result) {
+		if($this->owner->NeedsValidation) $result->error(_t (
+			'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
+			'You must validate your account before you can log in.'
+		));
+	}
+
 	public function populateDefaults() {
 		$this->owner->ValidationKey = sha1(mt_rand() . mt_rand());
 	}
