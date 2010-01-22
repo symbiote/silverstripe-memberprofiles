@@ -295,8 +295,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		));
 
 		return array (
-			'Title'   => $this->RegisterTitle,
-			'Content' => $this->RegisterContent,
+			'Title'   => $this->RegistrationTitle,
+			'Content' => $this->RegistrationContent,
 			'Form'    => $this->RegisterForm()
 		);
 	}
