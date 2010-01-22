@@ -466,6 +466,27 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$memberFields  = $member->getMemberFormFields();
 		$fields        = new FieldSet();
 
+		if($context == 'Registration') {
+			$fields->push(new HeaderField (
+				'LogInHeader', _t('MemberProfiles.LOGIN', 'Log In')
+			));
+
+			$fields->push(new LiteralField (
+				'LogInNote',
+				'<p>' . sprintf (
+					_t (
+						'MemberProfiles.LOGIN',
+						'If you already have an account you can <a href="%s">log in here</a>.'
+					),
+					Security::Link('login')
+				) . '</p>'
+			));
+
+			$fields->push(new HeaderField (
+				'RegisterHeader', _t('MemberProfiles.REGISTER', 'Register')
+			));
+		}
+
 		foreach($profileFields as $profileField) {
 			$visibility  = $profileField->{$context . 'Visibility'};
 			$name        = $profileField->MemberField;
