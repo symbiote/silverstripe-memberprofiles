@@ -104,6 +104,22 @@ class MemberProfilePage extends Page {
 				if($record) {
 					if($record->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
 					if($record->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
+
+					$formFields = singleton('Member')->getMemberFormFields();
+					$formField  = $formFields->dataFieldByName($record->MemberField);
+
+					if($formField instanceof DropdownField) {
+						$fields->insertBefore (
+							new DropdownField('DefaultValue', '', $formField->getSource(), null, null, true),
+							'Note'
+						);
+					} elseif($formField instanceof TextField) {
+						$fields->insertBefore(new TextField('DefaultValue'), 'Note');
+					} else {
+						$fields->insertBefore(new ReadonlyField('DefaultValue'), 'Note');
+					}
+				} else {
+					$fields->insertBefore(new TextField('DefaultValue'), 'Note');
 				}
 
 				return $fields;
@@ -121,6 +137,7 @@ class MemberProfilePage extends Page {
 				'RegistrationVisibility' => _t('MemberProfiles.REGISTRATIONVIS', ' Registration Visibility'),
 				'ProfileVisibility'      => _t('MemberProfiles.PROFILEVIS', 'Profile Visibility'),
 				'CustomTitle'            => _t('MemberProfiles.CUSTOMTITLE', 'Custom Title'),
+				'DefaultValue'           => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
 				'Note'                   => _t('MemberProfiles.NOTE', 'Note'),
 				'CustomError'            => _t('MemberProfiles.CUSTOMERRMESSAGE', 'Custom Error Message'),
 				'Unique'                 => _t('MemberProfiles.UNIQUE', 'Unique'),
@@ -497,6 +514,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$field = clone $memberField;
 			$field->setTitle($profileField->Title);
 			$field->setRightTitle($profileField->Note);
+
+			if($context == 'Registration' && $profileField->DefaultValue) {
+				$field->setValue($profileField->DefaultValue);
+			}
 
 			if($profileField->CustomError) {
 				$field->setCustomValidationMessage($profileField->CustomError);
