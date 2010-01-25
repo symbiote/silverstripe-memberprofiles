@@ -13,7 +13,8 @@ class MemberProfileField extends DataObject {
 		'Note'                   => 'Varchar(255)',
 		'CustomError'            => 'Varchar(255)',
 		'Unique'                 => 'Boolean',
-		'Required'               => 'Boolean'
+		'Required'               => 'Boolean',
+		'Sort'                   => 'Int'
 	);
 
 	public static $has_one = array (
@@ -28,6 +29,8 @@ class MemberProfileField extends DataObject {
 		'Unique'                 => 'Unique',
 		'Required'               => 'Required'
 	);
+
+	public static $default_sort = 'Sort';
 
 	/**
 	 * @return 
@@ -70,6 +73,8 @@ class MemberProfileField extends DataObject {
 
 		if($this->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
 		if($this->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
+
+		$fields->removeByName('Sort');
 
 		return $fields;
 	}

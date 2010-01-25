@@ -87,6 +87,10 @@ class MemberProfilePage extends Page {
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
 		$fieldsTable->setShowPagination(false);
 
+		if(method_exists($fieldsTable, 'setOrderable')) {
+			$fieldsTable->setOrderable(true);
+		}
+
 		$validation->push(new HeaderField (
 			'EmailValidHeader', _t('MemberProfiles.EMAILVALIDATION', 'Email Validation')
 		));
