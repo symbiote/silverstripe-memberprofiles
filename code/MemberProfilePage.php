@@ -74,82 +74,18 @@ class MemberProfilePage extends Page {
 		$fields->removeFieldFromTab('Root.Content.Main', 'Title');
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
 
-		if(!function_exists('member_profile_page_get_tablefields')) {
-			/**
-			 * Gets the table fields for editing a specific {@link MemberProfileField} instance.
-			 *
-			 * @param  MemberProfileField $record
-			 * @return FieldSet
-			 */
-			function get_profile_table_fields($record) {
-				$fields = new FieldSet (
-					new ReadonlyField('DefaultTitle'),
-					new DropdownField (
-						'RegistrationVisibility',
-						'',
-						$showOptions = array (
-							'Edit'     => _t('MemberProfiles.ALLOWEDIT', 'Allow Editing'),
-							'Readonly' => _t('MemberProfiles.READONLY', 'Show readonly'),
-							'Hidden'   => _t('MemberProfiles.HIDDEN', 'Do not show')
-						)
-					),
-					new DropdownField('ProfileVisibility', '', $showOptions),
-					new TextField('CustomTitle'),
-					new TextField('Note'),
-					new TextField('CustomError'),
-					$unique   = new CheckboxField('Unique'),
-					$required = new CheckboxField('Required')
-				);
-
-				if($record) {
-					if($record->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
-					if($record->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
-
-					$formFields = singleton('Member')->getMemberFormFields();
-					$formField  = $formFields->dataFieldByName($record->MemberField);
-
-					if($formField instanceof DropdownField) {
-						$fields->insertBefore (
-							new DropdownField('DefaultValue', '', $formField->getSource(), null, null, true),
-							'Note'
-						);
-					} elseif($formField instanceof TextField) {
-						$fields->insertBefore(new TextField('DefaultValue'), 'Note');
-					} else {
-						$fields->insertBefore(new ReadonlyField('DefaultValue'), 'Note');
-					}
-				} else {
-					$fields->insertBefore(new TextField('DefaultValue'), 'Note');
-				}
-
-				return $fields;
-			}
-		}
-
 		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
 			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
 		));
-		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new TableField (
+		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new ComplexTableField (
+			$this,
 			'Fields',
-			'MemberProfileField',
-			array (
-				'DefaultTitle'           => _t('MemberProfiles.TITLE', 'Title'),
-				'RegistrationVisibility' => _t('MemberProfiles.REGISTRATIONVIS', ' Registration Visibility'),
-				'ProfileVisibility'      => _t('MemberProfiles.PROFILEVIS', 'Profile Visibility'),
-				'CustomTitle'            => _t('MemberProfiles.CUSTOMTITLE', 'Custom Title'),
-				'DefaultValue'           => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
-				'Note'                   => _t('MemberProfiles.NOTE', 'Note'),
-				'CustomError'            => _t('MemberProfiles.CUSTOMERRMESSAGE', 'Custom Error Message'),
-				'Unique'                 => _t('MemberProfiles.UNIQUE', 'Unique'),
-				'Required'               => _t('MemberProfiles.REQUIRED', 'Required')
-			),
-			'get_profile_table_fields',
-			'ProfilePageID',
-			$this->ID
+			'MemberProfileField'
 		));
 
 		$fieldsTable->setPermissions(array('show', 'edit'));
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
+		$fieldsTable->setShowPagination(false);
 
 		$validation->push(new HeaderField (
 			'EmailValidHeader', _t('MemberProfiles.EMAILVALIDATION', 'Email Validation')

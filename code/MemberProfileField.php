@@ -20,6 +20,72 @@ class MemberProfileField extends DataObject {
 		'ProfilePage' => 'MemberProfilePage'
 	);
 
+	public static $summary_fields = array (
+		'DefaultTitle'           => 'Field',
+		'ProfileVisibility'      => 'Profile Visibility',
+		'RegistrationVisibility' => 'Registration Visibility',
+		'CustomTitle'            => 'Custom Title',
+		'Unique'                 => 'Unique',
+		'Required'               => 'Required'
+	);
+
+	/**
+	 * @return 
+	 */
+	public function getCMSFields() {
+		$fields       = parent::getCMSFields();
+		$memberFields = singleton('Member')->getMemberFormFields();
+		$memberField  = $memberFields->dataFieldByName($this->MemberField);
+
+		$fields->insertBefore (
+			new HeaderField('FieldOptions', $this->fieldLabel('FieldOptions')),
+			'ProfileVisibility'
+		);
+		$fields->insertBefore (
+			new ReadonlyField('MemberField', $this->fieldLabel('MemberField')),
+			'ProfileVisibility'
+		);
+
+		$fields->insertBefore (
+			new HeaderField('ValidationHeader', $this->fieldLabel('ValidationOptions')),
+			'CustomError'
+		);
+
+		if($memberField instanceof DropdownField) {
+			$fields->replaceField('DefaultValue', new DropdownField (
+				'DefaultValue',
+				$this->fieldLabel('DefaultValue'),
+				$memberField->getSource(),
+				null,
+				null,
+				true
+			));
+		} elseif($memberField instanceof TextField) {
+			$fields->replaceField('DefaultValue', new TextField (
+				'DefaultValue', $this->fieldLabel('DefaultValue')
+			));
+		} else {
+			$fields->removeByName('DefaultValue');
+		}
+
+		if($this->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
+		if($this->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
+
+		return $fields;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function fieldLabels() {
+		return array_merge(parent::fieldLabels(), array (
+			'FieldOptions'      => _t('MemberProfiles.FIELDOPTIONS', 'Field Options'),
+			'MemberField'       => _t('MemberProfiles.MEMBERFIELD', 'Member Field'),
+			'ValidationOptions' => _t('MemberProfiles.VALIDOPTIONS', 'Validation Options'),
+			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value')
+		));
+	}
+
 	/**
 	 * @uses   MemberProfileField::getDefaultTitle
 	 * @return string
