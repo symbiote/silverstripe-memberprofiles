@@ -1,6 +1,7 @@
 <?php
 /**
- * Adds validation fields to the Member object.
+ * Adds validation fields to the Member object, as well as exposing the user's
+ * status in the CMS.
  *
  * @package silverstripe-memberprofiles
  */
@@ -20,17 +21,39 @@ class MemberProfileExtension extends DataObjectDecorator {
 		));
 	}
 
+	/**
+	 * Allows admin users to manually confirm a user.
+	 */
+	public function saveManualEmailValidation($value) {
+		if($value == 'confirm') {
+			$this->owner->NeedsValidation = false;
+		}
+	}
+
 	public function populateDefaults() {
 		$this->owner->ValidationKey = sha1(mt_rand() . mt_rand());
 	}
 
 	public function updateMemberFormFields($fields) {
-		$this->updateCMSFields($fields);
+		$fields->removeByName('ValidationKey');
+		$fields->removeByName('NeedsValidation');
 	}
 
 	public function updateCMSFields($fields) {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+
+		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
+			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
+			new LiteralField('ConfirmationNote', '<p>' . _t (
+				'MemberProfiles.NOLOGINTILLCONFIRMED',
+				'The member cannot log in until their account is confirmed.'
+			) . '</p>'),
+			new DropdownField('ManualEmailValidation', '', array (
+				'unconfirmed' => _t('MemberProfiles.UNCONFIRMED', 'Unconfirmed'),
+				'confirm'     => _t('MemberProfiles.MANUALLYCONFIRM', 'Manually confirm')
+			))
+		));
 	}
 
 }
