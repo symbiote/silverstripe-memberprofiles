@@ -15,6 +15,38 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 	 */
 	public function testManualConfirmation() {
 		$member = $this->objFromFixture('Member', 'unconfirmed');
+		$this->assertEquals(true, (bool) $member->NeedsValidation);
+
+		$this->getSecurityAdmin();
+		$this->submitForm('MemberTableField_Popup_DetailForm', null, array (
+			'ManualEmailValidation' => 'confirm'
+		));
+
+		$member = DataObject::get_by_id('Member', $member->ID);
+		$this->assertEquals(false, (bool) $member->NeedsValidation);
+	}
+
+	/**
+	 * @covers MemberProfileExtension::saveManualEmailValidation
+	 * @covers MemberProfileExtension::updateCMSFields
+	 */
+	public function testResendConfirmationEmail() {
+		$member = $this->objFromFixture('Member', 'unconfirmed');
+		$this->assertEquals(true, (bool) $member->NeedsValidation);
+
+		$this->getSecurityAdmin();
+		$this->submitForm('MemberTableField_Popup_DetailForm', null, array (
+			'ManualEmailValidation' => 'resend'
+		));
+
+		$member = DataObject::get_by_id('Member', $member->ID);
+		$this->assertEquals(true, (bool) $member->NeedsValidation);
+
+		$this->assertEmailSent($member->Email);
+	}
+
+	protected function getSecurityAdmin() {
+		$member = $this->objFromFixture('Member', 'unconfirmed');
 		$admin  = new SecurityAdmin();
 		$group  = $this->objFromFixture('Group', 'group');
 
@@ -26,15 +58,6 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 
 		$this->get($gLink);
 		$this->get($mLink);
-
-		$this->assertEquals(true, (bool) $member->NeedsValidation);
-
-		$this->submitForm('MemberTableField_Popup_DetailForm', null, array (
-			'ManualEmailValidation' => 'confirm'
-		));
-
-		$member = DataObject::get_by_id('Member', $member->ID);
-		$this->assertEquals(false, (bool) $member->NeedsValidation);
 	}
 
 }

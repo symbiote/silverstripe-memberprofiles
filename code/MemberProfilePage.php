@@ -312,6 +312,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$member = new Member();
 		$form->saveInto($member);
 
+		$member->ProfilePageID = $this->ID;
+
 		try {
 			$member->write();
 		} catch(ValidationException $e) {

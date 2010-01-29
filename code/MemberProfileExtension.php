@@ -8,10 +8,15 @@
 class MemberProfileExtension extends DataObjectDecorator {
 
 	public function extraStatics() {
-		return array('db' => array (
-			'ValidationKey'   => 'Varchar(40)',
-			'NeedsValidation' => 'Boolean'
-		));
+		return array (
+			'db' => array (
+				'ValidationKey'   => 'Varchar(40)',
+				'NeedsValidation' => 'Boolean'
+			),
+			'has_one' => array (
+				'ProfilePage' => 'MemberProfilePage'
+			)
+		);
 	}
 
 	public function canLogIn($result) {
@@ -27,6 +32,9 @@ class MemberProfileExtension extends DataObjectDecorator {
 	public function saveManualEmailValidation($value) {
 		if($value == 'confirm') {
 			$this->owner->NeedsValidation = false;
+		} elseif($value == 'resend') {
+			$email = new MemberConfirmationEmail($this->owner->ProfilePage(), $this->owner);
+			$email->send();
 		}
 	}
 
@@ -51,6 +59,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 			) . '</p>'),
 			new DropdownField('ManualEmailValidation', '', array (
 				'unconfirmed' => _t('MemberProfiles.UNCONFIRMED', 'Unconfirmed'),
+				'resend'      => _t('MemberProfiles.RESEND', 'Resend confirmation email'),
 				'confirm'     => _t('MemberProfiles.MANUALLYCONFIRM', 'Manually confirm')
 			))
 		));
