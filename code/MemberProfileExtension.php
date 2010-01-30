@@ -45,11 +45,11 @@ class MemberProfileExtension extends DataObjectDecorator {
 	public function updateMemberFormFields($fields) {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('ProfilePageID');
 	}
 
 	public function updateCMSFields($fields) {
-		$fields->removeByName('ValidationKey');
-		$fields->removeByName('NeedsValidation');
+		$this->updateMemberFormFields($fields);
 
 		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
 			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
