@@ -77,7 +77,7 @@ class MemberProfilePage extends Page {
 		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
 			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
 		));
-		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new ComplexTableField (
+		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new OrderableCTF (
 			$this,
 			'Fields',
 			'MemberProfileField'
@@ -86,10 +86,6 @@ class MemberProfilePage extends Page {
 		$fieldsTable->setPermissions(array('show', 'edit'));
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
 		$fieldsTable->setShowPagination(false);
-
-		if(method_exists($fieldsTable, 'setOrderable')) {
-			$fieldsTable->setOrderable(true);
-		}
 
 		$validation->push(new HeaderField (
 			'EmailValidHeader', _t('MemberProfiles.EMAILVALIDATION', 'Email Validation')
