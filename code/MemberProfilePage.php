@@ -176,6 +176,12 @@ class MemberProfilePage extends Page {
 		return $fields;
 	}
 
+	public function onBeforeWrite() {
+		parent::onBeforeWrite();
+		// make sure that we have a menu title and title!
+		$this->Title = $this->MenuTitle;
+	}
+
 	/**
 	 * Get either the default or custom email template.
 	 *
@@ -452,7 +458,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 						'MemberProfiles.LOGIN',
 						'If you already have an account you can <a href="%s">log in here</a>.'
 					),
-					Security::Link('login')
+					Security::Link('login') . '?BackURL=' . $this->Link()
 				) . '</p>'
 			));
 
