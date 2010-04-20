@@ -46,6 +46,19 @@ class MemberProfilePage extends Page {
 		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
 	);
 
+	/**
+	 * An array of member profile fields that should be editable. All others will be set to NOT
+	 * be editable in either reg or profile update (fields can be enabled manually later) 
+	 *
+	 * @var array
+	 */
+	public static $default_editable_member_fields = array(
+		'Email' => true,
+		'FirstName' => true,
+		'Surname' => true,
+		'Password' => true
+	);
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
@@ -205,6 +218,12 @@ class MemberProfilePage extends Page {
 			$profileField = new MemberProfileField();
 			$profileField->MemberField   = $name;
 			$profileField->ProfilePageID = $this->ID;
+
+			if (!isset(self::$default_editable_member_fields[$name])) {
+				$profileField->ProfileVisibility = "Hidden";
+				$profileField->RegistrationVisibility = "Hidden";
+			}
+
 			$profileField->write();
 
 			$set->add($profileField);
@@ -423,7 +442,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 		if($context == 'Registration') {
 			$fields->push(new HeaderField (
-				'LogInHeader', _t('MemberProfiles.LOGIN', 'Log In')
+				'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
 			));
 
 			$fields->push(new LiteralField (
