@@ -10,6 +10,8 @@
  */
 class MemberProfilePage extends Page {
 
+	public static $icon = 'memberprofiles/images/memberprofilepage';
+
 	public static $db = array (
 		'ProfileTitle'             => 'Varchar(255)',
 		'RegistrationTitle'        => 'Varchar(255)',
@@ -32,7 +34,8 @@ class MemberProfilePage extends Page {
 	);
 
 	public static $many_many = array (
-		'Groups' => 'Group'
+		'Groups' => 'Group',
+		'SelectableGroups' => 'Group'
 	);
 
 	public static $defaults = array (
@@ -164,13 +167,25 @@ class MemberProfilePage extends Page {
 			'GroupsNote',
 			_t (
 				'MemberProfiles.GROUPSNOTE',
-				'<p>Any users registering via this page will be added to the below groups (if ' .
+				'<p>Any users registering via this page will always be added to the below groups (if ' .
 				'registration is enabled). Conversely, a member must belong to these groups '   .
 				'in order to edit their profile on this page.</p>'
 			)
 		));
 		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField (
 			'Groups', '', DataObject::get('Group')->map()
+		));
+
+		$fields->addFieldToTab('Root.Content.Main', new LiteralField (
+			'SelectableGroupsNote',
+			_t (
+				'MemberProfiles.SELECTABLE_GROUPSNOTE',
+				'<p>Users can choose to belong to the following groups, if the "Groups" field is enabled in the '.
+				'above</p>'
+			)
+		));
+		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField (
+			'SelectableGroups', '', DataObject::get('Group')->map()
 		));
 
 		return $fields;
@@ -258,7 +273,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return array
 	 */
 	public function index() {
-		return Member::currentUserID() ? $this->indexProfile() : $this->indexRegister();
+		return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
 	}
 
 	/**
@@ -272,15 +287,16 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'You cannot register on this profile page. Please login to edit your profile.'
 		));
 
+		$this->Title = $this->RegistrationTitle;
+		$this->Content = $this->RegistrationContent;
+
 		return array (
-			'Title'   => $this->RegistrationTitle,
-			'Content' => $this->RegistrationContent,
-			'Form'    => $this->RegisterForm()
+			'Form' => $this->RegisterForm()
 		);
 	}
 
 	/**
-	 * Allows users to edit their profile if they are in the groups this page is
+	 * Allows users to edit their profile if they are in at least one of the groups this page is
 	 * restricted to.
 	 *
 	 * @return array
@@ -297,9 +313,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$form = $this->ProfileForm();
 		$form->loadDataFrom($member);
 
+		$this->Title = $this->ProfileTitle;
+		$this->Content = $this->ProfileContent;
+
 		return array (
-			'Title'   => $this->ProfileTitle,
-			'Content' => $this->ProfileContent,
 			'Form'  => $form
 		);
 	}
@@ -329,10 +346,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 	/**
 	 * Handles validation and saving new Member objects, as well as sending out validation emails.
 	 */
-	public function register($data, $form) {
+	public function register($data, Form $form) {
 		$member = new Member();
-		$form->saveInto($member);
 
+		$groupIds = $this->getSettableGroupIdsFrom($form);
+
+		$form->saveInto($member);
 		$member->ProfilePageID = $this->ID;
 
 		try {
@@ -342,7 +361,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			return Director::redirectBack();
 		}
 
-		foreach($this->Groups() as $group) $member->Groups()->add($group);
+		// set after member is created otherwise the member object does not exist
+		$member->Groups()->setByIDList($groupIds);
 
 		if($this->EmailValidation) {
 			$email = new MemberConfirmationEmail($this, $member);
@@ -354,10 +374,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$member->logIn();
 		}
 
-		return array (
-			'Title'   => $this->AfterRegistrationTitle,
-			'Content' => $this->AfterRegistrationContent,
-		);
+		$this->Title = $this->AfterRegistrationTitle;
+		$this->Content = $this->AfterRegistrationTitle;
+
+		return array ();
 	}
 
 	/**
@@ -381,6 +401,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	public function save(array $data, Form $form) {
 		$member = Member::currentUser();
+
+		$groupIds = $this->getSettableGroupIdsFrom($form);
+		$member->Groups()->setByIDList($groupIds);
+
 		$form->saveInto($member);
 
 		try {
@@ -395,6 +419,43 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'good'
 		);
 		return Director::redirectBack();
+	}
+
+	/**
+	 * Gets the list of groups that can be set after the submission of a particular form
+	 *
+	 * This works around the problem with the checkboxsetfield which doesn't validate that the
+	 * groups that the user has selected are not validated against the list of groups the user is
+	 * allowed to choose from. 
+	 *
+	 * @param Form $form
+	 */
+	protected function getSettableGroupIdsFrom(Form $form) {
+		// first off check to see if groups were selected by the user. If so, we want
+		// to remove that control from the form list (just in case someone's sent through an
+		// ID for a group like, say, the admin's group...). It means we have to handle the setting
+		// ourselves, but that's okay
+		$groupField = $form->Fields()->dataFieldByName('Groups');
+		$groupIds = $allowedIds = $this->SelectableGroups()->map('ID', 'ID');
+
+		if ($groupField) {
+			$givenIds = $groupField->Value();
+			$groupIds = array();
+			if ($givenIds) {
+				foreach ($givenIds as $givenId) {
+					if (isset($allowedIds[$givenId])) {
+						$groupIds[] = $givenId;
+					}
+				}
+			}
+			$form->Fields()->removeByName('Groups');
+		}
+
+		foreach ($this->Groups()->column('ID') as $mustId) {
+			$groupIds[] = $mustId;
+		}
+
+		return $groupIds;
 	}
 
 	/**
@@ -471,6 +532,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$visibility  = $profileField->{$context . 'Visibility'};
 			$name        = $profileField->MemberField;
 			$memberField = $memberFields->dataFieldByName($name);
+
+			// handle the special case of the Groups control so that only allowed groups can be selected
+			if ($name == 'Groups') {
+				$availableGroups = $this->data()->SelectableGroups();
+				$memberField->setSource($availableGroups);
+			}
 
 			if(!$memberField || $visibility == 'Hidden') continue;
 

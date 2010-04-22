@@ -46,6 +46,11 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
 		$fields->removeByName('ProfilePageID');
+
+		// For now we just pass an empty array as the list of selectable groups -
+		// it's up to anything that uses this to populate it appropriately
+		$existing = $this->owner->Groups();
+		$fields->push(new CheckboxSetField('Groups', 'Groups', array(), $existing));
 	}
 
 	public function updateCMSFields($fields) {
