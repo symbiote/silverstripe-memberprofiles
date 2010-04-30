@@ -287,10 +287,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'You cannot register on this profile page. Please login to edit your profile.'
 		));
 
-		$this->Title = $this->RegistrationTitle;
-		$this->Content = $this->RegistrationContent;
-
 		return array (
+			'Title' => $this->obj('RegistrationTitle'),
+			'Content' => $this->obj('RegistrationContent'),
 			'Form' => $this->RegisterForm()
 		);
 	}
@@ -313,10 +312,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$form = $this->ProfileForm();
 		$form->loadDataFrom($member);
 
-		$this->Title = $this->ProfileTitle;
-		$this->Content = $this->ProfileContent;
-
 		return array (
+			'Title' => $this->obj('ProfileTitle'),
+			'Content' => $this->obj('ProfileContent'),
 			'Form'  => $form
 		);
 	}
@@ -374,10 +372,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$member->logIn();
 		}
 
-		$this->Title = $this->AfterRegistrationTitle;
-		$this->Content = $this->AfterRegistrationTitle;
-
-		return array ();
+		return array (
+			'Title' => $this->obj('AfterRegistrationTitle'),
+			'Content' => $this->obj('AfterRegistrationTitle'),
+		);
 	}
 
 	/**
@@ -492,8 +490,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$member->logIn();
 
 		return array (
-			'Title'   => $this->ConfirmationTitle,
-			'Content' => $this->ConfirmationContent
+			'Title'   => $this->obj('ConfirmationTitle'),
+			'Content' => $this->obj('ConfirmationContent')
 		);
 	}
 
