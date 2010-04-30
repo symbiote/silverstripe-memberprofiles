@@ -48,8 +48,7 @@ class OrderableCTF extends ComplexTableField {
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript(SAPPHIRE_DIR   . '/javascript/jquery_improvements.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/ui.core.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/ui.sortable.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/jquery-ui-1.8rc3.custom.js');
 		Requirements::javascript('memberprofiles/javascript/OrderableCTF.js');
 
 		return parent::FieldHolder();
