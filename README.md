@@ -45,6 +45,11 @@ You can choose a set of groups that are attached to the profile page. When a
 user registers they will be added to these groups, and an existing Member must
 belong to these groups in order to edit their profile on this profile page.
 
+In addition to the fixed group membership, users are also able to select optional
+groups to belong to (if desired). The list of groups they can select from is
+chosen in the bottom group list. To actually let users select, the "Groups"
+field must be made editable in the list of fields above. 
+
 ### Validation
 The "Validation" tab makes it possible to enable email validation, which means
 that a user must click on a link emailed to them before they can log in.
