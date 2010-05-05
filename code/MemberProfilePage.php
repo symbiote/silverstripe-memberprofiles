@@ -434,7 +434,24 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// ID for a group like, say, the admin's group...). It means we have to handle the setting
 		// ourselves, but that's okay
 		$groupField = $form->Fields()->dataFieldByName('Groups');
+		// The list of selectable groups
 		$groupIds = $allowedIds = $this->SelectableGroups()->map('ID', 'ID');
+
+		// we need to track the selected groups against the existing user's groups - this is
+		// so that we don't accidentally remove them from the list of groups
+		// a user might have been placed in via other means
+		$existingIds = array();
+		if (Member::currentUserID()) {
+			$existing = Member::currentUser()->Groups();
+			if ($existing && $existing->Count() > 0) {
+				$existingIds = $existing->map('ID', 'ID');
+				// remove any that are in the selectable groups map - we only want to 
+				// worry about those that aren't managed by this form
+				foreach ($groupIds as $gid) {
+					unset($existingIds[$gid]);
+				}
+			}
+		}
 
 		if ($groupField) {
 			$givenIds = $groupField->Value();
@@ -451,6 +468,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 		foreach ($this->Groups()->column('ID') as $mustId) {
 			$groupIds[] = $mustId;
+		}
+
+		foreach ($existingIds as $existingId) {
+			if (!in_array($existingId, $groupIds)) {
+				$groupIds[] = $existingId;
+			}
 		}
 
 		return $groupIds;
