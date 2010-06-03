@@ -374,7 +374,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 		return array (
 			'Title' => $this->obj('AfterRegistrationTitle'),
-			'Content' => $this->obj('AfterRegistrationTitle'),
+			'Content' => $this->obj('AfterRegistrationContent'),
 		);
 	}
 
