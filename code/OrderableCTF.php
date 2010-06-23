@@ -14,30 +14,31 @@ class OrderableCTF extends ComplexTableField {
 	 * Handles saving the updated order of objects.
 	 */
 	public function order($request) {
-		$objects  = $this->sourceItems();
-		$sort     = Object::get_static($this->sourceClass, 'default_sort');
-		$newIDs   = $request->postVar('ids');
-		$sortVals = array_values($objects->map('ID', $sort));
+		$items = $this->sourceItems();
+		$sort  = Object::get_static($this->sourceClass, 'default_sort');
+		$order = $request->postVar('ids');
 
-		// populate new ID values
-		foreach($objects as $object) if(!$object->$sort) {
-			$table = $object->class;
+		// Populate each object with a sort value.
+		foreach ($items as $item) if (!$item->$sort) {
+			$table = $item->class;
 			$query = DB::query("SELECT MAX(\"$sort\") + 1 FROM \"$table\"");
 
-			$object->$sort = $oldIDs[$object->ID] = $query->value();
-			$object->write();
+			$item->$sort = $query->value();
+			$item->write();
 		}
 
-		// save the new ID values - but only use existing sort values to prevent
-		// conflicts with items not in the table
-		foreach($newIDs as $key => $id) {
-			$object = $objects->find('ID', $id);
+		// Re-order the fields, but only use existing sort values to prevent
+		// conflicts with items not in this CTF.
+		$values = array_values($items->map('ID', $sort));
 
-			$object->$sort = $sortVals[$key];
-			$object->write();
+		foreach ($order as $key => $id) {
+			$item = $items->find('ID', $id);
+
+			$item->$sort = $values[$key];
+			$item->write();
 		}
 
-		$objects->sort($sort);
+		$items->sort($sort);
 		return $this->FieldHolder();
 	}
 
