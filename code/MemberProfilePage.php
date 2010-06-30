@@ -69,14 +69,22 @@ class MemberProfilePage extends Page {
 	);
 
 	/**
-	 * If we're configured only for only letting people add new members, lets link directly to the 'add' action
+	 * If profile editing is disabled, but the current user can add members,
+	 * just link directly to the add action.
 	 *
 	 * @param string $action
 	 */
-	public function Link($action=null) {
-		if (!$action && $this->AllowAdding && !$this->AllowRegistration) {
+	public function Link($action = null) {
+		if(
+			!$action
+			&& Member::currentUserID()
+			&& !$this->AllowProfileEditing
+			&& $this->AllowAdding
+			&& singleton('Member')->canCreate()
+		) {
 			$action = 'add';
 		}
+
 		return parent::Link($action);
 	}
 
@@ -325,16 +333,25 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
-	 * Allows users to edit their profile if they are in at least one of the groups this page is
-	 * restricted to.
+	 * Allows users to edit their profile if they are in at least one of the
+	 * groups this page is restricted to, and editing isn't disabled.
+	 *
+	 * If editing is disabled, but the current user can add users, then they
+	 * are redirected to the add user page.
 	 *
 	 * @return array
 	 */
 	protected function indexProfile() {
-		if(!$this->AllowProfileEditing) return Security::permissionFailure($this, _t(
-			'MemberProfiles.CANNOTEDIT',
-			'You cannot edit your profile via this page.'
-		));
+		if(!$this->AllowProfileEditing) {
+			if($this->AllowAdding && singleton('Member')->canCreate()) {
+				return $this->redirect($this->Link('add'));
+			}
+
+			return Security::permissionFailure($this, _t(
+				'MemberProfiles.CANNOTEDIT',
+				'You cannot edit your profile via this page.'
+			));
+		}
 
 		$member = Member::currentUser();
 
