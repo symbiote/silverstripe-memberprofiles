@@ -23,6 +23,7 @@ class MemberProfilePage extends Page {
 		'RegistrationContent'      => 'HTMLText',
 		'AfterRegistrationContent' => 'HTMLText',
 		'AllowRegistration'        => 'Boolean',
+		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
 
 		'EmailValidation'     => 'Boolean',
@@ -48,6 +49,7 @@ class MemberProfilePage extends Page {
 		'AfterRegistrationTitle'   => 'Registration Successful',
 		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
 		'AllowRegistration'        => true,
+		'AllowProfileEditing'      => true,
 		'EmailValidation'          => true,
 		'ConfirmationTitle'        => 'Account Confirmed',
 		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
@@ -168,6 +170,10 @@ class MemberProfilePage extends Page {
 			),
 			'ClassName'
 		);
+		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
+			'AllowProfileEditing',
+			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
+		), 'ClassName');
 		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
 			'AllowAdding', _t(
 				'MemberProfiles.ALLOWADDNOTE',
@@ -325,6 +331,11 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return array
 	 */
 	protected function indexProfile() {
+		if(!$this->AllowProfileEditing) return Security::permissionFailure($this, _t(
+			'MemberProfiles.CANNOTEDIT',
+			'You cannot edit your profile via this page.'
+		));
+
 		$member = Member::currentUser();
 
 		foreach($this->Groups() as $group) {
