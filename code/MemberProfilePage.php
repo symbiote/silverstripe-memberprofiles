@@ -4,6 +4,9 @@
  * fields available on the member object, then allow members to register and edit
  * their profile using these fields.
  *
+ * Members who have permission to create new members can also be allowed to
+ * create new members via this page.
+ *
  * It also supports email validation.
  *
  * @package silverstripe-memberprofiles
@@ -20,6 +23,7 @@ class MemberProfilePage extends Page {
 		'RegistrationContent'      => 'HTMLText',
 		'AfterRegistrationContent' => 'HTMLText',
 		'AllowRegistration'        => 'Boolean',
+		'AllowAdding'              => 'Boolean',
 
 		'EmailValidation'     => 'Boolean',
 		'EmailFrom'           => 'Varchar(255)',
@@ -152,6 +156,12 @@ class MemberProfilePage extends Page {
 			),
 			'ClassName'
 		);
+		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
+			'AllowAdding', _t(
+				'MemberProfiles.ALLOWADDNOTE',
+				'Allow members with member creation permissions to add members via this page'
+			)
+		), 'ClassName');
 		$fields->addFieldToTab (
 			'Root.Behaviour',
 			new HeaderField (
@@ -264,6 +274,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		'index',
 		'RegisterForm',
 		'ProfileForm',
+		'add',
+		'AddForm',
 		'confirm'
 	);
 
@@ -345,37 +357,18 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * Handles validation and saving new Member objects, as well as sending out validation emails.
 	 */
 	public function register($data, Form $form) {
-		$member = new Member();
+		if($member = $this->addMember($form)) {
+			if(!$this->EmailValidation) {
+				$member->logIn();
+			}
 
-		$groupIds = $this->getSettableGroupIdsFrom($form);
-
-		$form->saveInto($member);
-		$member->ProfilePageID = $this->ID;
-
-		try {
-			$member->write();
-		} catch(ValidationException $e) {
-			$form->sessionMessage($e->getResult()->message(), 'bad');
-			return Director::redirectBack();
-		}
-
-		// set after member is created otherwise the member object does not exist
-		$member->Groups()->setByIDList($groupIds);
-
-		if($this->EmailValidation) {
-			$email = new MemberConfirmationEmail($this, $member);
-			$email->send();
-
-			$member->NeedsValidation = true;
-			$member->write();
+			return array (
+				'Title' => $this->obj('AfterRegistrationTitle'),
+				'Content' => $this->obj('AfterRegistrationContent'),
+			);
 		} else {
-			$member->logIn();
+			return $this->redirectBack();
 		}
-
-		return array (
-			'Title' => $this->obj('AfterRegistrationTitle'),
-			'Content' => $this->obj('AfterRegistrationContent'),
-		);
 	}
 
 	/**
@@ -409,14 +402,60 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$member->write();
 		} catch(ValidationException $e) {
 			$form->sessionMessage($e->getResult()->message(), 'bad');
-			return Director::redirectBack();
+			return $this->redirectBack();
 		}
 
 		$form->sessionMessage (
 			_t('MemberProfiles.PROFILEUPDATED', 'Your profile has been updated.'),
 			'good'
 		);
-		return Director::redirectBack();
+		return $this->redirectBack();
+	}
+
+	/**
+	 * Allows members with the appropriate permissions to add/regsiter other
+	 * members.
+	 */
+	public function add($request) {
+		if(!$this->AllowAdding || !singleton('Member')->canCreate()) {
+			return Security::permissionFailure($this, _t (
+				'MemberProfiles.CANNOTADDMEMBERS',
+				'You cannot add members via this page.'
+			));
+		}
+
+		return array(
+			'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'),
+			'Content' => '',
+			'Form'    => $this->AddForm()
+		);
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function AddForm() {
+		return new Form (
+			$this,
+			'AddForm',
+			$this->getProfileFields('Add'),
+			new FieldSet (
+				new FormAction('doAdd', _t('MemberProfiles.ADD', 'Add'))
+			),
+			new MemberProfileValidator($this->Fields())
+		);
+	}
+
+	/**
+	 * Saves an add member form submission into a new member object.
+	 */
+	public function doAdd($data, $form) {
+		if($this->addMember($form)) $form->sessionMessage(
+			_t('MemberProfiles.MEMBERADDED', 'The new member has been added.'),
+			'good'
+		);
+
+		return $this->redirectBack();
 	}
 
 	/**
@@ -519,14 +558,53 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
+	 * Attempts to save either a registration or add member form submission
+	 * into a new member object, returning NULL on validation failure.
+	 *
+	 * @return Member|null
+	 */
+	protected function addMember($form) {
+		$member   = new Member();
+		$groupIds = $this->getSettableGroupIdsFrom($form);
+
+		$form->saveInto($member);
+		$member->ProfilePageID = $this->ID;
+
+		try {
+			$member->write();
+		} catch(ValidationException $e) {
+			$form->sessionMessage($e->getResult()->message(), 'bad');
+			return;
+		}
+
+		// set after member is created otherwise the member object does not exist
+		$member->Groups()->setByIDList($groupIds);
+
+		if($this->EmailValidation) {
+			$email = new MemberConfirmationEmail($this, $member);
+			$email->send();
+
+			$member->NeedsValidation = true;
+			$member->write();
+		}
+
+		return $member;
+	}
+
+	/**
 	 * @param  string $context
 	 * @return FieldSet
 	 */
 	protected function getProfileFields($context) {
 		$profileFields = $this->Fields();
-		$member        = Member::currentUser() ? Member::currentUser() : singleton('Member');
-		$memberFields  = $member->getMemberFormFields();
 		$fields        = new FieldSet();
+
+		// depending on the context, load fields from the current member
+		if(Member::currentUserID() && $context != 'Add') {
+			$memberFields = Member::currentUser()->getMemberFormFields();
+		} else {
+			$memberFields = singleton('Member')->getMemberFormFields();
+		}
 
 		if($context == 'Registration') {
 			$fields->push(new HeaderField (
@@ -547,6 +625,31 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$fields->push(new HeaderField (
 				'RegisterHeader', _t('MemberProfiles.REGISTER', 'Register')
 			));
+		}
+
+		if(
+			$context == 'Profile'
+			&& $this->AllowAdding
+			&& singleton('Member')->canCreate()
+		) {
+			$fields->push(new HeaderField(
+				'AddHeader', _t('MemberProfiles.ADDUSER', 'Add User')
+			));
+			$fields->push(new LiteralField (
+				'AddMemberNote',
+				'<p>' . sprintf(_t(
+					'MemberProfiles.ADDMEMBERNOTE',
+					'You can use this page to <a href="%s">add a new member</a>.'
+				), $this->Link('add')) . '</p>'
+			));
+			$fields->push(new HeaderField(
+				'YourProfileHeader', _t('MemberProfiles.YOURPROFILE', 'Your Profile')
+			));
+		}
+
+		// use the default registration fields for adding members
+		if($context == 'Add') {
+			$context = 'Registration';
 		}
 
 		foreach($profileFields as $profileField) {
