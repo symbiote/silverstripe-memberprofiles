@@ -393,7 +393,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	public function save(array $data, Form $form) {
 		$member = Member::currentUser();
 
-		$groupIds = $this->getSettableGroupIdsFrom($form);
+		$groupIds = $this->getSettableGroupIdsFrom($form, $member);
 		$member->Groups()->setByIDList($groupIds);
 
 		$form->saveInto($member);
@@ -465,9 +465,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * groups that the user has selected are not validated against the list of groups the user is
 	 * allowed to choose from. 
 	 *
-	 * @param Form $form
+	 * @param Form   $form
+	 * @param Member $member
 	 */
-	protected function getSettableGroupIdsFrom(Form $form) {
+	protected function getSettableGroupIdsFrom(Form $form, Member $member = null) {
 		// first off check to see if groups were selected by the user. If so, we want
 		// to remove that control from the form list (just in case someone's sent through an
 		// ID for a group like, say, the admin's group...). It means we have to handle the setting
@@ -480,8 +481,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// so that we don't accidentally remove them from the list of groups
 		// a user might have been placed in via other means
 		$existingIds = array();
-		if (Member::currentUserID()) {
-			$existing = Member::currentUser()->Groups();
+		if ($member) {
+			$existing = $member->Groups();
 			if ($existing && $existing->Count() > 0) {
 				$existingIds = $existing->map('ID', 'ID');
 				// remove any that are in the selectable groups map - we only want to 
