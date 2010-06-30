@@ -66,6 +66,18 @@ class MemberProfilePage extends Page {
 		'Password' => true
 	);
 
+	/**
+	 * If we're configured only for only letting people add new members, lets link directly to the 'add' action
+	 *
+	 * @param string $action
+	 */
+	public function Link($action=null) {
+		if (!$action && $this->AllowAdding && !$this->AllowRegistration) {
+			$action = 'add';
+		}
+		return parent::Link($action);
+	}
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
