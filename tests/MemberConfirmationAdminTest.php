@@ -51,7 +51,7 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 		$group  = $this->objFromFixture('Group', 'group');
 
 		Form::disable_all_security_tokens();
-		$this->logInWithPermssion('ADMIN');
+		$this->logInWithPermission('ADMIN');
 
 		$gLink = Controller::join_links($admin->Link(), 'show', $group->ID);
 		$mLink = Controller::join_links($admin->Link(), 'EditForm/field/Members/item', $member->ID, 'edit');
