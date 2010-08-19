@@ -25,6 +25,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowRegistration'        => 'Boolean',
 		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
+		'RegistrationRedirect'	   => 'Boolean',
 
 		'EmailValidation'     => 'Boolean',
 		'EmailFrom'           => 'Varchar(255)',
@@ -32,6 +33,10 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'EmailTemplate'       => 'Text',
 		'ConfirmationTitle'   => 'Varchar(255)',
 		'ConfirmationContent' => 'HTMLText'
+	);
+
+	public static $has_one = array(
+		'PostRegistrationTarget' => 'SiteTree',
 	);
 
 	public static $has_many = array (
@@ -129,6 +134,17 @@ class MemberProfilePage extends Page implements PermissionProvider {
 				new HtmlEditorField("{$tab}Content", _t('MemberProfiles.CONTENT', 'Content'))
 			);
 		}
+
+		$fields->addFieldToTab(
+			'Root.Content.AfterRegistration',
+			new CheckboxField('RegistrationRedirect', _t('MemberProfiles.REDIRECT_AFTER_REG', 'Redirect after registration?')),
+			'AfterRegistrationContent'
+		);
+		$fields->addFieldToTab(
+			'Root.Content.AfterRegistration',
+			new TreeDropdownField('PostRegistrationTargetID', _t('MemberProfiles.REDIRECT_TARGET', 'Redirect to page'), 'SiteTree'),
+			'AfterRegistrationContent'
+		);
 
 		$fields->removeFieldFromTab('Root.Content.Main', 'Title');
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
@@ -328,6 +344,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return array
 	 */
 	public function index() {
+		if (isset($_GET['BackURL'])) {
+			Session::set('MemberProfile.REDIRECT', $_GET['BackURL']);
+		}
 		return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
 	}
 
@@ -417,6 +436,21 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if($member = $this->addMember($form)) {
 			if(!$this->EmailValidation && !$this->AllowAdding) {
 				$member->logIn();
+			}
+
+			if ($this->RegistrationRedirect) {
+				if ($this->PostRegistrationTargetID) {
+					$this->redirect($this->PostRegistrationTarget()->Link());
+					return;
+				}
+
+				if ($sessionTarget = Session::get('MemberProfile.REDIRECT')) {
+					Session::clear('MemberProfile.REDIRECT');
+					if (Director::is_site_url($sessionTarget)) {
+						$this->redirect($sessionTarget);
+						return;
+					}
+				}
 			}
 
 			return array (

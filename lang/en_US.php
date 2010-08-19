@@ -23,6 +23,8 @@ $lang['en_US']['MemberProfilePage']['SINGULARNAME'] = array(
 	'Singular name of the object, used in dropdowns and to generally identify a single object in the interface'
 );
 $lang['en_US']['MemberProfiles']['AFTERRED'] = 'After Registration';
+$lang['en_US']['MemberProfiles']['REDIRECT_AFTER_REG'] = 'Redirect after registration?';
+$lang['en_US']['MemberProfiles']['REDIRECT_TARGET'] = 'Redirect to page';
 $lang['en_US']['MemberProfiles']['ALLOWREG'] = 'Allow registration via this page';
 $lang['en_US']['MemberProfiles']['CANNOTCONFIRMLOGGEDIN'] = 'You cannot confirm account while you are logged in.';
 $lang['en_US']['MemberProfiles']['CANNOTREGPLEASELOGIN'] = 'You cannot register on this profile page. Please login to edit your profile.';

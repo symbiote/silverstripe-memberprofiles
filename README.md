@@ -59,6 +59,15 @@ account you can do so via the "Security" CMS section - just click on a member
 and there will be a dropdown down the bottom allowing you to perform these
 actions.
 
+### Template Usage
+You can link to the profile page with the optional ?BackURL= parameter
+which will set a URL that the user will be redirected to after they complete
+registration. This requires the "RegistrationRedirect" property to be set
+on the After Registration tab. 
+
+If you like, you can manually set a redirection target by setting
+Session::set('MemberProfile.REDIRECT') to a URL value. 
+
 Known Issues
 ------------
 [Issue Tracker](http://github.com/ajshort/silverstripe-memberprofiles/issues)
