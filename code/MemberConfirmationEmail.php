@@ -46,7 +46,8 @@ class MemberConfirmationEmail extends Email {
 
 <p>
 	Once your account has been activated you will automatically be logged in. You can also log in
-	<a href="$LoginLink">here</a>.
+	<a href="$LoginLink">here</a>. If you have lost your password you can generate a new one
+	on the <a href="$LostPasswordLink">lost password</a> page.
 </p>
 ';
 
@@ -64,6 +65,7 @@ class MemberConfirmationEmail extends Email {
 	<li>$SiteName: The name of the site from the default site configuration.</li>
 	<li>$ConfirmLink: The link to confirm the user account.</li>
 	<li>$LoginLink: The link to log in with.</li>
+	<li>$LostPasswordLink: A link to the forgot password page.</li>
 	<li>
 		$Member.(Field): Various fields to do with the registered member. The available fields are
 		Name, FirstName, Surname, Email, and Created.
@@ -87,7 +89,8 @@ class MemberConfirmationEmail extends Email {
 				$member->ID,
 				"?key={$member->ValidationKey}"
 			)),
-			'$Member.Created' => $member->obj('Created')->Nice()
+			'$LostPasswordLink' => Director::absoluteURL(Security::Link('lostpassword')),
+			'$Member.Created'   => $member->obj('Created')->Nice()
 		);
 
 		foreach(array('Name', 'FirstName', 'Surname', 'Email') as $field) {

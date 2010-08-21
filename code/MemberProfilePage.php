@@ -27,7 +27,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowAdding'              => 'Boolean',
 		'RegistrationRedirect'	   => 'Boolean',
 
-		'EmailValidation'     => 'Boolean',
+		'EmailType'           => 'Enum("Validation, Confirmation, None", "None")',
 		'EmailFrom'           => 'Varchar(255)',
 		'EmailSubject'        => 'Varchar(255)',
 		'EmailTemplate'       => 'Text',
@@ -55,7 +55,6 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
 		'AllowRegistration'        => true,
 		'AllowProfileEditing'      => true,
-		'EmailValidation'          => true,
 		'ConfirmationTitle'        => 'Account Confirmed',
 		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
 	);
@@ -113,12 +112,12 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root', $validation = new Tab('Validation'), 'Behaviour');
+		$fields->addFieldToTab('Root', $email = new Tab('Email'), 'Behaviour');
 		$fields->addFieldToTab('Root.Content', $profileContent = new Tab('Profile'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $regContent = new Tab('Registration'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $afterReg = new Tab('AfterRegistration'), 'Metadata');
 
-		$validation->setTitle(_t('MemberProfiles.VALIDATION', 'Validation'));
+		$email->setTitle(_t('MemberProfiles.EMAIL', 'Email'));
 		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
 		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
 		$afterReg->setTitle(_t('MemberProfiles.AFTERRED', 'After Registration'));
@@ -162,40 +161,26 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		$fieldsTable->setCustomSourceItems($this->getProfileFields());
 		$fieldsTable->setShowPagination(false);
 
-		$validation->push(new HeaderField (
-			'EmailValidHeader', _t('MemberProfiles.EMAILVALIDATION', 'Email Validation')
+		$email->push(new HeaderField (
+			'EmailHeader', 'Email Confirmation & Validation'
 		));
-		$validation->push(new CheckboxField (
-			'EmailValidation', _t('MemberProfiles.EMAILVALID', 'Require email validation')
-		));
-		$validation->push(new TextField (
-			'EmailSubject', _t('MemberProfiles.VALIDEMAILSUBJECT', 'Validation email subject')
-		));
-		$validation->push(new TextField (
-			'EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')
-		));
-		$validation->push(new TextareaField (
-			'EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')
-		));
-		$validation->push(new LiteralField (
-			'TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE
-		));
-		$validation->push(new HeaderField (
-			'ConfirmationContentHeader', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content')
-		));
-		$validation->push(new LiteralField (
-			'ConfirmationNote',
-			'<p>' . _t (
-				'MemberProfiles.CONFIRMNOTE',
-				'This content is displayed when a user confirms their account.'
-			) . '</p>'
-		));
-		$validation->push(new TextField (
-			'ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')
-		));
-		$validation->push(new HtmlEditorField (
-			'ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content')
-		));
+		$email->push(new OptionSetField('EmailType', '', array(
+			'Validation'   => 'Require email validation to activate an account',
+			'Confirmation' => 'Send a confirmation email after a user registers',
+			'None'         => 'Do not send any emails'
+		)));
+		$email->push(new ToggleCompositeField('EmailContent', 'Email Content', array(
+			new TextField('Email Subject', 'Email subject'),
+			new TextField('EmailFrom', 'Email from'),
+			new TextareaField('EmailTemplate', 'Email template'),
+			new LiteralField('TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE)
+		)));
+		$email->push(new ToggleCompositeField('ConfirmationContent', 'Confirmation Content', array(
+			new LiteralField('ConfirmationNote', '<p>This content is dispayed when
+				a user confirms their account.</p>'),
+			new TextField('ConfirmationTitle', 'Title'),
+			new HtmlEditorField('ConfirmationContent', 'Content')
+		)));
 
 		$fields->addFieldToTab (
 			'Root.Behaviour',
@@ -434,7 +419,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
-			if(!$this->EmailValidation && !$this->AllowAdding) {
+			if($this->EmailType != 'Validation' && !$this->AllowAdding) {
 				$member->logIn();
 			}
 
@@ -626,7 +611,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		}
 
 		if (
-			!$this->EmailValidation
+			$this->EmailType != 'Validation'
 			|| (!$id = $request->param('ID')) || (!$key = $request->getVar('key')) || !is_numeric($id)
 			|| !$member = DataObject::get_by_id('Member', $id)
 		) {
@@ -672,12 +657,15 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// set after member is created otherwise the member object does not exist
 		$member->Groups()->setByIDList($groupIds);
 
-		if($this->EmailValidation) {
+		if($this->EmailType == 'Validation') {
 			$email = new MemberConfirmationEmail($this, $member);
 			$email->send();
 
 			$member->NeedsValidation = true;
 			$member->write();
+		} elseif($this->EmailType == 'Confirmation') {
+			$email = new MemberConfirmationEmail($this, $member);
+			$email->send();
 		}
 
 		return $member;
