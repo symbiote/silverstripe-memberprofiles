@@ -170,7 +170,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'None'         => 'Do not send any emails'
 		)));
 		$email->push(new ToggleCompositeField('EmailContent', 'Email Content', array(
-			new TextField('Email Subject', 'Email subject'),
+			new TextField('EmailSubject', 'Email subject'),
 			new TextField('EmailFrom', 'Email from'),
 			new TextareaField('EmailTemplate', 'Email template'),
 			new LiteralField('TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE)
