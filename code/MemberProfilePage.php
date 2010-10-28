@@ -320,7 +320,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		'ProfileForm',
 		'add',
 		'AddForm',
-		'confirm'
+		'confirm',
+		
 	);
 
 	/**
@@ -332,7 +333,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if (isset($_GET['BackURL'])) {
 			Session::set('MemberProfile.REDIRECT', $_GET['BackURL']);
 		}
-		return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
+		$mode = Member::currentUser() ? 'profile' : 'register';
+		$data = Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
+		if (is_array($data)) {
+			return $this->customise($data)->renderWith(array('MemberProfilePage_'.$mode, 'MemberProfilePage', 'Page'));
+		}
+		return $data;
 	}
 
 	/**
@@ -500,11 +506,13 @@ class MemberProfilePage_Controller extends Page_Controller {
 			));
 		}
 
-		return array(
+		$data = array(
 			'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'),
 			'Content' => '',
 			'Form'    => $this->AddForm()
 		);
+
+		return $this->customise($data)->renderWith(array('MemberProfilePage_add', 'MemberProfilePage', 'Page'));
 	}
 
 	/**
