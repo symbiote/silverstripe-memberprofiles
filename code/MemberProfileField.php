@@ -31,13 +31,24 @@ class MemberProfileField extends DataObject {
 	);
 
 	public static $default_sort = 'Sort';
+	
+	/**
+	 * Temporary local cache of form fields - otherwise we can potentially be calling
+	 * getMemberFormFields 20 - 30 times per request via getDefaultTitle.
+	 * 
+	 * It's declared as a static so all instances have access to it after it's
+	 * loaded the first time. 
+	 *
+	 * @var FieldSet
+	 */
+	protected static $member_fields;
 
 	/**
 	 * @return 
 	 */
 	public function getCMSFields() {
 		$fields       = parent::getCMSFields();
-		$memberFields = singleton('Member')->getMemberFormFields();
+		$memberFields = $this->getMemberFields();
 		$memberField  = $memberFields->dataFieldByName($this->MemberField);
 
 		$fields->insertBefore (
@@ -105,10 +116,17 @@ class MemberProfileField extends DataObject {
 	 * @return string
 	 */
 	public function getDefaultTitle() {
-		$fields = singleton('Member')->getMemberFormFields();
+		$fields = $this->getMemberFields();
 		$field  = $fields->dataFieldByName($this->MemberField);
 
 		return $field->Title() ? $field->Title() : $field->Name();
+	}
+	
+	protected function getMemberFields() {
+		if (!self::$member_fields) {
+			self::$member_fields = singleton('Member')->getMemberFormFields();
+		}
+		return self::$member_fields;
 	}
 
 	/**
