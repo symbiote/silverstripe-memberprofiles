@@ -13,7 +13,7 @@
  */
 class MemberProfilePage extends Page implements PermissionProvider {
 
-	public static $icon = 'memberprofiles/images/memberprofilepage';
+	public static $icon = 'silverstripe-memberprofiles/images/memberprofilepage';
 
 	public static $db = array (
 		'ProfileTitle'             => 'Varchar(255)',
@@ -151,7 +151,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
 			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
 		));
-		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new OrderableCTF (
+		
+		if (class_exists('DataObjectManager'))$a='DataObjectManager'; else $a='OrderableCTF';
+		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new $a (
 			$this,
 			'Fields',
 			'MemberProfileField'
@@ -248,7 +250,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		// make sure that we have a menu title and title!
-		$this->Title = $this->MenuTitle;
+		if(!$this->Title)$this->Title = $this->MenuTitle;
 	}
 
 	/**
@@ -684,60 +686,63 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return FieldSet
 	 */
 	protected function getProfileFields($context) {
-		$profileFields = $this->Fields();
+		$profileFields = $this->Fields();		
 		$fields        = new FieldSet();
-
-		// depending on the context, load fields from the current member
-		if(Member::currentUserID() && $context != 'Add') {
-			$memberFields = Member::currentUser()->getMemberFormFields();
-		} else {
-			$memberFields = singleton('Member')->getMemberFormFields();
-		}
-
-		if($context == 'Registration') {
-			$fields->push(new HeaderField (
-				'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
-			));
-
-			$fields->push(new LiteralField (
-				'LogInNote',
-				'<p>' . sprintf (
-					_t (
-						'MemberProfiles.LOGIN',
-						'If you already have an account you can <a href="%s">log in here</a>.'
-					),
-					Security::Link('login') . '?BackURL=' . $this->Link()
-				) . '</p>'
-			));
-
-			$fields->push(new HeaderField (
-				'RegisterHeader', _t('MemberProfiles.REGISTER', 'Register')
-			));
-		}
-
-		if(
-			$context == 'Profile'
-			&& $this->AllowAdding
-			&& singleton('Member')->canCreate()
-		) {
-			$fields->push(new HeaderField(
-				'AddHeader', _t('MemberProfiles.ADDUSER', 'Add User')
-			));
-			$fields->push(new LiteralField (
-				'AddMemberNote',
-				'<p>' . sprintf(_t(
-					'MemberProfiles.ADDMEMBERNOTE',
-					'You can use this page to <a href="%s">add a new member</a>.'
-				), $this->Link('add')) . '</p>'
-			));
-			$fields->push(new HeaderField(
-				'YourProfileHeader', _t('MemberProfiles.YOURPROFILE', 'Your Profile')
-			));
-		}
-
-		// use the default registration fields for adding members
-		if($context == 'Add') {
-			$context = 'Registration';
+		
+		/**
+			// depending on the context, load fields from the current member
+			if($member = Member::currentUser() && $context != 'Add') {
+				$memberFields = $member->getMemberFormFields();
+			} else {
+				$memberFields = singleton('Member')->getMemberFormFields();
+			}
+		**/
+		$memberFields = singleton('Member')->getMemberFormFields();
+		
+		switch($context) {
+			case 'Registration':
+				$fields->push(new HeaderField (
+					'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
+				));
+	
+				$fields->push(new LiteralField (
+					'LogInNote',
+					'<p>' . sprintf (
+						_t (
+							'MemberProfiles.LOGIN',
+							'If you already have an account you can <a href="%s">log in here</a>.'
+						),
+						Security::Link('login') . '?BackURL=' . $this->Link()
+					) . '</p>'
+				));
+	
+				$fields->push(new HeaderField (
+					'RegisterHeader', _t('MemberProfiles.REGISTER', 'Register')
+				));
+			break;
+			
+			case 'Profile':
+				if($this->AllowAdding && singleton('Member')->canCreate()) {
+					$fields->push(new HeaderField(
+						'AddHeader', _t('MemberProfiles.ADDUSER', 'Add User')
+					));
+					$fields->push(new LiteralField (
+						'AddMemberNote',
+						'<p>' . sprintf(_t(
+							'MemberProfiles.ADDMEMBERNOTE',
+							'You can use this page to <a href="%s">add a new member</a>.'
+						), $this->Link('add')) . '</p>'
+					));
+					$fields->push(new HeaderField(
+						'YourProfileHeader', _t('MemberProfiles.YOURPROFILE', 'Your Profile')
+					));
+				}
+			break;
+	
+			// use the default registration fields for adding members
+			case 'Add':
+			default:
+				$context = 'Registration';
 		}
 
 		foreach($profileFields as $profileField) {
@@ -748,7 +753,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			// handle the special case of the Groups control so that only allowed groups can be selected
 			if ($name == 'Groups') {
 				$availableGroups = $this->data()->SelectableGroups();
-				$memberField->setSource($availableGroups);
+				if($availableGroups->count()>0)
+					$memberField->setSource($availableGroups);
 			}
 
 			if(!$memberField || $visibility == 'Hidden') continue;

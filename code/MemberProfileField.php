@@ -47,7 +47,7 @@ class MemberProfileField extends DataObject {
 	 * @return 
 	 */
 	public function getCMSFields() {
-		$fields       = parent::getCMSFields();
+		$fields       = parent::getCMSFields()->findormakeTab("Root.Main")->Children;
 		$memberFields = $this->getMemberFields();
 		$memberField  = $memberFields->dataFieldByName($this->MemberField);
 
@@ -86,9 +86,26 @@ class MemberProfileField extends DataObject {
 		if($this->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
 
 		$fields->removeByName('Sort');
+		if (class_exists('SortableDataObject')){$fields->removeByName('SortOrder');}
 
 		return $fields;
 	}
+	
+	public function onBeforeWrite(){
+		parent::onBeforeWrite();
+			if (class_exists('SortableDataObject'))
+				if(isset($this->owner->Sort) && isset($this->owner->SortOrder)){
+					$changed = $this->getChangedFields();
+					if(isset($changed['SortOrder']) && $changed['SortOrder']) {
+						//Default sort is always used
+						$this->owner->Sort=$this->owner->SortOrder;
+					}elseif(isset($changed['Sort']) && $changed['Sort']) {
+						//User might be migrating
+						$this->owner->SortOrder=$this->owner->Sort;
+					}
+				}
+	}
+	
 
 	/**
 	 * @return array
