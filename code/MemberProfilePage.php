@@ -23,6 +23,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'RegistrationContent'      => 'HTMLText',
 		'AfterRegistrationContent' => 'HTMLText',
 		'AllowRegistration'        => 'Boolean',
+		'AllowProfileViewing'      => 'Boolean',
 		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
 		'RegistrationRedirect'	   => 'Boolean',
@@ -54,6 +55,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AfterRegistrationTitle'   => 'Registration Successful',
 		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
 		'AllowRegistration'        => true,
+		'AllowProfileViewing'      => true,
 		'AllowProfileEditing'      => true,
 		'ConfirmationTitle'        => 'Account Confirmed',
 		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
@@ -61,7 +63,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	/**
 	 * An array of member profile fields that should be editable. All others will be set to NOT
-	 * be editable in either reg or profile update (fields can be enabled manually later) 
+	 * be editable in either reg or profile update (fields can be enabled manually later)
 	 *
 	 * @var array
 	 */
@@ -196,6 +198,12 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			'ClassName'
 		);
+		$fields->addFieldToTab(
+			'Root.Behaviour',
+			new CheckboxField('AllowProfileViewing', _t(
+				'MemberProfiles.ALLOWPROFILEVIEWING',
+				'Allow people to view user\'s profiles.')),
+			'ClassName');
 		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
 			'AllowProfileEditing',
 			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
