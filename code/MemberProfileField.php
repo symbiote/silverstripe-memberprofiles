@@ -7,6 +7,7 @@ class MemberProfileField extends DataObject {
 	public static $db = array (
 		'ProfileVisibility'      => 'Enum("Edit, Readonly, Hidden", "Edit")',
 		'RegistrationVisibility' => 'Enum("Edit, Readonly, Hidden", "Edit")',
+		'PublicVisibility'       => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
 		'MemberField'            => 'Varchar(100)',
 		'CustomTitle'            => 'Varchar(100)',
 		'DefaultValue'           => 'Text',
@@ -31,20 +32,20 @@ class MemberProfileField extends DataObject {
 	);
 
 	public static $default_sort = 'Sort';
-	
+
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
 	 * getMemberFormFields 20 - 30 times per request via getDefaultTitle.
-	 * 
+	 *
 	 * It's declared as a static so all instances have access to it after it's
-	 * loaded the first time. 
+	 * loaded the first time.
 	 *
 	 * @var FieldSet
 	 */
 	protected static $member_fields;
 
 	/**
-	 * @return 
+	 * @return
 	 */
 	public function getCMSFields() {
 		$fields       = parent::getCMSFields();
@@ -64,6 +65,16 @@ class MemberProfileField extends DataObject {
 			new HeaderField('ValidationHeader', $this->fieldLabel('ValidationOptions')),
 			'CustomError'
 		);
+
+		$fields->replaceField('PublicVisibility', new OptionsetField(
+			'PublicVisibility',
+			$this->fieldLabel('PublicVisibility'),
+			array(
+				'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
+				'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
+				'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
+			)
+		));
 
 		if($memberField instanceof DropdownField) {
 			$fields->replaceField('DefaultValue', new DropdownField (
@@ -98,7 +109,8 @@ class MemberProfileField extends DataObject {
 			'FieldOptions'      => _t('MemberProfiles.FIELDOPTIONS', 'Field Options'),
 			'MemberField'       => _t('MemberProfiles.MEMBERFIELD', 'Member Field'),
 			'ValidationOptions' => _t('MemberProfiles.VALIDOPTIONS', 'Validation Options'),
-			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value')
+			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
+			'PublicVisibility'  => _t('MemberProfiles.PUBLICVISIBILITY', 'Public Profile Visiblity')
 		));
 	}
 
