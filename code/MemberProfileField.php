@@ -107,21 +107,31 @@ class MemberProfileField extends DataObject {
 	 * @return string
 	 */
 	public function getTitle() {
-		return $this->CustomTitle ? $this->CustomTitle : $this->getDefaultTitle();
+		if ($this->CustomTitle) {
+			return $this->CustomTitle;
+		} else {
+			return $this->getDefaultTitle(false);
+		}
 	}
 
 	/**
-	 * Get the default title for this field, derived from {@link Member::getMemberFormFields}.
+	 * Get the default title for this field from the form field.
 	 *
+	 * @param  bool $force Force a non-empty title to be returned.
 	 * @return string
 	 */
-	public function getDefaultTitle() {
+	public function getDefaultTitle($force = true) {
 		$fields = $this->getMemberFields();
 		$field  = $fields->dataFieldByName($this->MemberField);
+		$title  = $field->Title();
 
-		return $field->Title() ? $field->Title() : $field->Name();
+		if (!$title && $force) {
+			$title = $field->Name();
+		}
+
+		return $title;
 	}
-	
+
 	protected function getMemberFields() {
 		if (!self::$member_fields) {
 			self::$member_fields = singleton('Member')->getMemberFormFields();
