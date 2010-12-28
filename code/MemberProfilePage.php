@@ -330,7 +330,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		'add',
 		'AddForm',
 		'confirm',
-		
+		'view'
 	);
 
 	/**
@@ -405,6 +405,13 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'Content' => $this->obj('ProfileContent'),
 			'Form'  => $form
 		);
+	}
+
+	/**
+	 * @return MemberProfileViewer
+	 */
+	public function view() {
+		return new MemberProfileViewer($this, 'view');
 	}
 
 	/**
@@ -565,7 +572,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 *
 	 * This works around the problem with the checkboxsetfield which doesn't validate that the
 	 * groups that the user has selected are not validated against the list of groups the user is
-	 * allowed to choose from. 
+	 * allowed to choose from.
 	 *
 	 * @param Form   $form
 	 * @param Member $member
@@ -587,7 +594,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$existing = $member->Groups();
 			if ($existing && $existing->Count() > 0) {
 				$existingIds = $existing->map('ID', 'ID');
-				// remove any that are in the selectable groups map - we only want to 
+				// remove any that are in the selectable groups map - we only want to
 				// worry about those that aren't managed by this form
 				foreach ($groupIds as $gid) {
 					unset($existingIds[$gid]);
