@@ -88,6 +88,8 @@ class MemberProfileField extends DataObject {
 				$publicVisibility)
 		));
 
+		if ($this->isNeverPublic()) $fields->makeFieldReadonly('PublicVisibility');
+
 		$fields->addFieldsToTab('Root.Validation', array(
 			$fields->dataFieldByName('CustomError'),
 			$fields->dataFieldByName('Unique'),
@@ -165,12 +167,30 @@ class MemberProfileField extends DataObject {
 		return $this->MemberField == Member::get_unique_identifier_field();
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function isNeverPublic() {
+		return $this->MemberField == 'Password';
+	}
+
 	public function getUnique() {
 		return $this->getField('Unique') || $this->isAlwaysUnique();
 	}
 
 	public function getRequired() {
 		return $this->getField('Required') || $this->isAlwaysRequired();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPublicVisibility() {
+		if ($this->isNeverPublic()) {
+			return 'Hidden';
+		} else {
+			return $this->getField('PublicVisibility');
+		}
 	}
 
 }
