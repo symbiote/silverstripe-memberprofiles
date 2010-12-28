@@ -7,3 +7,7 @@
 #MemberList tr.odd { background: #F5F5F5; }
 #MemberListPagination {
 	border: 1px solid #AAA; margin-top: 5px; padding: 5px; text-align: center; }
+
+#MemberProfileTitle { padding-bottom: 5px; border-bottom: 1px solid #999; }
+#MemberProfile .memberProfileSection {
+	margin-top: 10px; padding-bottom: 5px; border-bottom: 1px solid #CCC; }

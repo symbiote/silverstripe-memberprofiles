@@ -8,7 +8,8 @@
 class MemberProfileViewer extends Page_Controller {
 
 	public static $url_handlers = array(
-		'' => 'handleList'
+		''           => 'handleList',
+		'$MemberID!' => 'handleView'
 	);
 
 	protected $parent, $name;
@@ -86,6 +87,48 @@ class MemberProfileViewer extends Page_Controller {
 		));
 		return $controller->renderWith(array(
 			'MemberProfileViewer_list', 'MemberProfileViewer', 'Page'
+		));
+	}
+
+	/**
+	 * Handles viewing an individual user's profile.
+	 *
+	 * @return string
+	 */
+	public function handleView($request) {
+		$id = $request->param('MemberID');
+
+		if (!ctype_digit($id) || !$member = DataObject::get_by_id('Member', $id)) {
+			$this->httpError(404);
+		}
+
+		if (!$this->parent->AllowProfileViewing) {
+			$this->httpError(403);
+		}
+
+		$groups = $this->parent->Groups();
+		if (count($groups) && !$member->inGroups($groups)) {
+			$this->httpError(403);
+		}
+
+		$sections = $this->parent->Sections();
+		if ($sections) foreach ($sections as $section) {
+			$section->setMember($member);
+		}
+
+		$this->data()->Title = sprintf(
+			_t('MemberProfiles.MEMBERPROFILETITLE', "%s's Profile"),
+			$member->getName()
+		);
+		$this->data()->Parent = $this->parent;
+
+		$controller = $this->customise(array(
+			'Member'   => $member,
+			'Sections' => $sections,
+			'IsSelf'   => $member->ID == Member::currentUserID()
+		));
+		return $controller->renderWith(array(
+			'MemberProfileViewer_view', 'MemberProfileViewer', 'Page'
 		));
 	}
 
