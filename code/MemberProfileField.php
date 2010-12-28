@@ -7,6 +7,7 @@ class MemberProfileField extends DataObject {
 	public static $db = array (
 		'ProfileVisibility'      => 'Enum("Edit, Readonly, Hidden", "Edit")',
 		'RegistrationVisibility' => 'Enum("Edit, Readonly, Hidden", "Edit")',
+		'MemberListVisible'      => 'Boolean',
 		'PublicVisibility'       => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
 		'MemberField'            => 'Varchar(100)',
 		'CustomTitle'            => 'Varchar(100)',
@@ -83,12 +84,16 @@ class MemberProfileField extends DataObject {
 		$fields->addFieldsToTab('Root.Visibility', array(
 			$fields->dataFieldByName('ProfileVisibility'),
 			$fields->dataFieldByName('RegistrationVisibility'),
+			$fields->dataFieldByName('MemberListVisible'),
 			new DropdownField(
 				'PublicVisibility', $this->fieldLabel('PublicVisibility'),
 				$publicVisibility)
 		));
 
-		if ($this->isNeverPublic()) $fields->makeFieldReadonly('PublicVisibility');
+		if ($this->isNeverPublic()) {
+			$fields->makeFieldReadonly('MemberListVisible');
+			$fields->makeFieldReadonly('PublicVisibility');
+		}
 
 		$fields->addFieldsToTab('Root.Validation', array(
 			$fields->dataFieldByName('CustomError'),
@@ -109,6 +114,7 @@ class MemberProfileField extends DataObject {
 		return array_merge(parent::fieldLabels(), array (
 			'MemberField'       => _t('MemberProfiles.MEMBERFIELD', 'Member Field'),
 			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
+			'MemberListVisible' => _t('MemberProfiles.VISIBLEMEMLIST', 'Visible on member list'),
 			'PublicVisibility'  => _t('MemberProfiles.PUBLICVISIBILITY', 'Public Profile Visiblity')
 		));
 	}
@@ -191,6 +197,13 @@ class MemberProfileField extends DataObject {
 		} else {
 			return $this->getField('PublicVisibility');
 		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getMemberListVisible() {
+		return $this->getField('MemberListVisible') && !$this->isNeverPublic();
 	}
 
 }
