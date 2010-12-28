@@ -30,4 +30,8 @@ class MemberProfileFieldsSection extends MemberProfileSection {
 		return $result;
 	}
 
+	public function ShowTitle() {
+		return false;
+	}
+
 }
