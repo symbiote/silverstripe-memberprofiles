@@ -330,7 +330,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		'add',
 		'AddForm',
 		'confirm',
-		'view'
+		'show'
 	);
 
 	/**
@@ -410,8 +410,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 	/**
 	 * @return MemberProfileViewer
 	 */
-	public function view() {
-		return new MemberProfileViewer($this, 'view');
+	public function show() {
+		return new MemberProfileViewer($this, 'show');
 	}
 
 	/**
