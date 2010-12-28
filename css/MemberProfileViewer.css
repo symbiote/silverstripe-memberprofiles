@@ -10,4 +10,9 @@
 
 #MemberProfileTitle { padding-bottom: 5px; border-bottom: 1px solid #999; }
 #MemberProfile .memberProfileSection {
-	margin-top: 10px; padding-bottom: 5px; border-bottom: 1px solid #CCC; }
+	margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #CCC; }
+
+#MemberProfile .memberProfileFields { overflow: auto; margin: 0; }
+#MemberProfile .memberProfileFields dt {
+	clear: left; float: left; font-weight: bold; width: 80px; }
+#MemberProfile .memberProfileFields dd { float: left; }
