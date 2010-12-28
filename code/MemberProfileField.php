@@ -52,40 +52,21 @@ class MemberProfileField extends DataObject {
 		$memberFields = $this->getMemberFields();
 		$memberField  = $memberFields->dataFieldByName($this->MemberField);
 
-		$fields->insertBefore (
-			new HeaderField('FieldOptions', $this->fieldLabel('FieldOptions')),
-			'ProfileVisibility'
-		);
+		$fields->removeByName('Sort');
+
 		$fields->insertBefore (
 			new ReadonlyField('MemberField', $this->fieldLabel('MemberField')),
 			'ProfileVisibility'
 		);
 
-		$fields->insertBefore (
-			new HeaderField('ValidationHeader', $this->fieldLabel('ValidationOptions')),
-			'CustomError'
-		);
-
-		$fields->replaceField('PublicVisibility', new OptionsetField(
-			'PublicVisibility',
-			$this->fieldLabel('PublicVisibility'),
-			array(
-				'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
-				'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
-				'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
-			)
-		));
-
-		if($memberField instanceof DropdownField) {
+		if ($memberField instanceof DropdownField) {
 			$fields->replaceField('DefaultValue', new DropdownField (
 				'DefaultValue',
 				$this->fieldLabel('DefaultValue'),
 				$memberField->getSource(),
-				null,
-				null,
-				true
+				null, null, true
 			));
-		} elseif($memberField instanceof TextField) {
+		} elseif ($memberField instanceof TextField) {
 			$fields->replaceField('DefaultValue', new TextField (
 				'DefaultValue', $this->fieldLabel('DefaultValue')
 			));
@@ -93,10 +74,28 @@ class MemberProfileField extends DataObject {
 			$fields->removeByName('DefaultValue');
 		}
 
+		$publicVisibility = array(
+			'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
+			'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
+			'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
+		);
+
+		$fields->addFieldsToTab('Root.Visibility', array(
+			$fields->dataFieldByName('ProfileVisibility'),
+			$fields->dataFieldByName('RegistrationVisibility'),
+			new DropdownField(
+				'PublicVisibility', $this->fieldLabel('PublicVisibility'),
+				$publicVisibility)
+		));
+
+		$fields->addFieldsToTab('Root.Validation', array(
+			$fields->dataFieldByName('CustomError'),
+			$fields->dataFieldByName('Unique'),
+			$fields->dataFieldByName('Required'),
+		));
+
 		if($this->isAlwaysUnique())   $fields->makeFieldReadonly('Unique');
 		if($this->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
-
-		$fields->removeByName('Sort');
 
 		return $fields;
 	}
@@ -106,9 +105,7 @@ class MemberProfileField extends DataObject {
 	 */
 	public function fieldLabels() {
 		return array_merge(parent::fieldLabels(), array (
-			'FieldOptions'      => _t('MemberProfiles.FIELDOPTIONS', 'Field Options'),
 			'MemberField'       => _t('MemberProfiles.MEMBERFIELD', 'Member Field'),
-			'ValidationOptions' => _t('MemberProfiles.VALIDOPTIONS', 'Validation Options'),
 			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
 			'PublicVisibility'  => _t('MemberProfiles.PUBLICVISIBILITY', 'Public Profile Visiblity')
 		));
