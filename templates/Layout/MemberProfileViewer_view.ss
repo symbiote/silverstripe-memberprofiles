@@ -12,6 +12,7 @@
 		</div>
 		<% control Sections %>
 			<div id="$ClassName" class="memberProfileSection">
+				<% if ShowTitle %><h3>$Title</h3><% end_if %>
 				$Me
 			</div>
 		<% end_control %>

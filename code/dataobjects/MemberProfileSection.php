@@ -69,6 +69,15 @@ class MemberProfileSection extends DataObject {
 	}
 
 	/**
+	 * Controls whether the title is shown in the template.
+	 *
+	 * @return bool
+	 */
+	public function ShowTitle() {
+		return true;
+	}
+
+	/**
 	 * Returns the content to be rendered into the profile template.
 	 *
 	 * @return string
