@@ -1,0 +1,9 @@
+#MemberList {
+	border-collapse: collapse; width: 100%;
+	border-left: 1px solid #AAA; border-top: 1px solid #AAA; }
+#MemberList td,
+#MemberList th {
+	border-right: 1px solid #AAA; border-bottom: 1px solid #AAA; padding: 4px; }
+#MemberList tr.odd { background: #F5F5F5; }
+#MemberListPagination {
+	border: 1px solid #AAA; margin-top: 5px; padding: 5px; text-align: center; }
