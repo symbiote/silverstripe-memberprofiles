@@ -44,7 +44,7 @@
 			<% end_if %>
 			<% if Can(add) %>
 			<tr>
-				<th width="18">&nbsp;</th>
+				<td width="18">&nbsp;</td>
 				<% if Markable %><td width="18">&nbsp;</td><% end_if %>
 				<td colspan="$ItemCount">
 					<input type="hidden" id="{$id}_PopupHeight" value="$PopupHeight" disabled="disabled">

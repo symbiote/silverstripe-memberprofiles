@@ -41,7 +41,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	);
 
 	public static $has_many = array (
-		'Fields' => 'MemberProfileField'
+		'Fields'   => 'MemberProfileField',
+		'Sections' => 'MemberProfileSection'
 	);
 
 	public static $many_many = array (
@@ -115,11 +116,13 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		$fields = parent::getCMSFields();
 
 		$fields->addFieldToTab('Root', $email = new Tab('Email'), 'Behaviour');
+		$fields->addFieldToTab('Root', $public = new Tab('PublicProfile'), 'Behaviour');
 		$fields->addFieldToTab('Root.Content', $profileContent = new Tab('Profile'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $regContent = new Tab('Registration'), 'Metadata');
 		$fields->addFieldToTab('Root.Content', $afterReg = new Tab('AfterRegistration'), 'Metadata');
 
 		$email->setTitle(_t('MemberProfiles.EMAIL', 'Email'));
+		$public->setTitle(_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'));
 		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
 		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
 		$afterReg->setTitle(_t('MemberProfiles.AFTERRED', 'After Registration'));
@@ -184,6 +187,18 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			new HtmlEditorField('ConfirmationContent', 'Content')
 		)));
 
+		$fields->addFieldsToTab('Root.PublicProfile', array(
+			new HeaderField('PublicProfilesHeader',
+				_t('MemberProfiles.PUBLICPROFILEHEADER', 'Public Profile')),
+			new CheckboxField('AllowProfileViewing', _t(
+				'MemberProfiles.ALLOWPROFILEVIEWING',
+				'Allow people to view user\'s profiles.')),
+			new HeaderField('ProfileSectionsHeader',
+				_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections')),
+			new MemberProfileSectionField(
+				$this, 'Sections', 'MemberProfileSection')
+		));
+
 		$fields->addFieldToTab (
 			'Root.Behaviour',
 			new HeaderField (
@@ -198,12 +213,6 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			'ClassName'
 		);
-		$fields->addFieldToTab(
-			'Root.Behaviour',
-			new CheckboxField('AllowProfileViewing', _t(
-				'MemberProfiles.ALLOWPROFILEVIEWING',
-				'Allow people to view user\'s profiles.')),
-			'ClassName');
 		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
 			'AllowProfileEditing',
 			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
