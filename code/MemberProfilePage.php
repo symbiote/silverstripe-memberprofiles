@@ -115,157 +115,151 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
+		// Setup tabs
+		$fields->addFieldToTab('Root', $profile = new TabSet('Profile'), 'Content');
 		$fields->addFieldToTab('Root', $email = new Tab('Email'), 'Behaviour');
-		$fields->addFieldToTab('Root', $public = new Tab('PublicProfile'), 'Behaviour');
-		$fields->addFieldToTab('Root.Content', $profileContent = new Tab('Profile'), 'Metadata');
-		$fields->addFieldToTab('Root.Content', $regContent = new Tab('Registration'), 'Metadata');
-		$fields->addFieldToTab('Root.Content', $afterReg = new Tab('AfterRegistration'), 'Metadata');
 
+		$profile->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
 		$email->setTitle(_t('MemberProfiles.EMAIL', 'Email'));
-		$public->setTitle(_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'));
-		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
-		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
-		$afterReg->setTitle(_t('MemberProfiles.AFTERRED', 'After Registration'));
 
-		foreach(array('Profile', 'Registration', 'AfterRegistration') as $tab) {
-			$fields->addFieldToTab (
-				"Root.Content.$tab",
-				new TextField("{$tab}Title", _t('MemberProfiles.TITLE', 'Title'))
-			);
+		$fields->findOrMakeTab(
+			'Root.Profile.Fields', _t('MemberProfiles.FIELDS', 'Fields'));
+		$fields->findOrMakeTab(
+			'Root.Profile.Groups', _t('MemberProfiles.GROUPS', 'Groups'));
+		$fields->findOrMakeTab(
+			'Root.Profile.PublicProfile',
+			_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'));
 
-			$fields->addFieldToTab (
-				"Root.Content.$tab",
-				new HtmlEditorField("{$tab}Content", _t('MemberProfiles.CONTENT', 'Content'))
-			);
-		}
-
-		$fields->addFieldToTab(
-			'Root.Content.AfterRegistration',
-			new CheckboxField('RegistrationRedirect', _t('MemberProfiles.REDIRECT_AFTER_REG', 'Redirect after registration?')),
-			'AfterRegistrationContent'
-		);
-		$fields->addFieldToTab(
-			'Root.Content.AfterRegistration',
-			new TreeDropdownField('PostRegistrationTargetID', _t('MemberProfiles.REDIRECT_TARGET', 'Redirect to page'), 'SiteTree'),
-			'AfterRegistrationContent'
-		);
-
-		$fields->removeFieldFromTab('Root.Content.Main', 'Title');
-		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
-
-		$fields->addFieldsToTab('Root.Content.Main', new HeaderField (
-			'FieldsHeader', _t('MemberProfiles.PROFILEREGFIELDS', 'Profile/Registration Fields')
-		));
-		$fields->addFieldToTab('Root.Content.Main', $fieldsTable = new OrderableCTF (
-			$this,
-			'Fields',
-			'MemberProfileField'
+		// Profile fields
+		$fields->addFieldsToTab('Root.Profile.Fields', array(
+			new HeaderField(
+				'ProfileFieldsHeader',
+				_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields')),
+			$table = new OrderableCTF(
+				$this, 'Fields', 'MemberProfileField')
 		));
 
-		$fieldsTable->setPermissions(array('show', 'edit'));
-		$fieldsTable->setCustomSourceItems($this->getProfileFields());
-		$fieldsTable->setShowPagination(false);
+		$table->setPermissions(array('show', 'edit'));
+		$table->setCustomSourceItems($this->getProfileFields());
 
-		$email->push(new HeaderField (
-			'EmailHeader', 'Email Confirmation & Validation'
+		// Groups
+		$fields->addFieldsToTab('Root.Profile.Groups', array(
+			new HeaderField('GroupsHeader',
+				_t('MemberProfiles.GROUPASSIGNMENT', 'Group Assignment')),
+			new LiteralField('GroupsNote', '<p>' . _t('MemberProfiles.GROUPSNOTE',
+				'Any users registering via this page will always be added to '  .
+				'the below groups (if registration is enabled). Conversely, a ' .
+				'member must belong to these groups in order to edit their '    .
+				'profile on this page.'
+			) . '</p>'),
+			new CheckboxSetField('Groups', '', DataObject::get('Group')->map()),
+			new HeaderField('SelectableGroupsHeader',
+				_t('MemberProfiles.USERSELECTABLE', 'User Selectable')),
+			new LiteralField('SelectableGroupsNote', '<p>' . _t(
+				'MemberProfiles.SELECTABLEGROUPSNOTE',
+				'Users can choose to belong to the following groups, if the ' .
+				'"Groups" field is enabled in the "Fields" tab.'
+			) . '</p>'),
+			new CheckboxSetField(
+				'SelectableGroups', '', DataObject::get('Group')->map())
 		));
-		$email->push(new OptionSetField('EmailType', '', array(
-			'Validation'   => 'Require email validation to activate an account',
-			'Confirmation' => 'Send a confirmation email after a user registers',
-			'None'         => 'Do not send any emails'
-		)));
-		$email->push(new ToggleCompositeField('EmailContent', 'Email Content', array(
-			new TextField('EmailSubject', 'Email subject'),
-			new TextField('EmailFrom', 'Email from'),
-			new TextareaField('EmailTemplate', 'Email template'),
-			new LiteralField('TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE)
-		)));
-		$email->push(new ToggleCompositeField('ConfirmationContent', 'Confirmation Content', array(
-			new LiteralField('ConfirmationNote', '<p>This content is dispayed when
-				a user confirms their account.</p>'),
-			new TextField('ConfirmationTitle', 'Title'),
-			new HtmlEditorField('ConfirmationContent', 'Content')
-		)));
 
-		$fields->addFieldsToTab('Root.PublicProfile', array(
-			new HeaderField('PublicProfilesHeader',
-				_t('MemberProfiles.PUBLICPROFILEHEADER', 'Public Profile')),
-			new CheckboxField('AllowProfileViewing', _t(
-				'MemberProfiles.ALLOWPROFILEVIEWING',
-				'Allow people to view user\'s profiles.')),
-			new HeaderField('ProfileSectionsHeader',
+		// Public profile
+		$fields->addFieldsToTab('Root.Profile.PublicProfile', array(
+			new HeaderField(
+				'PublicProfileHeader',
+				_t('MemberProfiles.PUBLICPROFILE', 'Public Profile')),
+			new CheckboxField(
+				'AllowProfileViewing',
+				_t('MemberProfiles.ALLOWPROFILEVIEWING', 'Allow people to view user profiles.')),
+			new HeaderField(
+				'ProfileSectionsHeader',
 				_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections')),
 			new MemberProfileSectionField(
 				$this, 'Sections', 'MemberProfileSection')
 		));
 
-		$fields->addFieldToTab (
-			'Root.Behaviour',
-			new HeaderField (
-				'RegSettingsHeader', _t('MemberProfiles.REGSETTINGS', 'Registration Settings')
-			),
-			'ClassName'
-		);
-		$fields->addFieldToTab (
-			'Root.Behaviour',
-			new CheckboxField (
-				'AllowRegistration', _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
-			),
-			'ClassName'
-		);
-		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
-			'AllowProfileEditing',
-			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
-		), 'ClassName');
-		$fields->addFieldToTab('Root.Behaviour', new CheckboxField(
-			'AllowAdding', _t(
-				'MemberProfiles.ALLOWADDNOTE',
-				'Allow members with member creation permissions to add members via this page'
-			)
-		), 'ClassName');
-		$fields->addFieldToTab (
-			'Root.Behaviour',
-			new HeaderField (
-				'PageSettingsHeader', _t('MemberProfiles.PAGESETTINGS', 'Page Settings')
-			),
-			'ClassName'
-		);
-
-		$fields->addFieldToTab('Root.Content.Main', new HeaderField (
-			'GroupSettingsHeader', _t('MemberProfiles.GROUPSETTINGS', 'Group Settings')
-		));
-		$fields->addFieldToTab('Root.Content.Main', new LiteralField (
-			'GroupsNote',
-			_t (
-				'MemberProfiles.GROUPSNOTE',
-				'<p>Any users registering via this page will always be added to the below groups (if ' .
-				'registration is enabled). Conversely, a member must belong to these groups '   .
-				'in order to edit their profile on this page.</p>'
-			)
-		));
-		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField (
-			'Groups', '', DataObject::get('Group')->map()
+		// Email confirmation and validation
+		$fields->addFieldsToTab('Root.Email', array(
+			new HeaderField('EmailHeader', 'Email Confirmation and Validation'),
+			new OptionSetField('EmailType', '', array(
+				'Validation'   => 'Require email validation to activate an account',
+				'Confirmation' => 'Send a confirmation email after a user registers',
+				'None'         => 'Do not send any emails'
+			)),
+			new ToggleCompositeField('EmailContent', 'Email Content', array(
+				new TextField('EmailSubject', 'Email subject'),
+				new TextField('EmailFrom', 'Email from'),
+				new TextareaField('EmailTemplate', 'Email template'),
+				new LiteralField('TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE)
+			)),
+			new ToggleCompositeField('ConfirmationContent', 'Confirmation Content', array(
+				new LiteralField('ConfirmationNote', '<p>This content is dispayed when
+					a user confirms their account.</p>'),
+				new TextField('ConfirmationTitle', 'Title'),
+				new HtmlEditorField('ConfirmationContent', 'Content')
+			))
 		));
 
-		$fields->addFieldToTab('Root.Content.Main', new LiteralField (
-			'SelectableGroupsNote',
-			_t (
-				'MemberProfiles.SELECTABLE_GROUPSNOTE',
-				'<p>Users can choose to belong to the following groups, if the "Groups" field is enabled in the '.
-				'above</p>'
-			)
-		));
-		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField (
-			'SelectableGroups', '', DataObject::get('Group')->map()
-		));
+		// Content
+		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
+
+		$fields->addFieldToTab('Root.Content',
+			$profileContent = new Tab('Profile'), 'Metadata');
+		$fields->addFieldToTab('Root.Content',
+			$regContent = new Tab('Registration'), 'Metadata');
+		$fields->addFieldToTab('Root.Content',
+			$afterReg = new Tab('AfterRegistration'), 'Metadata');
+
+		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
+		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
+		$afterReg->setTitle(_t('MemberProfiles.AFTERREG', 'After Registration'));
+
+		$tabs = array('Profile', 'Registration', 'AfterRegistration');
+		foreach ($tabs as $tab) {
+			$fields->addFieldsToTab("Root.Content.$tab", array(
+				new TextField("{$tab}Title", _t('MemberProfiles.TITLE', 'Title')),
+				new HtmlEditorField("{$tab}Content", _t('MemberProfiles.CONTENT', 'Content'))
+			));
+		}
+
+		$fields->addFieldToTab(
+			'Root.Content.AfterRegistration',
+			new CheckboxField('RegistrationRedirect',
+				_t('MemberProfiles.REDIRECT_AFTER_REG', 'Redirect after registration?')),
+			'AfterRegistrationContent'
+		);
+		$fields->addFieldToTab(
+			'Root.Content.AfterRegistration',
+			new TreeDropdownField('PostRegistrationTargetID',
+				_t('MemberProfiles.REDIRECT_TARGET', 'Redirect to page'), 'SiteTree'),
+			'AfterRegistrationContent'
+		);
+
+		// Behaviour
+		$fields->addFieldToTab('Root.Behaviour',
+			new HeaderField('ProfileBehaviour',
+				_t('MemberProfiles.PROFILEBEHAVIOUR', 'Profile Behaviour')),
+			'ClassName');
+		$fields->addFieldToTab('Root.Behaviour',
+			new CheckboxField('AllowRegistration',
+			_t('MemberProfiles.ALLOWREG', 'Allow registration via this page')),
+			'ClassName');
+		$fields->addFieldToTab('Root.Behaviour',
+			new CheckboxField('AllowProfileEditing',
+			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')),
+			'ClassName');
+		$fields->addFieldToTab('Root.Behaviour',
+			new CheckboxField('AllowAdding',
+			_t('MemberProfiles.ALLOWADD',
+				'Allow members with member creation permissions to add members via this page')),
+			'ClassName');
+		$fields->addFieldToTab('Root.Behaviour',
+			new HeaderField('PageSettingsHeader',
+				_t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour')),
+			'ClassName');
 
 		return $fields;
-	}
-
-	public function onBeforeWrite() {
-		parent::onBeforeWrite();
-		// make sure that we have a menu title and title!
-		$this->Title = $this->MenuTitle;
 	}
 
 	/**
