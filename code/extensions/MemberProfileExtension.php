@@ -64,11 +64,10 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function updateCMSFields($fields) {
-		$this->updateMemberFormFields($fields);
-
-		// need to add all the groups that can be selected for the Groups
-		$groupField = $fields->fieldByName('Groups');
-		$groupField->setSource(DataObject::get('Group'));
+		$fields->removeByName('ValidationKey');
+		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('ProfilePageID');
+		$fields->removeByName('PublicFields');
 
 		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
 			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
