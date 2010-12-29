@@ -64,14 +64,23 @@ class MemberProfileViewer extends Page_Controller {
 		));
 
 		if ($members && $fields) foreach ($members as $member) {
-			$data = new DataObjectSet();
+			$data   = new DataObjectSet();
+			$public = $member->getPublicFields();
 
 			foreach ($fields as $field) {
+				if ($field->PublicVisibility == 'MemberChoice'
+				    && !in_array($field->MemberField, $public)
+				) {
+					$value = null;
+				} else {
+					$value = $member->{$field->MemberField};
+				}
+
 				$data->push(new ArrayData(array(
 					'MemberID' => $member->ID,
 					'Name'     => $field->MemberField,
 					'Title'    => $field->Title,
-					'Value'    => $member->{$field->MemberField},
+					'Value'    => $value,
 					'Sortable' => $member->hasDatabaseField($field->MemberField)
 				)));
 			}
