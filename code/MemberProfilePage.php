@@ -774,6 +774,13 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$context = 'Registration';
 		}
 
+		if ($profileFields->find('PublicVisibility', 'MemberChoice')) {
+			$fields->push(new LiteralField('VisibilityNote', '<p>' . _t(
+				'MemberProfiles.CHECKVISNOTE',
+				'Check fields below to make them visible on your public ' .
+				'profile.') . '</p>'));
+		}
+
 		foreach($profileFields as $profileField) {
 			$visibility  = $profileField->{$context . 'Visibility'};
 			$name        = $profileField->MemberField;
@@ -797,6 +804,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 			if($profileField->CustomError) {
 				$field->setCustomValidationMessage($profileField->CustomError);
+			}
+
+			if ($profileField->PublicVisibility == 'MemberChoice') {
+				$field = new CheckableVisibilityField($field);
 			}
 
 			if($visibility == 'Readonly') {

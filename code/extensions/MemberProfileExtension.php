@@ -11,12 +11,21 @@ class MemberProfileExtension extends DataObjectDecorator {
 		return array (
 			'db' => array (
 				'ValidationKey'   => 'Varchar(40)',
-				'NeedsValidation' => 'Boolean'
+				'NeedsValidation' => 'Boolean',
+				'PublicFields'    => 'Text'
 			),
 			'has_one' => array (
 				'ProfilePage' => 'MemberProfilePage'
 			)
 		);
+	}
+
+	public function getPublicFields() {
+		return (array) unserialize($this->owner->getField('PublicFields'));
+	}
+
+	public function setPublicFields($fields) {
+		$this->owner->setField('PublicFields', serialize($fields));
 	}
 
 	public function canLogIn($result) {
@@ -46,6 +55,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
 		$fields->removeByName('ProfilePageID');
+		$fields->removeByName('PublicFields');
 
 		// For now we just pass an empty array as the list of selectable groups -
 		// it's up to anything that uses this to populate it appropriately
