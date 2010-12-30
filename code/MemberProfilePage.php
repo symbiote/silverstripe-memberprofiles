@@ -63,16 +63,26 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	);
 
 	/**
-	 * An array of member profile fields that should be editable. All others will be set to NOT
-	 * be editable in either reg or profile update (fields can be enabled manually later)
-	 *
-	 * @var array
+	 * An array of default settings for some standard member fields.
 	 */
-	public static $default_editable_member_fields = array(
-		'Email' => true,
-		'FirstName' => true,
-		'Surname' => true,
-		'Password' => true
+	public static $profile_field_defaults = array(
+		'Email' => array(
+			'RegistrationVisibility' => 'Edit',
+			'ProfileVisibility'      => 'Edit',
+			'PublicVisibility'       => 'MemberChoice'),
+		'FirstName' => array(
+			'RegistrationVisibility' => 'Edit',
+			'ProfileVisibility'      => 'Edit',
+			'MemberListVisible'      => true,
+			'PublicVisibility'       => 'Display'),
+		'Surname' => array(
+			'RegistrationVisibility' => 'Edit',
+			'ProfileVisibility'      => 'Edit',
+			'MemberListVisible'      => true,
+			'PublicVisibility'       => 'MemberChoice'),
+		'Password' => array(
+			'RegistrationVisibility' => 'Edit',
+			'ProfileVisibility'      => 'Edit')
 	);
 
 	/**
@@ -305,13 +315,11 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			$profileField->MemberField   = $name;
 			$profileField->ProfilePageID = $this->ID;
 
-			if (!isset(self::$default_editable_member_fields[$name])) {
-				$profileField->ProfileVisibility = "Hidden";
-				$profileField->RegistrationVisibility = "Hidden";
+			if (array_key_exists($name, self::$profile_field_defaults)) {
+				$profileField->update(self::$profile_field_defaults[$name]);
 			}
 
 			$profileField->write();
-
 			$set->add($profileField);
 		}
 
