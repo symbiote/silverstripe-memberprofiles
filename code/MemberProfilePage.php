@@ -317,6 +317,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	public static $allowed_actions = array (
 		'index',
 		'RegisterForm',
+		'afterregistration',
 		'ProfileForm',
 		'add',
 		'AddForm',
@@ -444,13 +445,22 @@ class MemberProfilePage_Controller extends Page_Controller {
 				}
 			}
 
-			return array (
-				'Title' => $this->obj('AfterRegistrationTitle'),
-				'Content' => $this->obj('AfterRegistrationContent'),
-			);
+			return $this->redirect($this->Link('afterregistration'));
 		} else {
 			return $this->redirectBack();
 		}
+	}
+
+	/**
+	 * Returns the after registration content to the user.
+	 *
+	 * @return array
+	 */
+	public function afterregistration() {
+		return array (
+			'Title'   => $this->obj('AfterRegistrationTitle'),
+			'Content' => $this->obj('AfterRegistrationContent')
+		);
 	}
 
 	/**
