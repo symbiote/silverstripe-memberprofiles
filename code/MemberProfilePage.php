@@ -776,7 +776,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$context = 'Registration';
 		}
 
-		if ($profileFields->find('PublicVisibility', 'MemberChoice')) {
+		if ($this->AllowProfileViewing
+		    && $profileFields->find('PublicVisibility', 'MemberChoice')
+		) {
 			$fields->push(new LiteralField('VisibilityNote', '<p>' . _t(
 				'MemberProfiles.CHECKVISNOTE',
 				'Check fields below to make them visible on your public ' .
@@ -808,11 +810,14 @@ class MemberProfilePage_Controller extends Page_Controller {
 				$field->setCustomValidationMessage($profileField->CustomError);
 			}
 
-			if ($profileField->PublicVisibility == 'MemberChoice') {
+			if ($this->AllowProfileViewing
+			    && $profileField->PublicVisibility != 'Hidden'
+			) {
 				$field = new CheckableVisibilityField($field);
-			} elseif ($profileField->PublicVisibility == 'Display') {
-				$field = new CheckableVisibilityField($field);
-				$field->makeAlwaysVisible();
+
+				if ($profileField->PublicVisibility == 'Display') {
+					$field->makeAlwaysVisible();
+				}
 			}
 
 			if($visibility == 'Readonly') {
