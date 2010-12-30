@@ -810,6 +810,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 			if ($profileField->PublicVisibility == 'MemberChoice') {
 				$field = new CheckableVisibilityField($field);
+			} elseif ($profileField->PublicVisibility == 'Display') {
+				$field = new CheckableVisibilityField($field);
+				$field->makeAlwaysVisible();
 			}
 
 			if($visibility == 'Readonly') {

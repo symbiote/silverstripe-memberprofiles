@@ -7,7 +7,7 @@
  */
 class CheckableVisibilityField extends FormField {
 
-	protected $child, $checkbox;
+	protected $child, $checkbox, $alwaysVisible = false;
 
 	/**
 	 * @param FormField $child
@@ -19,10 +19,31 @@ class CheckableVisibilityField extends FormField {
 		$this->checkbox = new CheckboxField("Visible[{$this->name}]", '');
 	}
 
+	/**
+	 * @return FormField
+	 */
+	public function getChild() {
+		return $this->child;
+	}
+
+	/**
+	 * @return CheckboxField
+	 */
+	public function getCheckbox() {
+		return $this->checkbox;
+	}
+
+	public function makeAlwaysVisible() {
+		$this->alwaysVisible = true;
+		$this->checkbox      = $this->checkbox->performDisabledTransformation();
+	}
+
 	public function setValue($value, $data) {
 		$this->child->setValue($value);
 
-		if (is_array($data)) {
+		if ($this->alwaysVisible) {
+			$this->checkbox->setValue(true);
+		} elseif (is_array($data)) {
 			$this->checkbox->setValue((
 				isset($data['Visible'][$this->name]) && $data['Visible'][$this->name]
 			));
