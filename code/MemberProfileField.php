@@ -5,8 +5,8 @@
 class MemberProfileField extends DataObject {
 
 	public static $db = array (
-		'ProfileVisibility'      => 'Enum("Edit, Readonly, Hidden", "Edit")',
-		'RegistrationVisibility' => 'Enum("Edit, Readonly, Hidden", "Edit")',
+		'ProfileVisibility'      => 'Enum("Edit, Readonly, Hidden", "Hidden")',
+		'RegistrationVisibility' => 'Enum("Edit, Readonly, Hidden", "Hidden")',
 		'MemberListVisible'      => 'Boolean',
 		'PublicVisibility'       => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
 		'MemberField'            => 'Varchar(100)',
