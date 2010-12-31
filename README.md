@@ -8,6 +8,7 @@ Maintainer Contacts
 Requirements
 ------------
 * SilverStripe 2.4
+* The [Orderable](https://github.com/ajshort/silverstripe-orderable) module
 
 Documentation
 -------------

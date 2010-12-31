@@ -146,7 +146,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			new HeaderField(
 				'ProfileFieldsHeader',
 				_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields')),
-			$table = new OrderableCTF(
+			$table = new OrderableComplexTableField(
 				$this, 'Fields', 'MemberProfileField')
 		));
 

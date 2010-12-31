@@ -1,12 +1,12 @@
 <?php
 /**
- * An extension to {@link OrderableCTF} that allows you to create and manage
- * one of each {@link MemberProfileSection}.
+ * An extension to {@link OrderableComplexTableField} that allows you to create
+ * and manage one of each {@link MemberProfileSection}.
  *
  * @package    silverstripe-memberprofiles
  * @subpackage formfields
  */
-class MemberProfileSectionField extends OrderableCTF {
+class MemberProfileSectionField extends OrderableComplexTableField {
 
 	/**
 	 * @return array

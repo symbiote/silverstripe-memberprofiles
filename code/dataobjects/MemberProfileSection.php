@@ -15,6 +15,10 @@ class MemberProfileSection extends DataObject {
 		'Parent' => 'MemberProfilePage'
 	);
 
+	public static $extensions = array(
+		'Orderable'
+	);
+
 	public static $summary_fields = array(
 		'DefaultTitle' => 'Title',
 		'CustomTitle'  => 'Custom Title'

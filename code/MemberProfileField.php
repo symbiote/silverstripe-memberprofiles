@@ -16,8 +16,7 @@ class MemberProfileField extends DataObject {
 		'Note'                    => 'Varchar(255)',
 		'CustomError'             => 'Varchar(255)',
 		'Unique'                  => 'Boolean',
-		'Required'                => 'Boolean',
-		'Sort'                    => 'Int'
+		'Required'                => 'Boolean'
 	);
 
 	public static $has_one = array (
@@ -33,7 +32,9 @@ class MemberProfileField extends DataObject {
 		'Required'               => 'Required'
 	);
 
-	public static $default_sort = 'Sort';
+	public static $extensions = array(
+		'Orderable'
+	);
 
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
@@ -53,8 +54,6 @@ class MemberProfileField extends DataObject {
 		$fields       = parent::getCMSFields();
 		$memberFields = $this->getMemberFields();
 		$memberField  = $memberFields->dataFieldByName($this->MemberField);
-
-		$fields->removeByName('Sort');
 
 		$fields->insertBefore (
 			new ReadonlyField('MemberField', $this->fieldLabel('MemberField')),
