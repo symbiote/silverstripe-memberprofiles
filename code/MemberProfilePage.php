@@ -326,6 +326,16 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		return $set;
 	}
 
+	public function onAfterWrite() {
+		if ($this->isChanged('ID')) {
+			$section = new MemberProfileFieldsSection();
+			$section->ParentID = $this->ID;
+			$section->write();
+		}
+
+		parent::populateDefaults();
+	}
+
 }
 
 /**
