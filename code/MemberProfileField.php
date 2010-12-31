@@ -5,18 +5,19 @@
 class MemberProfileField extends DataObject {
 
 	public static $db = array (
-		'ProfileVisibility'      => 'Enum("Edit, Readonly, Hidden", "Hidden")',
-		'RegistrationVisibility' => 'Enum("Edit, Readonly, Hidden", "Hidden")',
-		'MemberListVisible'      => 'Boolean',
-		'PublicVisibility'       => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
-		'MemberField'            => 'Varchar(100)',
-		'CustomTitle'            => 'Varchar(100)',
-		'DefaultValue'           => 'Text',
-		'Note'                   => 'Varchar(255)',
-		'CustomError'            => 'Varchar(255)',
-		'Unique'                 => 'Boolean',
-		'Required'               => 'Boolean',
-		'Sort'                   => 'Int'
+		'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
+		'RegistrationVisibility'  => 'Enum("Edit, Readonly, Hidden", "Hidden")',
+		'MemberListVisible'       => 'Boolean',
+		'PublicVisibility'        => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
+		'PublicVisibilityDefault' => 'Boolean',
+		'MemberField'             => 'Varchar(100)',
+		'CustomTitle'             => 'Varchar(100)',
+		'DefaultValue'            => 'Text',
+		'Note'                    => 'Varchar(255)',
+		'CustomError'             => 'Varchar(255)',
+		'Unique'                  => 'Boolean',
+		'Required'                => 'Boolean',
+		'Sort'                    => 'Int'
 	);
 
 	public static $has_one = array (
@@ -87,7 +88,10 @@ class MemberProfileField extends DataObject {
 			$fields->dataFieldByName('MemberListVisible'),
 			new DropdownField(
 				'PublicVisibility', $this->fieldLabel('PublicVisibility'),
-				$publicVisibility)
+				$publicVisibility),
+			new CheckboxField(
+				'PublicVisibilityDefault',
+				_t('MemberProfiles.DEFAULTPUBLIC', 'Mark as public by default'))
 		));
 
 		if ($this->isNeverPublic()) {
@@ -105,6 +109,11 @@ class MemberProfileField extends DataObject {
 		if($this->isAlwaysRequired()) $fields->makeFieldReadonly('Required');
 
 		return $fields;
+	}
+
+	public function getRequirementsForPopup() {
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		Requirements::javascript('memberprofiles/javascript/MemberProfileFieldPopup.js');
 	}
 
 	/**

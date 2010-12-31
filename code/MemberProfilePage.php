@@ -76,10 +76,11 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'MemberListVisible'      => true,
 			'PublicVisibility'       => 'Display'),
 		'Surname' => array(
-			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit',
-			'MemberListVisible'      => true,
-			'PublicVisibility'       => 'MemberChoice'),
+			'RegistrationVisibility'  => 'Edit',
+			'ProfileVisibility'       => 'Edit',
+			'MemberListVisible'       => true,
+			'PublicVisibility'        => 'MemberChoice',
+			'PublicVisibilityDefault' => true),
 		'Password' => array(
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit')
@@ -820,13 +821,17 @@ class MemberProfilePage_Controller extends Page_Controller {
 				$field->setCustomValidationMessage($profileField->CustomError);
 			}
 
-			if ($this->AllowProfileViewing
-			    && $profileField->PublicVisibility != 'Hidden'
-			) {
+			$canSetVisibility = (
+				$this->AllowProfileViewing
+				&& $profileField->PublicVisibility != 'Hidden'
+			);
+			if ($canSetVisibility) {
 				$field = new CheckableVisibilityField($field);
 
 				if ($profileField->PublicVisibility == 'Display') {
 					$field->makeAlwaysVisible();
+				} else {
+					$field->getCheckbox()->setValue($profileField->PublicVisibilityDefault);
 				}
 			}
 

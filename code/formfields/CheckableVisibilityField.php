@@ -35,7 +35,8 @@ class CheckableVisibilityField extends FormField {
 
 	public function makeAlwaysVisible() {
 		$this->alwaysVisible = true;
-		$this->checkbox      = $this->checkbox->performDisabledTransformation();
+		$this->checkbox->setValue(true);
+		$this->checkbox = $this->checkbox->performDisabledTransformation();
 	}
 
 	public function setValue($value, $data) {
