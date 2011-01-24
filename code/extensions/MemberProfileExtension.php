@@ -12,7 +12,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 			'db' => array (
 				'ValidationKey'   => 'Varchar(40)',
 				'NeedsValidation' => 'Boolean',
-				'PublicFields'    => 'Text'
+				'PublicFieldsRaw'    => 'Text'
 			),
 			'has_one' => array (
 				'ProfilePage' => 'MemberProfilePage'
@@ -21,11 +21,11 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function getPublicFields() {
-		return (array) unserialize($this->owner->getField('PublicFields'));
+		return (array) unserialize($this->owner->getField('PublicFieldsRaw'));
 	}
 
 	public function setPublicFields($fields) {
-		$this->owner->setField('PublicFields', serialize($fields));
+		$this->owner->setField('PublicFieldsRaw', serialize($fields));
 	}
 
 	public function canLogIn($result) {
