@@ -89,12 +89,4 @@ class CheckableVisibilityField extends FormField {
 		return $this->child->Title();
 	}
 
-	public function Message() {
-		return $this->child->Message();
-	}
-
-	public function MessageType() {
-		return $this->child->MessageType();
-	}
-
 }
