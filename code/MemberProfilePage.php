@@ -26,14 +26,14 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowProfileViewing'      => 'Boolean',
 		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
-		'RegistrationRedirect'	   => 'Boolean',
-
-		'EmailType'           => 'Enum("Validation, Confirmation, None", "None")',
-		'EmailFrom'           => 'Varchar(255)',
-		'EmailSubject'        => 'Varchar(255)',
-		'EmailTemplate'       => 'Text',
-		'ConfirmationTitle'   => 'Varchar(255)',
-		'ConfirmationContent' => 'HTMLText'
+		'RegistrationRedirect'     => 'Boolean',
+		'RequireApproval'          => 'Boolean',
+		'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
+		'EmailFrom'                => 'Varchar(255)',
+		'EmailSubject'             => 'Varchar(255)',
+		'EmailTemplate'            => 'Text',
+		'ConfirmationTitle'        => 'Varchar(255)',
+		'ConfirmationContent'      => 'HTMLText'
 	);
 
 	public static $has_one = array(
@@ -46,8 +46,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	);
 
 	public static $many_many = array (
-		'Groups' => 'Group',
-		'SelectableGroups' => 'Group'
+		'Groups'           => 'Group',
+		'SelectableGroups' => 'Group',
+		'ApprovalGroups'   => 'Group'
 	);
 
 	public static $defaults = array (
@@ -125,6 +126,10 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
+
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
+		Requirements::javascript('memberprofiles/javascript/MemberProfilePageCms.js');
 
 		// Setup tabs
 		$fields->addFieldToTab('Root', $profile = new TabSet('Profile'), 'Content');
@@ -265,10 +270,18 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			_t('MemberProfiles.ALLOWADD',
 				'Allow members with member creation permissions to add members via this page')),
 			'ClassName');
-		$fields->addFieldToTab('Root.Behaviour',
-			new HeaderField('PageSettingsHeader',
-				_t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour')),
-			'ClassName');
+
+		$requireApproval = new CheckboxField('RequireApproval', _t(
+			'MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?'
+		));
+		$fields->addFieldToTab('Root.Behaviour', $requireApproval, 'ClassName');
+
+		$approvalGroups = _t('MemberProfiles.NOTIFYTHESEGROUPS', 'Notify these groups to approve new registrations');
+		$approvalGroups = new TreeMultiselectField('ApprovalGroups', $approvalGroups, 'Group');
+		$fields->addFieldToTab('Root.Behaviour', $approvalGroups, 'ClassName');
+
+		$pageSettings = new HeaderField('PageSettingsHeader', _t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour'));
+		$fields->addFieldToTab('Root.Behaviour', $pageSettings, 'ClassName');
 
 		return $fields;
 	}
