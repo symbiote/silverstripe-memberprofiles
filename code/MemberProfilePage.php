@@ -774,7 +774,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$fields        = new FieldSet();
 
 		// depending on the context, load fields from the current member
-		if(Member::currentUserID() && $context != 'Add') {
+		if(Member::currentUser() && $context != 'Add') {
 			$memberFields = Member::currentUser()->getMemberFormFields();
 		} else {
 			$memberFields = singleton('Member')->getMemberFormFields();
