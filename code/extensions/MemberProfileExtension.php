@@ -57,6 +57,22 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$this->owner->ValidationKey = sha1(mt_rand() . mt_rand());
 	}
 
+	public function onAfterWrite() {
+		$changed = $this->owner->getChangedFields();
+
+		if (array_key_exists('NeedsApproval', $changed)) {
+			$before = $changed['NeedsApproval']['before'];
+			$after  = $changed['NeedsApproval']['after'];
+			$page   = $this->owner->ProfilePage();
+			$email  = $page->EmailType;
+
+			if ($before == true && $after == false && $email != 'None') {
+				$email = new MemberConfirmationEmail($page, $this->owner);
+				$email->send();
+			}
+		}
+	}
+
 	public function updateMemberFormFields($fields) {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
