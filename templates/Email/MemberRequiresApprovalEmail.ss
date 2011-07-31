@@ -15,7 +15,11 @@
 <% end_control %>
 
 <p>
-	Please <a href="$ApproveLink">click here to approve this member</a>. Once
-	approved they will be sent a confirmation email if configured. If you do not
-	approve this member then they will not be able to log in.
+	Please visit the link below to confirm this member. Once approved they will
+	be sent a confirmation email if configured. If you do not approve this member
+	then they will not be able to log in.
+</p>
+
+<p>
+	<a href="$ApproveLink">$ApproveLink</a>
 </p>

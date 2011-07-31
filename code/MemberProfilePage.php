@@ -735,14 +735,17 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$emails = array();
 
 			if ($groups) foreach ($groups as $group) {
-				foreach ($group->Members() as $member) {
-					if ($member->Email) $emails[] = $member->Email;
+				foreach ($group->Members() as $_member) {
+					if ($member->Email) $emails[] = $_member->Email;
 				}
 			}
 
 			if ($emails) {
-				$email  = new Email();
-				$config = SiteConfig::current_site_config();
+				$email   = new Email();
+				$config  = SiteConfig::current_site_config();
+				$approve = Controller::join_links(
+					Director::baseURL(), 'member-approval', $member->ID, '?token=' . $member->ValidationKey
+				);
 
 				$email->setSubject("Registration Approval Requested for $config->Title");
 				$email->setBcc(implode(',', array_unique($emails)));
@@ -750,16 +753,14 @@ class MemberProfilePage_Controller extends Page_Controller {
 				$email->populateTemplate(array(
 					'SiteConfig'  => $config,
 					'Member'      => $member,
-					'ApproveLink' => ''
+					'ApproveLink' => Director::absoluteURL($approve)
 				));
 
 				$email->send();
 			}
-		} else {
-			if($this->EmailType != 'None') {
-				$email = new MemberConfirmationEmail($this, $member);
-				$email->send();
-			}
+		} elseif($this->EmailType != 'None') {
+			$email = new MemberConfirmationEmail($this, $member);
+			$email->send();
 		}
 
 		return $member;
