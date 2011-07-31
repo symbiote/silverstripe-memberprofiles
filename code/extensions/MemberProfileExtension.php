@@ -61,7 +61,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
 		$fields->removeByName('ProfilePageID');
-		$fields->removeByName('PublicFields');
+		$fields->removeByName('PublicFieldsRaw');
 
 		// For now we just pass an empty array as the list of selectable groups -
 		// it's up to anything that uses this to populate it appropriately
@@ -73,7 +73,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
 		$fields->removeByName('ProfilePageID');
-		$fields->removeByName('PublicFields');
+		$fields->removeByName('PublicFieldsRaw');
 
 		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
 			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
