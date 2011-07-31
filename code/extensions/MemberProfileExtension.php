@@ -60,6 +60,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 	public function updateMemberFormFields($fields) {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('NeedsApproval');
 		$fields->removeByName('ProfilePageID');
 		$fields->removeByName('PublicFieldsRaw');
 
@@ -70,12 +71,31 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function updateCMSFields($fields) {
+		$mainFields = $fields->fieldByName("Root")->fieldByName("Main")->Children;
+
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('NeedsApproval');
 		$fields->removeByName('ProfilePageID');
 		$fields->removeByName('PublicFieldsRaw');
 
-		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
+		if ($this->owner->NeedsApproval) {
+			$note = _t(
+				'MemberProfiles.NOLOGINUNTILAPPROVED',
+				'This user has not yet been approved. They cannot log in until their account is approved.'
+			);
+
+			$mainFields->merge(array(
+				new HeaderField('ApprovalHheader', _t('MemberProfiles.REGAPPROVAL', 'Registration Approval')),
+				new LiteralField('ApprovalNote', "<p>$note</p>"),
+				new DropdownField('NeedsApproval', '', array(
+					true  => _t('MemberProfiles.DONOTCHANGE', 'Do not change'),
+					false => _t('MemberProfiles.APPROVETHISMEMBER', 'Approve this member')
+				))
+			));
+		}
+
+		if($this->owner->NeedsValidation) $mainFields->merge(array(
 			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
 			new LiteralField('ConfirmationNote', '<p>' . _t (
 				'MemberProfiles.NOLOGINTILLCONFIRMED',
