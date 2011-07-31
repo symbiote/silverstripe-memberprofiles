@@ -12,7 +12,8 @@ class MemberProfileExtension extends DataObjectDecorator {
 			'db' => array (
 				'ValidationKey'   => 'Varchar(40)',
 				'NeedsValidation' => 'Boolean',
-				'PublicFieldsRaw'    => 'Text'
+				'NeedsApproval'   => 'Boolean',
+				'PublicFieldsRaw' => 'Text'
 			),
 			'has_one' => array (
 				'ProfilePage' => 'MemberProfilePage'
@@ -29,6 +30,11 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function canLogIn($result) {
+		if($this->owner->NeedsApproval) $result->error(_t (
+			'MemberProfiles.NEEDSAPPROVALTOLOGIN',
+			'An administrator must confirm your account before you can log in.'
+		));
+
 		if($this->owner->NeedsValidation) $result->error(_t (
 			'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
 			'You must validate your account before you can log in.'

@@ -476,7 +476,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
-			if($this->EmailType != 'Validation' && !$this->AllowAdding) {
+			if(!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
 				$member->logIn();
 			}
 
@@ -713,7 +713,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$groupIds = $this->getSettableGroupIdsFrom($form);
 
 		$form->saveInto($member);
-		$member->ProfilePageID = $this->ID;
+
+		$member->ProfilePageID   = $this->ID;
+		$member->NeedsValidation = ($this->EmailType == 'Validation');
+		$member->NeedsApproval   = $this->RequireApproval;
 
 		try {
 			$member->write();
@@ -725,15 +728,38 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// set after member is created otherwise the member object does not exist
 		$member->Groups()->setByIDList($groupIds);
 
-		if($this->EmailType == 'Validation') {
-			$email = new MemberConfirmationEmail($this, $member);
-			$email->send();
+		// If we require admin approval, send an email to the admin and delay
+		// sending an email to the member.
+		if ($this->RequireApproval) {
+			$groups = $this->ApprovalGroups();
+			$emails = array();
 
-			$member->NeedsValidation = true;
-			$member->write();
-		} elseif($this->EmailType == 'Confirmation') {
-			$email = new MemberConfirmationEmail($this, $member);
-			$email->send();
+			if ($groups) foreach ($groups as $group) {
+				foreach ($group->Members() as $member) {
+					if ($member->Email) $emails[] = $member->Email;
+				}
+			}
+
+			if ($emails) {
+				$email  = new Email();
+				$config = SiteConfig::current_site_config();
+
+				$email->setSubject("Registration Approval Requested for $config->Title");
+				$email->setBcc(implode(',', array_unique($emails)));
+				$email->setTemplate('MemberRequiresApprovalEmail');
+				$email->populateTemplate(array(
+					'SiteConfig'  => $config,
+					'Member'      => $member,
+					'ApproveLink' => ''
+				));
+
+				$email->send();
+			}
+		} else {
+			if($this->EmailType != 'None') {
+				$email = new MemberConfirmationEmail($this, $member);
+				$email->send();
+			}
 		}
 
 		return $member;
