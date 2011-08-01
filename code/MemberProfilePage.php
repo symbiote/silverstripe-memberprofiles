@@ -763,6 +763,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$email->send();
 		}
 
+		$this->extend('onAddMember', $member);
 		return $member;
 	}
 
