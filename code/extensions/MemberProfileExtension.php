@@ -12,7 +12,8 @@ class MemberProfileExtension extends DataObjectDecorator {
 			'db' => array (
 				'ValidationKey'   => 'Varchar(40)',
 				'NeedsValidation' => 'Boolean',
-				'PublicFieldsRaw'    => 'Text'
+				'NeedsApproval'   => 'Boolean',
+				'PublicFieldsRaw' => 'Text'
 			),
 			'has_one' => array (
 				'ProfilePage' => 'MemberProfilePage'
@@ -29,6 +30,11 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function canLogIn($result) {
+		if($this->owner->NeedsApproval) $result->error(_t (
+			'MemberProfiles.NEEDSAPPROVALTOLOGIN',
+			'An administrator must confirm your account before you can log in.'
+		));
+
 		if($this->owner->NeedsValidation) $result->error(_t (
 			'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
 			'You must validate your account before you can log in.'
@@ -51,11 +57,28 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$this->owner->ValidationKey = sha1(mt_rand() . mt_rand());
 	}
 
+	public function onAfterWrite() {
+		$changed = $this->owner->getChangedFields();
+
+		if (array_key_exists('NeedsApproval', $changed)) {
+			$before = $changed['NeedsApproval']['before'];
+			$after  = $changed['NeedsApproval']['after'];
+			$page   = $this->owner->ProfilePage();
+			$email  = $page->EmailType;
+
+			if ($before == true && $after == false && $email != 'None') {
+				$email = new MemberConfirmationEmail($page, $this->owner);
+				$email->send();
+			}
+		}
+	}
+
 	public function updateMemberFormFields($fields) {
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('NeedsApproval');
 		$fields->removeByName('ProfilePageID');
-		$fields->removeByName('PublicFields');
+		$fields->removeByName('PublicFieldsRaw');
 
 		// For now we just pass an empty array as the list of selectable groups -
 		// it's up to anything that uses this to populate it appropriately
@@ -64,12 +87,31 @@ class MemberProfileExtension extends DataObjectDecorator {
 	}
 
 	public function updateCMSFields($fields) {
+		$mainFields = $fields->fieldByName("Root")->fieldByName("Main")->Children;
+
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
+		$fields->removeByName('NeedsApproval');
 		$fields->removeByName('ProfilePageID');
-		$fields->removeByName('PublicFields');
+		$fields->removeByName('PublicFieldsRaw');
 
-		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array (
+		if ($this->owner->NeedsApproval) {
+			$note = _t(
+				'MemberProfiles.NOLOGINUNTILAPPROVED',
+				'This user has not yet been approved. They cannot log in until their account is approved.'
+			);
+
+			$mainFields->merge(array(
+				new HeaderField('ApprovalHheader', _t('MemberProfiles.REGAPPROVAL', 'Registration Approval')),
+				new LiteralField('ApprovalNote', "<p>$note</p>"),
+				new DropdownField('NeedsApproval', '', array(
+					true  => _t('MemberProfiles.DONOTCHANGE', 'Do not change'),
+					false => _t('MemberProfiles.APPROVETHISMEMBER', 'Approve this member')
+				))
+			));
+		}
+
+		if($this->owner->NeedsValidation) $mainFields->merge(array(
 			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
 			new LiteralField('ConfirmationNote', '<p>' . _t (
 				'MemberProfiles.NOLOGINTILLCONFIRMED',

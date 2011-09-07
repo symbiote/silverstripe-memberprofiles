@@ -26,14 +26,14 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowProfileViewing'      => 'Boolean',
 		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
-		'RegistrationRedirect'	   => 'Boolean',
-
-		'EmailType'           => 'Enum("Validation, Confirmation, None", "None")',
-		'EmailFrom'           => 'Varchar(255)',
-		'EmailSubject'        => 'Varchar(255)',
-		'EmailTemplate'       => 'Text',
-		'ConfirmationTitle'   => 'Varchar(255)',
-		'ConfirmationContent' => 'HTMLText'
+		'RegistrationRedirect'     => 'Boolean',
+		'RequireApproval'          => 'Boolean',
+		'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
+		'EmailFrom'                => 'Varchar(255)',
+		'EmailSubject'             => 'Varchar(255)',
+		'EmailTemplate'            => 'Text',
+		'ConfirmationTitle'        => 'Varchar(255)',
+		'ConfirmationContent'      => 'HTMLText'
 	);
 
 	public static $has_one = array(
@@ -46,8 +46,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	);
 
 	public static $many_many = array (
-		'Groups' => 'Group',
-		'SelectableGroups' => 'Group',
+		'Groups'             => 'Group',
+		'SelectableGroups'   => 'Group',
+		'ApprovalGroups'     => 'Group',
 		'RegistrationGroups' => 'Group'
 	);
 
@@ -126,6 +127,10 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
+
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
+		Requirements::javascript('memberprofiles/javascript/MemberProfilePageCms.js');
 
 		// Setup tabs
 		$fields->addFieldToTab('Root', $profile = new TabSet('Profile'), 'Content');
@@ -275,10 +280,18 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			_t('MemberProfiles.ALLOWADD',
 				'Allow members with member creation permissions to add members via this page')),
 			'ClassName');
-		$fields->addFieldToTab('Root.Behaviour',
-			new HeaderField('PageSettingsHeader',
-				_t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour')),
-			'ClassName');
+
+		$requireApproval = new CheckboxField('RequireApproval', _t(
+			'MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?'
+		));
+		$fields->addFieldToTab('Root.Behaviour', $requireApproval, 'ClassName');
+
+		$approvalGroups = _t('MemberProfiles.NOTIFYTHESEGROUPS', 'Notify these groups to approve new registrations');
+		$approvalGroups = new TreeMultiselectField('ApprovalGroups', $approvalGroups, 'Group');
+		$fields->addFieldToTab('Root.Behaviour', $approvalGroups, 'ClassName');
+
+		$pageSettings = new HeaderField('PageSettingsHeader', _t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour'));
+		$fields->addFieldToTab('Root.Behaviour', $pageSettings, 'ClassName');
 
 		return $fields;
 	}
@@ -473,7 +486,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
-			if($this->EmailType != 'Validation' && !$this->AllowAdding) {
+			if(!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
 				$member->logIn();
 			}
 
@@ -718,7 +731,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$groupIds = $this->getSettableGroupIdsFrom($form);
 
 		$form->saveInto($member);
-		$member->ProfilePageID = $this->ID;
+
+		$member->ProfilePageID   = $this->ID;
+		$member->NeedsValidation = ($this->EmailType == 'Validation');
+		$member->NeedsApproval   = $this->RequireApproval;
 
 		try {
 			$member->write();
@@ -730,17 +746,42 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// set after member is created otherwise the member object does not exist
 		$member->Groups()->setByIDList($groupIds);
 
-		if($this->EmailType == 'Validation') {
-			$email = new MemberConfirmationEmail($this, $member);
-			$email->send();
+		// If we require admin approval, send an email to the admin and delay
+		// sending an email to the member.
+		if ($this->RequireApproval) {
+			$groups = $this->ApprovalGroups();
+			$emails = array();
 
-			$member->NeedsValidation = true;
-			$member->write();
-		} elseif($this->EmailType == 'Confirmation') {
+			if ($groups) foreach ($groups as $group) {
+				foreach ($group->Members() as $_member) {
+					if ($member->Email) $emails[] = $_member->Email;
+				}
+			}
+
+			if ($emails) {
+				$email   = new Email();
+				$config  = SiteConfig::current_site_config();
+				$approve = Controller::join_links(
+					Director::baseURL(), 'member-approval', $member->ID, '?token=' . $member->ValidationKey
+				);
+
+				$email->setSubject("Registration Approval Requested for $config->Title");
+				$email->setBcc(implode(',', array_unique($emails)));
+				$email->setTemplate('MemberRequiresApprovalEmail');
+				$email->populateTemplate(array(
+					'SiteConfig'  => $config,
+					'Member'      => $member,
+					'ApproveLink' => Director::absoluteURL($approve)
+				));
+
+				$email->send();
+			}
+		} elseif($this->EmailType != 'None') {
 			$email = new MemberConfirmationEmail($this, $member);
 			$email->send();
 		}
 
+		$this->extend('onAddMember', $member);
 		return $member;
 	}
 
@@ -753,7 +794,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$fields        = new FieldSet();
 
 		// depending on the context, load fields from the current member
-		if(Member::currentUserID() && $context != 'Add') {
+		if(Member::currentUser() && $context != 'Add') {
 			$memberFields = Member::currentUser()->getMemberFormFields();
 		} else {
 			$memberFields = singleton('Member')->getMemberFormFields();
