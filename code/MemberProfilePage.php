@@ -47,7 +47,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	public static $many_many = array (
 		'Groups' => 'Group',
-		'SelectableGroups' => 'Group'
+		'SelectableGroups' => 'Group',
+		'RegistrationGroups' => 'Group'
 	);
 
 	public static $defaults = array (
@@ -172,7 +173,16 @@ class MemberProfilePage extends Page implements PermissionProvider {
 				'"Groups" field is enabled in the "Fields" tab.'
 			) . '</p>'),
 			new CheckboxSetField(
-				'SelectableGroups', '', DataObject::get('Group')->map())
+				'SelectableGroups', '', DataObject::get('Group')->map()),
+			new HeaderField('RegistrationGroupsHeader',
+				_t('MemberProfiles.REGISTRATIONGROUPS', 'Registration Groups')),
+			new LiteralField('SelectableGroupsNote', '<p>' . _t(
+				'MemberProfiles.REGISTRATIONGROUPSNOTE',
+				'Upon registration, if the "Groups" field is disabled on the "Fields" tab, ' .
+				'users will be placed in these groups.'
+			) . '</p>'),
+			new CheckboxSetField(
+				'RegistrationGroups', '', DataObject::get('Group')->map())
 		));
 
 		// Public profile
@@ -630,20 +640,28 @@ class MemberProfilePage_Controller extends Page_Controller {
 			if ($givenIds) {
 				foreach ($givenIds as $givenId) {
 					if (isset($allowedIds[$givenId])) {
-						$groupIds[] = $givenId;
+						$groupIds[$givenId] = $givenId;
 					}
 				}
 			}
 			$form->Fields()->removeByName('Groups');
 		}
+		elseif( !$member ) {
+			/**
+			 * We don't have a group field and we don't have a member, so they must be registering so
+			 * use the RegistrationGroups as our group ids.
+			 * @author Alex Hayes <alex.hayes@dimension27.com>
+			 */
+			$groupIds = $this->RegistrationGroups()->map('ID', 'ID');
+		}
 
 		foreach ($this->Groups()->column('ID') as $mustId) {
-			$groupIds[] = $mustId;
+			$groupIds[$mustId] = $mustId;
 		}
 
 		foreach ($existingIds as $existingId) {
 			if (!in_array($existingId, $groupIds)) {
-				$groupIds[] = $existingId;
+				$groupIds[$existingId] = $existingId;
 			}
 		}
 
