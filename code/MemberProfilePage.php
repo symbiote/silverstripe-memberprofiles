@@ -488,6 +488,15 @@ class MemberProfilePage_Controller extends Page_Controller {
 		}
 	}
 
+	public function redirectBack() {
+		if( $url = $this->request->requestVar('redirectBackURL') ) {
+			return $this->redirect($url);
+		}
+		else {
+			return $this->redirectBack();
+		}
+	}
+
 	/**
 	 * Returns the after registration content to the user.
 	 *
