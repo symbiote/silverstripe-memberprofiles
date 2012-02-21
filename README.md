@@ -10,10 +10,6 @@ Requirements
 * SilverStripe 2.4
 * The [Orderable](https://github.com/ajshort/silverstripe-orderable) module
 
-Documentation
--------------
-[GitHub Wiki](http://wiki.github.com/ajshort/silverstripe-memberprofiles)
-
 Installation Instructions
 -------------------------
 
