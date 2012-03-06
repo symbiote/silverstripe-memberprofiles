@@ -3,7 +3,7 @@
  * @package silverstripe-memberprofiles
  */
 
-if(!ClassInfo::exists('Orderaable')) {
+if(!ClassInfo::exists('Orderable')) {
 	$view = new DebugView();
 	$link = 'https://github.com/ajshort/silverstripe-orderable';
 
