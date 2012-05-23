@@ -805,6 +805,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 				'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
 			));
 
+			if( array_key_exists('BackURL', $_REQUEST) ) {
+				$BackURL = $_REQUEST['BackURL'];
+			} else {
+				$BackURL = $this->Link();
+			}
+			
 			$fields->push(new LiteralField (
 				'LogInNote',
 				'<p>' . sprintf (
@@ -812,7 +818,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 						'MemberProfiles.LOGIN',
 						'If you already have an account you can <a href="%s">log in here</a>.'
 					),
-					Security::Link('login') . '?BackURL=' . $this->Link()
+					Security::Link('login') . '?BackURL=' . $BackURL
 				) . '</p>'
 			));
 
