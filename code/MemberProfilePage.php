@@ -818,7 +818,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 						'MemberProfiles.LOGIN',
 						'If you already have an account you can <a href="%s">log in here</a>.'
 					),
-					Security::Link('login') . '?BackURL=' . $BackURL
+					Security::Link('login') . '?BackURL=' . urlencode($BackURL)
 				) . '</p>'
 			));
 
