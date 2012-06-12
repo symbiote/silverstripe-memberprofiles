@@ -33,7 +33,7 @@ class MemberProfileField extends DataObject {
 	);
 
 	public static $extensions = array(
-		'Orderable'
+		// 'Orderable'
 	);
 
 	/**

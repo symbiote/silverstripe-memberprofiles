@@ -16,7 +16,7 @@ class MemberProfileSection extends DataObject {
 	);
 
 	public static $extensions = array(
-		'Orderable'
+		// 'Orderable'
 	);
 
 	public static $summary_fields = array(
