@@ -505,6 +505,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 				}
 			}
 
+			if( array_key_exists('BackURL', $data) && !empty($data['BackURL']) ) {
+				return $this->redirect(urldecode($data['BackURL']));				
+			}
+			
 			return $this->redirect($this->Link('afterregistration'));
 		} else {
 			return $this->redirectBack();
@@ -807,6 +811,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 			if( array_key_exists('BackURL', $_REQUEST) ) {
 				$BackURL = $_REQUEST['BackURL'];
+				$fields->push(new HiddenField('BackURL', 'BackURL', urlencode($BackURL)));
 			} else {
 				$BackURL = $this->Link();
 			}
