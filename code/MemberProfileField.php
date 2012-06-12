@@ -118,8 +118,8 @@ class MemberProfileField extends DataObject {
 	/**
 	 * @return array
 	 */
-	public function fieldLabels() {
-		return array_merge(parent::fieldLabels(), array (
+	public function fieldLabels($relations = true) {
+		return array_merge(parent::fieldLabels($relations), array (
 			'MemberField'       => _t('MemberProfiles.MEMBERFIELD', 'Member Field'),
 			'DefaultValue'      => _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
 			'MemberListVisible' => _t('MemberProfiles.VISIBLEMEMLIST', 'Visible on member list'),

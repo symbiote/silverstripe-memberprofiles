@@ -5,21 +5,18 @@
  *
  * @package silverstripe-memberprofiles
  */
-class MemberProfileExtension extends DataObjectDecorator {
+class MemberProfileExtension extends DataExtension {
 
-	public function extraStatics() {
-		return array (
-			'db' => array (
-				'ValidationKey'   => 'Varchar(40)',
-				'NeedsValidation' => 'Boolean',
-				'NeedsApproval'   => 'Boolean',
-				'PublicFieldsRaw' => 'Text'
-			),
-			'has_one' => array (
-				'ProfilePage' => 'MemberProfilePage'
-			)
-		);
-	}
+	public static $db = array(
+		'ValidationKey'   => 'Varchar(40)',
+		'NeedsValidation' => 'Boolean',
+		'NeedsApproval'   => 'Boolean',
+		'PublicFieldsRaw' => 'Text'
+	);
+
+	public static $has_one = array(
+	'ProfilePage' => 'MemberProfilePage'
+	);
 
 	public function getPublicFields() {
 		return (array) unserialize($this->owner->getField('PublicFieldsRaw'));
@@ -86,7 +83,7 @@ class MemberProfileExtension extends DataObjectDecorator {
 		$fields->push(new CheckboxSetField('Groups', 'Groups', array(), $existing));
 	}
 
-	public function updateCMSFields($fields) {
+	public function updateCMSFields(FieldList $fields) {
 		$mainFields = $fields->fieldByName("Root")->fieldByName("Main")->Children;
 
 		$fields->removeByName('ValidationKey');
