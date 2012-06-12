@@ -1,0 +1,6 @@
+---
+Name: extensions
+---
+Member:
+  extensions:
+    ['MemberProfileExtension']

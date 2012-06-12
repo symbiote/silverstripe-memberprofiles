@@ -1,0 +1,7 @@
+---
+Name: routes
+After: framework/routes#coreroutes
+---
+Director:
+  rules:
+    'member-approval': 'MemberApprovalController'
