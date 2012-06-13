@@ -13,8 +13,6 @@
  */
 class MemberProfilePage extends Page implements PermissionProvider {
 
-	public static $icon = 'memberprofiles/images/memberprofilepage';
-
 	public static $db = array (
 		'ProfileTitle'             => 'Varchar(255)',
 		'RegistrationTitle'        => 'Varchar(255)',
@@ -86,6 +84,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit')
 	);
+
+	public static $icon = 'memberprofiles/images/memberprofilepage.png';
 
 	/**
 	 * If profile editing is disabled, but the current user can add members,
