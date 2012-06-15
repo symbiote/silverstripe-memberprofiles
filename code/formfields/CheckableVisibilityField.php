@@ -73,6 +73,10 @@ class CheckableVisibilityField extends FormField {
 		$record->setPublicFields($public);
 	}
 
+	public function validate($validator) {
+		return $this->child->validate($validator);
+	}
+
 	public function Value() {
 		return $this->child->Value();
 	}
