@@ -22,6 +22,10 @@ class MemberProfileValidator extends RequiredFields {
 			if($field->Required) $this->addRequiredField($field->MemberField);
 			if($field->Unique)   $this->unique[] = $field->MemberField;
 		}
+
+		if($member && $member->ID && $member->Password) {
+			$this->removeRequiredField('Password');
+		}
 	}
 
 	/**
@@ -32,8 +36,8 @@ class MemberProfileValidator extends RequiredFields {
 	}
 
 	public function php($data) {
-		$member   = Member::currentUser();
-		$valid    = true;
+		$member = $this->member;
+		$valid  = true;
 
 		foreach($this->unique as $field) {
 			$other = DataObject::get_one (

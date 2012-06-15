@@ -435,6 +435,12 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$form = $this->ProfileForm();
 		$form->loadDataFrom($member);
 
+		if($password = $form->Fields()->fieldByName('Password')) {
+			$password->setCanBeEmpty(false);
+			$password->setValue(null);
+			$password->setCanBeEmpty(true);
+		}
+
 		return array (
 			'Title' => $this->obj('ProfileTitle'),
 			'Content' => $this->obj('ProfileContent'),
