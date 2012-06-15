@@ -851,6 +851,11 @@ class MemberProfilePage_Controller extends Page_Controller {
 			if(!$memberField || $visibility == 'Hidden') continue;
 
 			$field = clone $memberField;
+
+			if($visibility == 'Readonly') {
+				$field = $field->performReadonlyTransformation();
+			}
+
 			$field->setTitle($profileField->Title);
 			$field->setRightTitle($profileField->Note);
 
@@ -863,8 +868,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			}
 
 			$canSetVisibility = (
-				   $visibility == 'Edit'
-				&& $this->AllowProfileViewing
+				   $this->AllowProfileViewing
 				&& $profileField->PublicVisibility != 'Hidden'
 			);
 			if ($canSetVisibility) {
@@ -875,10 +879,6 @@ class MemberProfilePage_Controller extends Page_Controller {
 				} else {
 					$field->getCheckbox()->setValue($profileField->PublicVisibilityDefault);
 				}
-			}
-
-			if($visibility == 'Readonly') {
-				$field = $field->performReadonlyTransformation();
 			}
 
 			$fields->push($field);
