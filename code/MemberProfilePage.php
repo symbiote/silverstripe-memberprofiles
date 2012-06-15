@@ -85,6 +85,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'ProfileVisibility'      => 'Edit')
 	);
 
+	public static $description = '';
+
 	public static $icon = 'memberprofiles/images/memberprofilepage.png';
 
 	/**
@@ -127,161 +129,166 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-		Requirements::javascript('memberprofiles/javascript/MemberProfilePageCms.js');
+		$fields->addFieldToTab('Root', new TabSet('Profile'));
+		$fields->addFieldToTab('Root', new Tab('ContentBlocks'));
+		$fields->addFieldToTab('Root', new Tab('Email'));
+		$fields->fieldByName('Root.Main')->setTitle(_t('MemberProfiles.MAIN', 'Main'));
 
-		// Setup tabs
-		$fields->addFieldToTab('Root', $profile = new TabSet('Profile'), 'Content');
-		$fields->addFieldToTab('Root', $email = new Tab('Email'), 'Behaviour');
-
-		$profile->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
-		$email->setTitle(_t('MemberProfiles.EMAIL', 'Email'));
-
-		$fields->findOrMakeTab(
-			'Root.Profile.Fields', _t('MemberProfiles.FIELDS', 'Fields'));
-		$fields->findOrMakeTab(
-			'Root.Profile.Groups', _t('MemberProfiles.GROUPS', 'Groups'));
-		$fields->findOrMakeTab(
-			'Root.Profile.PublicProfile',
-			_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'));
-
-		// Profile fields
-		$fields->addFieldsToTab('Root.Profile.Fields', array(
-			new HeaderField(
-				'ProfileFieldsHeader',
-				_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields')),
-			$table = new OrderableComplexTableField(
-				$this, 'Fields', 'MemberProfileField')
+		$fields->addFieldsToTab('Root.Profile', array(
+			new Tab(
+				'Fields',
+				new GridField(
+					'Fields',
+					_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields'),
+					$this->Fields(),
+					$grid = GridFieldConfig_RecordEditor::create()
+						->removeComponentsByType('GridFieldDeleteAction')
+						->removeComponentsByType('GridFieldAddNewButton')
+				)
+			),
+			new Tab(
+				'Groups',
+				$groups = new TreeMultiselectField(
+					'Groups',
+					_t('MemberProfiles.GROUPS', 'Groups'),
+					'Group'
+				),
+				$selectable = new TreeMultiselectField(
+					'SelectableGroups',
+					_t('MemberProfiles.SELECTABLEGROUPS', 'Selectable Groups'),
+					'Group'
+				)
+			),
+			new Tab(
+				'PublicProfile',
+				new GridField(
+					'Sections',
+					_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections'),
+					$this->Sections(),
+					GridFieldConfig_RecordEditor::create()
+						->removeComponentsByType('GridFieldAddNewButton')
+						//->addComponent(new MemberProfilesAddSectionButton('buttons-before-left'))
+				)
+			)
 		));
 
-		$table->setPermissions(array('show', 'edit'));
-		$table->setCustomSourceItems($this->getProfileFields());
-
-		// Groups
-		$fields->addFieldsToTab('Root.Profile.Groups', array(
-			new HeaderField('GroupsHeader',
-				_t('MemberProfiles.GROUPASSIGNMENT', 'Group Assignment')),
-			new LiteralField('GroupsNote', '<p>' . _t('MemberProfiles.GROUPSNOTE',
-				'Any users registering via this page will always be added to '  .
-				'the below groups (if registration is enabled). Conversely, a ' .
-				'member must belong to these groups in order to edit their '    .
-				'profile on this page.'
-			) . '</p>'),
-			new CheckboxSetField('Groups', '', DataObject::get('Group')->map()),
-			new HeaderField('SelectableGroupsHeader',
-				_t('MemberProfiles.USERSELECTABLE', 'User Selectable')),
-			new LiteralField('SelectableGroupsNote', '<p>' . _t(
-				'MemberProfiles.SELECTABLEGROUPSNOTE',
-				'Users can choose to belong to the following groups, if the ' .
-				'"Groups" field is enabled in the "Fields" tab.'
-			) . '</p>'),
-			new CheckboxSetField(
-				'SelectableGroups', '', DataObject::get('Group')->map())
+		$grid->getComponentByType('GridFieldDataColumns')->setFieldFormatting(array(
+			'Unique'   => function($obj) { return $obj->dbObject('Unique')->Nice(); },
+			'Required' => function($obj) { return $obj->dbObject('Required')->Nice(); }
 		));
 
-		// Public profile
-		$fields->addFieldsToTab('Root.Profile.PublicProfile', array(
-			new HeaderField(
-				'PublicProfileHeader',
-				_t('MemberProfiles.PUBLICPROFILE', 'Public Profile')),
-			new CheckboxField(
-				'AllowProfileViewing',
-				_t('MemberProfiles.ALLOWPROFILEVIEWING', 'Allow people to view user profiles.')),
-			new HeaderField(
-				'ProfileSectionsHeader',
-				_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections')),
-			new MemberProfileSectionField(
-				$this, 'Sections', 'MemberProfileSection')
+		if(!$this->AllowProfileViewing) {
+			$disabledNote = new LiteralField('PublisProfileDisabledNote', sprintf(
+				'<p class="message notice">%s</p>', _t(
+					'MemberProfiles.PUBLICPROFILEDISABLED',
+					'Public profiles are currently disabled, you can enable them ' .
+					'in the "Settings" tab.'
+				)
+			));
+			$fields->insertBefore($disabledNote, 'Sections');
+		}
+
+		$groups->setDescription(_t(
+			'MemberProfiles.GROUPSNOTE',
+			'Any users registering via this page will always be added to ' .
+			'these groups (if registration is enabled). Conversely, a member ' .
+			'must belong to these groups in order to edit their profile on ' .
+			'this page.'
 		));
 
-		// Email confirmation and validation
+		$selectable->setDescription(_t(
+			'MemberProfiles.GROUPSNOTE',
+			'Users can choose to belong to these groups, if the  "Groups" field ' .
+			'is enabled in the "Fields" tab.'
+		));
+
+		$fields->removeByName('Content', true);
+
+		foreach(array('Profile', 'Registration', 'AfterRegistration') as $type) {
+			$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
+				"{$type}Toggle",
+				FormField::name_to_label($type),
+				array(
+					new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
+					$content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
+				)
+			));
+			$content->setRows(15);
+		}
+
 		$fields->addFieldsToTab('Root.Email', array(
-			new HeaderField('EmailHeader', 'Email Confirmation and Validation'),
-			new OptionSetField('EmailType', '', array(
-				'Validation'   => 'Require email validation to activate an account',
-				'Confirmation' => 'Send a confirmation email after a user registers',
-				'None'         => 'Do not send any emails'
-			)),
-			new ToggleCompositeField('EmailContent', 'Email Content', array(
+			new OptionsetField(
+				'EmailType',
+				_t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
+				array(
+					'Validation'   => 'Require email validation',
+					'Confirmation' => 'Send a confirmation email',
+					'None'         => 'None'
+				)
+			),
+			new ToggleCompositeField('EmailContentToggle', 'Email Content', array(
 				new TextField('EmailSubject', 'Email subject'),
 				new TextField('EmailFrom', 'Email from'),
 				new TextareaField('EmailTemplate', 'Email template'),
-				new LiteralField('TemplateNote', MemberConfirmationEmail::TEMPLATE_NOTE)
+				new LiteralField('TemplateNote', sprintf(
+					'<div class="field">%s</div>', MemberConfirmationEmail::TEMPLATE_NOTE
+				))
 			)),
-			new ToggleCompositeField('ConfirmationContent', 'Confirmation Content', array(
-				new LiteralField('ConfirmationNote', '<p>This content is dispayed when
-					a user confirms their account.</p>'),
+			new ToggleCompositeField('ConfirmationContentToggle', 'Confirmation Content', array(
 				new TextField('ConfirmationTitle', 'Title'),
-				new HtmlEditorField('ConfirmationContent', 'Content')
+				$confContent  = new HtmlEditorField('ConfirmationContent', 'Content')
 			))
 		));
+		$confContent->setRows(15);
 
-		// Content
-		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
+		return $fields;
+	}
 
-		$fields->addFieldToTab('Root.Content',
-			$profileContent = new Tab('Profile'), 'Metadata');
-		$fields->addFieldToTab('Root.Content',
-			$regContent = new Tab('Registration'), 'Metadata');
-		$fields->addFieldToTab('Root.Content',
-			$afterReg = new Tab('AfterRegistration'), 'Metadata');
+	public function getSettingsFields() {
+		$fields = parent::getSettingsFields();
 
-		$profileContent->setTitle(_t('MemberProfiles.PROFILE', 'Profile'));
-		$regContent->setTitle(_t('MemberProfiles.REGISTRATION', 'Registration'));
-		$afterReg->setTitle(_t('MemberProfiles.AFTERREG', 'After Registration'));
-
-		$tabs = array('Profile', 'Registration', 'AfterRegistration');
-		foreach ($tabs as $tab) {
-			$fields->addFieldsToTab("Root.Content.$tab", array(
-				new TextField("{$tab}Title", _t('MemberProfiles.TITLE', 'Title')),
-				new HtmlEditorField("{$tab}Content", _t('MemberProfiles.CONTENT', 'Content'))
-			));
-		}
-
-		$fields->addFieldToTab(
-			'Root.Content.AfterRegistration',
-			new CheckboxField('RegistrationRedirect',
-				_t('MemberProfiles.REDIRECT_AFTER_REG', 'Redirect after registration?')),
-			'AfterRegistrationContent'
-		);
-		$fields->addFieldToTab(
-			'Root.Content.AfterRegistration',
-			new TreeDropdownField('PostRegistrationTargetID',
-				_t('MemberProfiles.REDIRECT_TARGET', 'Redirect to page'), 'SiteTree'),
-			'AfterRegistrationContent'
-		);
-
-		// Behaviour
-		$fields->addFieldToTab('Root.Behaviour',
-			new HeaderField('ProfileBehaviour',
-				_t('MemberProfiles.PROFILEBEHAVIOUR', 'Profile Behaviour')),
-			'ClassName');
-		$fields->addFieldToTab('Root.Behaviour',
-			new CheckboxField('AllowRegistration',
-			_t('MemberProfiles.ALLOWREG', 'Allow registration via this page')),
-			'ClassName');
-		$fields->addFieldToTab('Root.Behaviour',
-			new CheckboxField('AllowProfileEditing',
-			_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')),
-			'ClassName');
-		$fields->addFieldToTab('Root.Behaviour',
-			new CheckboxField('AllowAdding',
-			_t('MemberProfiles.ALLOWADD',
-				'Allow members with member creation permissions to add members via this page')),
-			'ClassName');
-
-		$requireApproval = new CheckboxField('RequireApproval', _t(
-			'MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?'
+		$fields->addFieldToTab('Root', new Tab('Profile'), 'Settings');
+		$fields->addFieldsToTab('Root.Profile', array(
+			new CheckboxField(
+				'AllowRegistration',
+				_t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
+			),
+			new CheckboxField(
+				'AllowProfileEditing',
+				_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
+			),
+			new CheckboxField(
+				'AllowAdding',
+				_t('MemberProfiles.ALLOWADD', 'Allow adding members via this page')
+			),
+			new CheckboxField(
+				'AllowProfileViewing',
+				_t('MemberProfiles.ALLOWPROFILEVIEWING', 'Enable public profiles?')
+			),
+			new CheckboxField(
+				'RequireApproval',
+				_t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
+			),
+			$approval = new TreeMultiselectField(
+				'ApprovalGroups',
+				_t('MemberProfiles.APPROVALGROUPS', 'Approval Groups'),
+				'Group'
+			),
+			new CheckboxField(
+				'RegistrationRedirect',
+				_t('MemberProfiles.REDIRECTAFTERREG', 'Redirect after registration?')
+			),
+			new TreeDropdownField(
+				'PostRegistrationTargetID',
+				_t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
+				'SiteTree'
+			)
 		));
-		$fields->addFieldToTab('Root.Behaviour', $requireApproval, 'ClassName');
 
-		$approvalGroups = _t('MemberProfiles.NOTIFYTHESEGROUPS', 'Notify these groups to approve new registrations');
-		$approvalGroups = new TreeMultiselectField('ApprovalGroups', $approvalGroups, 'Group');
-		$fields->addFieldToTab('Root.Behaviour', $approvalGroups, 'ClassName');
-
-		$pageSettings = new HeaderField('PageSettingsHeader', _t('MemberProfiles.PAGEBEHAVIOUR', 'Page Behaviour'));
-		$fields->addFieldToTab('Root.Behaviour', $pageSettings, 'ClassName');
+		$approval->setDescription(_t(
+			'MemberProfiles.NOTIFYTHESEGROUPS',
+			'These groups will be notified to approve new registrations'
+		));
 
 		return $fields;
 	}
@@ -305,39 +312,38 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	}
 
 	/**
-	 * Get a set of all the {@link MemberProfileFields} available, automatically synced with the
-	 * state of the Member object.
+	 * Returns a list of profile field objects after synchronising them with the
+	 * Member form fields.
 	 *
-	 * @return DataObjectSet
+	 * @return HasManyList
 	 */
-	public function getProfileFields() {
-		$set        = $this->Fields();
-		$fields     = singleton('Member')->getMemberFormFields()->dataFields();
-		$setNames   = $set->map('ID', 'MemberField');
-		$fieldNames = array_keys($fields);
+	public function Fields() {
+		$list     = $this->getComponents('Fields');
+		$fields   = singleton('Member')->getMemberFormFields()->dataFields();
+		$included = array();
 
-		foreach($set as $field) {
-			if(!in_array($field->MemberField, $fieldNames)) {
-				$set->remove($field);
+		foreach($list as $profileField) {
+			if(!array_key_exists($profileField->MemberField, $fields)) {
+				$profileField->delete();
+			} else {
+				$included[] = $profileField->MemberField;
 			}
 		}
 
 		foreach($fields as $name => $field) {
-			if(in_array($name, $setNames)) continue;
+			if(!in_array($name, $included)) {
+				$profileField = new MemberProfileField();
+				$profileField->MemberField = $name;
 
-			$profileField = new MemberProfileField();
-			$profileField->MemberField   = $name;
-			$profileField->ProfilePageID = $this->ID;
+				if(isset(self::$profile_field_defaults[$name])) {
+					$profileField->update(self::$profile_field_defaults[$name]);
+				}
 
-			if (array_key_exists($name, self::$profile_field_defaults)) {
-				$profileField->update(self::$profile_field_defaults[$name]);
+				$list->add($profileField);
 			}
-
-			$profileField->write();
-			$set->add($profileField);
 		}
 
-		return $set;
+		return $list;
 	}
 
 	public function onAfterWrite() {
@@ -347,7 +353,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			$section->write();
 		}
 
-		parent::populateDefaults();
+		parent::onAfterWrite();
 	}
 
 }
@@ -464,7 +470,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this,
 			'RegisterForm',
 			$this->getProfileFields('Registration'),
-			new FieldSet (
+			new FieldList(
 				new FormAction('register', _t('MemberProfiles.REGISTER', 'Register'))
 			),
 			new MemberProfileValidator($this->Fields())
@@ -528,7 +534,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this,
 			'ProfileForm',
 			$this->getProfileFields('Profile'),
-			new FieldSet (
+			new FieldList(
 				new FormAction('save', _t('MemberProfiles.SAVE', 'Save'))
 			),
 			new MemberProfileValidator($this->Fields(), Member::currentUser())
@@ -589,7 +595,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this,
 			'AddForm',
 			$this->getProfileFields('Add'),
-			new FieldSet (
+			new FieldList(
 				new FormAction('doAdd', _t('MemberProfiles.ADD', 'Add'))
 			),
 			new MemberProfileValidator($this->Fields())
@@ -779,7 +785,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	protected function getProfileFields($context) {
 		$profileFields = $this->Fields();
-		$fields        = new FieldSet();
+		$fields        = new FieldList();
 
 		// depending on the context, load fields from the current member
 		if(Member::currentUser() && $context != 'Add') {
@@ -863,7 +869,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			}
 
 			$field->setTitle($profileField->Title);
-			$field->setRightTitle($profileField->Note);
+			$field->setDescription($profileField->Note);
 
 			if($context == 'Registration' && $profileField->DefaultValue) {
 				$field->setValue($profileField->DefaultValue);

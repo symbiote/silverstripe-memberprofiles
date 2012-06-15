@@ -55,6 +55,8 @@ class MemberProfileField extends DataObject {
 		$memberFields = $this->getMemberFields();
 		$memberField  = $memberFields->dataFieldByName($this->MemberField);
 
+		$fields->removeByName('ProfilePageID');
+
 		$fields->insertBefore (
 			new ReadonlyField('MemberField', $this->fieldLabel('MemberField')),
 			'ProfileVisibility'
@@ -151,7 +153,7 @@ class MemberProfileField extends DataObject {
 		$title  = $field->Title();
 
 		if (!$title && $force) {
-			$title = $field->Name();
+			$title = $field->getName();
 		}
 
 		return $title;
