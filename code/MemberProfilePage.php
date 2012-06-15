@@ -863,7 +863,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			}
 
 			$canSetVisibility = (
-				$this->AllowProfileViewing
+				   $visibility == 'Edit'
+				&& $this->AllowProfileViewing
 				&& $profileField->PublicVisibility != 'Hidden'
 			);
 			if ($canSetVisibility) {
