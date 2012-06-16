@@ -1,0 +1,11 @@
+.memberprofiles-add-section select {
+	width: 250px;
+}
+
+.memberprofiles-add-section .field {
+	border: none;
+	box-shadow: none;
+	float: left;
+	margin: 0 8px 0 0;
+	padding: 0;
+}

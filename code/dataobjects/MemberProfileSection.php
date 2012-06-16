@@ -43,14 +43,14 @@ class MemberProfileSection extends DataObject {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root.Main', new HeaderField(
-			'ProfileSectionTitle',
-			_t('MemberProfiles.PROFILESECTION', 'Profile Section')),
-			'CustomTitle');
-		$fields->addFieldToTab('Root.Main', new ReadonlyField(
-			'DefaultTitle',
-			_t('MemberProfiles.SECTIONTYPE', 'Section type')),
-			'CustomTitle');
+		$fields->addFieldsToTab(
+			'Root.Main',
+			array(
+				new ReadonlyField('DefaultTitle', _t('MemberProfiles.SECTIONTYPE', 'Section type')),
+				new HiddenField('ClassName', '')
+			),
+			'CustomTitle'
+		);
 
 		return $fields;
 	}

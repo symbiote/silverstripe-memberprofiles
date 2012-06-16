@@ -167,7 +167,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 					$this->Sections(),
 					GridFieldConfig_RecordEditor::create()
 						->removeComponentsByType('GridFieldAddNewButton')
-						//->addComponent(new MemberProfilesAddSectionButton('buttons-before-left'))
+						->addComponent(new MemberProfilesAddSectionAction())
 				)
 			)
 		));
