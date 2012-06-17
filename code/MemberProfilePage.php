@@ -109,23 +109,6 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		return parent::Link($action);
 	}
 
-	/**
-	 * Provide permissions so users can be configured to create accounts for other people via the frontend
-	 *
-	 * @return array
-	 */
-	public function providePermissions() {
-		return array(
-			'CREATE_OTHER_USERS' => array(
-				'name' => _t('MemberProfilePage.CREATE_OTHERS', 'Create other users via a member profile page'),
-				'category' => _t('MemberProfilePage.MEMBER_PROFILE_CATEGORY', 'Member profile category'),
-				'help' => _t('MemberProfilePage.CREATE_OTHERS_HELP', 'Users with this permission can create new
-					members via a member profile page that has been configured for creating new users'),
-				'sort' => 400
-			)
-		);
-	}
-
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
@@ -420,7 +403,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	protected function indexProfile() {
 		if(!$this->AllowProfileEditing) {
-			if($this->AllowAdding && Permission::check('CREATE_OTHER_USERS')) {
+			if($this->AllowAdding && Injector::inst()->get('Member')->canCreate()) {
 				return $this->redirect($this->Link('add'));
 			}
 
@@ -575,7 +558,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * members.
 	 */
 	public function add($request) {
-		if(!$this->AllowAdding || !Permission::check('CREATE_OTHER_USERS')) {
+		if(!$this->AllowAdding || !Injector::inst()->get('Member')->canCreate()) {
 			return Security::permissionFailure($this, _t (
 				'MemberProfiles.CANNOTADDMEMBERS',
 				'You cannot add members via this page.'
