@@ -173,8 +173,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		));
 
 		$grid->getComponentByType('GridFieldDataColumns')->setFieldFormatting(array(
-			'Unique'   => function($obj) { return $obj->dbObject('Unique')->Nice(); },
-			'Required' => function($obj) { return $obj->dbObject('Required')->Nice(); }
+			'Unique'   => function($val, $obj) { return $obj->dbObject('Unique')->Nice(); },
+			'Required' => function($val, $obj) { return $obj->dbObject('Required')->Nice(); }
 		));
 
 		if(!$this->AllowProfileViewing) {
