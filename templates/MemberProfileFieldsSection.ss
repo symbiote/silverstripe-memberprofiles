@@ -1,6 +1,6 @@
-<dl class="memberProfileFields">
-	<% control Fields %>
+<dl class="member-profile-fields">
+	<% loop $Fields %>
 		<dt>$Title</dt>
 		<dd>$Value</dd>
-	<% end_control %>
+	<% end_loop %>
 </dl>

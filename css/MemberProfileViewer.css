@@ -1,18 +1,30 @@
-#MemberList {
-	border-collapse: collapse; width: 100%;
-	border-left: 1px solid #AAA; border-top: 1px solid #AAA; }
-#MemberList td,
-#MemberList th {
-	border-right: 1px solid #AAA; border-bottom: 1px solid #AAA; padding: 4px; }
-#MemberList tr.odd { background: #F5F5F5; }
-#MemberListPagination {
-	border: 1px solid #AAA; margin-top: 5px; padding: 5px; text-align: center; }
+#member-list {
+	width: 100%;
+}
+#member-list th, #member-list td {
+	padding: 5px;
+}
+#member-list a {
+	border: none;
+}
 
-#MemberProfileTitle { padding-bottom: 5px; border-bottom: 1px solid #999; }
-#MemberProfile .memberProfileSection {
-	margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #CCC; }
+.member-profile-section {
+	border-bottom: 1px solid #CCC;
+	margin-top: 10px;
+	padding-bottom: 10px;
+}
 
-#MemberProfile .memberProfileFields { overflow: auto; margin: 0; }
+.member-profile-fields dt {
+	clear: left;
+	float: left;
+	font-weight: bold;
+	width: 80px;
+}
+.member-profile-fields dd {
+	margin-left: 100px;
+}
+
+.member-profile-section { overflow: auto; margin: 0; }
 #MemberProfile .memberProfileFields dt {
 	clear: left; float: left; font-weight: bold; width: 80px; }
 #MemberProfile .memberProfileFields dd { float: left; }

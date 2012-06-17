@@ -17,12 +17,12 @@ class MemberProfileFieldsSection extends MemberProfileSection {
 	}
 
 	public function Fields() {
-		$fields = $this->Parent()->Fields('"PublicVisibility" <> \'Hidden\'');
+		$fields = $this->Parent()->Fields()->where('"PublicVisibility" <> \'Hidden\'');
 		$public = $this->member->getPublicFields();
-		$result = new DataObjectSet();
+		$result = new ArrayList();
 
-		foreach ($fields as $field) {
-			if ($field->PublicVisibility == 'MemberChoice') {
+		foreach($fields as $field) {
+			if($field->PublicVisibility == 'MemberChoice') {
 				if(!in_array($field->MemberField, $public)) continue;
 			}
 

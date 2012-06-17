@@ -458,6 +458,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return MemberProfileViewer
 	 */
 	public function show() {
+		if(!$this->AllowProfileViewing) {
+			$this->httpError(404);
+		}
+
 		return new MemberProfileViewer($this, 'show');
 	}
 

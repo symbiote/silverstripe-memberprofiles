@@ -32,67 +32,48 @@ class MemberProfileViewer extends Page_Controller {
 	 * @return string
 	 */
 	public function handleList($request) {
-		if (!$this->parent->AllowProfileViewing) {
-			return ErrorPage::response_for(404);
-		}
+		$fields  = $this->parent->Fields()->filter('MemberListVisible', true);
+		$members = $this->parent->Groups()->relation('Members');
+		$members = new PaginatedList($members, $request);
 
-		$sort = $request->getVar('sort');
+		$list = new PaginatedList(new ArrayList(), $request);
+		$list->setLimitItems(false);
+		$list->setTotalItems($members->getTotalItems());
 
-		if ($sort && singleton('Member')->hasDatabaseField($sort)) {
-			$sort = sprintf('"%s"', Convert::raw2sql($sort));
-		} else {
-			$sort = '"ID"';
-		}
-
-		$groups = $this->parent->Groups();
-		$fields = $this->parent->Fields('"MemberListVisible" = 1');
-
-		// List all members that are in at least one of the groups on the
-		// parent page.
-		if (count($groups)) {
-			$groups = implode(',' , array_keys($groups->map()));
-			$filter = "\"Group_Members\".\"GroupID\" IN ($groups)";
-			$join   = 'LEFT JOIN "Group_Members" ' .
-				'ON "Member"."ID" = "Group_Members"."MemberID"';
-		} else {
-			$filter = $join = null;
-		}
-
-		$members = DataObject::get('Member', $filter, $sort, $join, array(
-			'start' => $this->getPaginationStart(),
-			'limit' => 25
-		));
-
-		if ($members && $fields) foreach ($members as $member) {
-			$data   = new DataObjectSet();
+		foreach($members as $member) {
+			$cols   = new ArrayList();
 			$public = $member->getPublicFields();
+			$link   = $this->Link($member->ID);
 
-			foreach ($fields as $field) {
-				if ($field->PublicVisibility == 'MemberChoice'
-				    && !in_array($field->MemberField, $public)
+			foreach($fields as $field) {
+				if(
+					   $field->PublicVisibility == 'MemberChoice'
+					&& !in_array($field->MemberField, $public)
 				) {
-					$value = null;
+					$value =  null;
 				} else {
 					$value = $member->{$field->MemberField};
 				}
 
-				$data->push(new ArrayData(array(
-					'MemberID' => $member->ID,
+				$cols->push(new ArrayData(array(
 					'Name'     => $field->MemberField,
 					'Title'    => $field->Title,
 					'Value'    => $value,
-					'Sortable' => $member->hasDatabaseField($field->MemberField)
+					'Sortable' => $member->hasDatabaseField($field->MemberField),
+					'Link'     => $link
 				)));
 			}
 
-			$member->setField('Fields', $data);
+			$list->push($member->customise(array(
+				'Fields' => $cols
+			)));
 		}
 
 		$this->data()->Title  = _t('MemberProfiles.MEMBERLIST', 'Member List');
 		$this->data()->Parent = $this->parent;
 
 		$controller = $this->customise(array(
-			'Members' => $members
+			'Members' => $list
 		));
 		return $controller->renderWith(array(
 			'MemberProfileViewer_list', 'MemberProfileViewer', 'Page'
@@ -107,21 +88,22 @@ class MemberProfileViewer extends Page_Controller {
 	public function handleView($request) {
 		$id = $request->param('MemberID');
 
-		if (!ctype_digit($id) || !$member = DataObject::get_by_id('Member', $id)) {
+		if(!ctype_digit($id)) {
 			$this->httpError(404);
 		}
 
-		if (!$this->parent->AllowProfileViewing) {
-			$this->httpError(403);
-		}
-
+		$member = Member::get()->byID($id);
 		$groups = $this->parent->Groups();
-		if (count($groups) && !$member->inGroups($groups)) {
+
+		if(!$member->inGroups($groups)) {
 			$this->httpError(403);
 		}
 
-		$sections = $this->parent->Sections();
-		if ($sections) foreach ($sections as $section) {
+		$sections     = $this->parent->Sections();
+		$sectionsList = new ArrayList();
+
+		foreach($sections as $section) {
+			$sectionsList->push($section);
 			$section->setMember($member);
 		}
 
@@ -133,7 +115,7 @@ class MemberProfileViewer extends Page_Controller {
 
 		$controller = $this->customise(array(
 			'Member'   => $member,
-			'Sections' => $sections,
+			'Sections' => $sectionsList,
 			'IsSelf'   => $member->ID == Member::currentUserID()
 		));
 		return $controller->renderWith(array(
@@ -155,8 +137,8 @@ class MemberProfileViewer extends Page_Controller {
 	/**
 	 * @return string
 	 */
-	public function Link() {
-		return Controller::join_links($this->parent->Link(), $this->name);
+	public function Link($action = null) {
+		return Controller::join_links($this->parent->Link(), $this->name, $action);
 	}
 
 }
