@@ -97,11 +97,10 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	 */
 	public function Link($action = null) {
 		if(
-			!$action
+			   !$action
 			&& Member::currentUserID()
 			&& !$this->AllowProfileEditing
-			&& $this->AllowAdding
-			&& singleton('Member')->canCreate()
+			&& $this->CanAddMembers()
 		) {
 			$action = 'add';
 		}
@@ -386,9 +385,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 		));
 
 		return array (
-			'Title' => $this->obj('RegistrationTitle'),
+			'Title'   => $this->obj('RegistrationTitle'),
 			'Content' => $this->obj('RegistrationContent'),
-			'Form' => $this->RegisterForm()
+			'Form'    => $this->RegisterForm()
 		);
 	}
 
@@ -601,6 +600,21 @@ class MemberProfilePage_Controller extends Page_Controller {
 		return $this->redirectBack();
 	}
 
+	public function LoginLink() {
+		return Controller::join_links(
+			Injector::inst()->get('Security')->Link(),
+			'login',
+			'?BackURL=' . urlencode($this->Link())
+		);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function CanAddMembers() {
+		return $this->AllowAdding && singleton('Member')->canCreate();
+	}
+
 	/**
 	 * Gets the list of groups that can be set after the submission of a particular form
 	 *
@@ -779,47 +793,6 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$memberFields = Member::currentUser()->getMemberFormFields();
 		} else {
 			$memberFields = singleton('Member')->getMemberFormFields();
-		}
-
-		if($context == 'Registration') {
-			$fields->push(new HeaderField (
-				'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
-			));
-
-			$fields->push(new LiteralField (
-				'LogInNote',
-				'<p>' . sprintf (
-					_t (
-						'MemberProfiles.LOGIN',
-						'If you already have an account you can <a href="%s">log in here</a>.'
-					),
-					Security::Link('login') . '?BackURL=' . $this->Link()
-				) . '</p>'
-			));
-
-			$fields->push(new HeaderField (
-				'RegisterHeader', _t('MemberProfiles.REGISTER', 'Register')
-			));
-		}
-
-		if(
-			$context == 'Profile'
-			&& $this->AllowAdding
-			&& singleton('Member')->canCreate()
-		) {
-			$fields->push(new HeaderField(
-				'AddHeader', _t('MemberProfiles.ADDUSER', 'Add User')
-			));
-			$fields->push(new LiteralField (
-				'AddMemberNote',
-				'<p>' . sprintf(_t(
-					'MemberProfiles.ADDMEMBERNOTE',
-					'You can use this page to <a href="%s">add a new member</a>.'
-				), $this->Link('add')) . '</p>'
-			));
-			$fields->push(new HeaderField(
-				'YourProfileHeader', _t('MemberProfiles.YOURPROFILE', 'Your Profile')
-			));
 		}
 
 		// use the default registration fields for adding members
