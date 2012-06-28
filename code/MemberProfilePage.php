@@ -632,7 +632,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		// ourselves, but that's okay
 		$groupField = $form->Fields()->dataFieldByName('Groups');
 		// The list of selectable groups
-		$groupIds = $allowedIds = $this->SelectableGroups()->map('ID', 'ID');
+		$groupIds = $allowedIds = $this->SelectableGroups()->map('ID', 'ID')->toArray();
 
 		// we need to track the selected groups against the existing user's groups - this is
 		// so that we don't accidentally remove them from the list of groups
@@ -641,7 +641,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if ($member) {
 			$existing = $member->Groups();
 			if ($existing && $existing->Count() > 0) {
-				$existingIds = $existing->map('ID', 'ID');
+				$existingIds = $existing->map('ID', 'ID')->toArray();
 				// remove any that are in the selectable groups map - we only want to
 				// worry about those that aren't managed by this form
 				foreach ($groupIds as $gid) {
