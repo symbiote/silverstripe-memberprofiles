@@ -13,7 +13,7 @@ class CheckableVisibilityField extends FormField {
 	 * @param FormField $child
 	 */
 	public function __construct($child) {
-		parent::__construct($child->Name());
+		parent::__construct($child->getName());
 
 		$this->child    = $child;
 		$this->checkbox = new CheckboxField("Visible[{$this->name}]", '');
@@ -39,7 +39,7 @@ class CheckableVisibilityField extends FormField {
 		$this->checkbox = $this->checkbox->performDisabledTransformation();
 	}
 
-	public function setValue($value, $data) {
+	public function setValue($value, $data = array()) {
 		$this->child->setValue($value);
 
 		if ($this->alwaysVisible) {
@@ -57,7 +57,7 @@ class CheckableVisibilityField extends FormField {
 		return $this;
 	}
 
-	public function saveInto($record) {
+	public function saveInto(DataObjectInterface $record) {
 		$child = clone $this->child;
 		$child->setName($this->name);
 		$child->saveInto($record);
@@ -85,7 +85,7 @@ class CheckableVisibilityField extends FormField {
 		return $this->child->dataValue();
 	}
 
-	public function Field() {
+	public function Field($properties = array()) {
 		return $this->child->Field() . ' ' . $this->checkbox->Field();
 	}
 
