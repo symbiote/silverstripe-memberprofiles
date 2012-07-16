@@ -46,9 +46,10 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	);
 
 	public static $many_many = array (
-		'Groups'           => 'Group',
-		'SelectableGroups' => 'Group',
-		'ApprovalGroups'   => 'Group'
+		'Groups'             => 'Group',
+		'SelectableGroups'   => 'Group',
+		'ApprovalGroups'     => 'Group',
+		'RegistrationGroups' => 'Group'
 	);
 
 	public static $defaults = array (
@@ -177,7 +178,16 @@ class MemberProfilePage extends Page implements PermissionProvider {
 				'"Groups" field is enabled in the "Fields" tab.'
 			) . '</p>'),
 			new CheckboxSetField(
-				'SelectableGroups', '', DataObject::get('Group')->map())
+				'SelectableGroups', '', DataObject::get('Group')->map()),
+			new HeaderField('RegistrationGroupsHeader',
+				_t('MemberProfiles.REGISTRATIONGROUPS', 'Registration Groups')),
+			new LiteralField('SelectableGroupsNote', '<p>' . _t(
+				'MemberProfiles.REGISTRATIONGROUPSNOTE',
+				'Upon registration, if the "Groups" field is disabled on the "Fields" tab, ' .
+				'users will be placed in these groups.'
+			) . '</p>'),
+			new CheckboxSetField(
+				'RegistrationGroups', '', DataObject::get('Group')->map())
 		));
 
 		// Public profile
@@ -501,6 +511,10 @@ class MemberProfilePage_Controller extends Page_Controller {
 				}
 			}
 
+			if( array_key_exists('BackURL', $data) && !empty($data['BackURL']) ) {
+				return $this->redirect(urldecode($data['BackURL']));				
+			}
+			
 			return $this->redirect($this->Link('afterregistration'));
 		} else {
 			return $this->redirectBack();
@@ -649,20 +663,28 @@ class MemberProfilePage_Controller extends Page_Controller {
 			if ($givenIds) {
 				foreach ($givenIds as $givenId) {
 					if (isset($allowedIds[$givenId])) {
-						$groupIds[] = $givenId;
+						$groupIds[$givenId] = $givenId;
 					}
 				}
 			}
 			$form->Fields()->removeByName('Groups');
 		}
+		elseif( !$member ) {
+			/**
+			 * We don't have a group field and we don't have a member, so they must be registering so
+			 * use the RegistrationGroups as our group ids.
+			 * @author Alex Hayes <alex.hayes@dimension27.com>
+			 */
+			$groupIds = $this->RegistrationGroups()->map('ID', 'ID');
+		}
 
 		foreach ($this->Groups()->column('ID') as $mustId) {
-			$groupIds[] = $mustId;
+			$groupIds[$mustId] = $mustId;
 		}
 
 		foreach ($existingIds as $existingId) {
 			if (!in_array($existingId, $groupIds)) {
-				$groupIds[] = $existingId;
+				$groupIds[$existingId] = $existingId;
 			}
 		}
 
@@ -793,6 +815,13 @@ class MemberProfilePage_Controller extends Page_Controller {
 				'LogInHeader', _t('MemberProfiles.LOGIN_HEADER', 'Log In')
 			));
 
+			if( array_key_exists('BackURL', $_REQUEST) ) {
+				$BackURL = $_REQUEST['BackURL'];
+				$fields->push(new HiddenField('BackURL', 'BackURL', urlencode($BackURL)));
+			} else {
+				$BackURL = $this->Link();
+			}
+			
 			$fields->push(new LiteralField (
 				'LogInNote',
 				'<p>' . sprintf (
@@ -800,7 +829,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 						'MemberProfiles.LOGIN',
 						'If you already have an account you can <a href="%s">log in here</a>.'
 					),
-					Security::Link('login') . '?BackURL=' . $this->Link()
+					Security::Link('login') . '?BackURL=' . urlencode($BackURL)
 				) . '</p>'
 			));
 
