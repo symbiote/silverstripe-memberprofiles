@@ -36,6 +36,10 @@ class MemberProfileField extends DataObject {
 		'Orderable'
 	);
 
+	public static $alwaysRequired = array(
+		'Password' => 'Password'
+	);
+
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
 	 * getMemberFormFields 20 - 30 times per request via getDefaultTitle.
@@ -168,10 +172,8 @@ class MemberProfileField extends DataObject {
 	 * @return bool
 	 */
 	public function isAlwaysRequired() {
-		return in_array (
-			$this->MemberField,
-			array(Member::get_unique_identifier_field(), 'Password')
-		);
+		return $this->MemberField == Member::get_unique_identifier_field() ||
+				in_array($this->MemberField, self::$alwaysRequired);
 	}
 
 	/**
