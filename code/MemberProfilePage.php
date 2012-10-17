@@ -338,6 +338,13 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		parent::onAfterWrite();
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function CanAddMembers() {
+		return $this->AllowAdding && singleton('Member')->canCreate();
+	}
+
 }
 
 /**
@@ -608,12 +615,6 @@ class MemberProfilePage_Controller extends Page_Controller {
 		);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function CanAddMembers() {
-		return $this->AllowAdding && singleton('Member')->canCreate();
-	}
 
 	/**
 	 * Gets the list of groups that can be set after the submission of a particular form
