@@ -83,13 +83,13 @@ class MemberConfirmationEmail extends Email {
 	public static function get_parsed_string($string, $member, $page) {
 		$variables = array (
 			'$SiteName'       => SiteConfig::current_site_config()->Title,
-			'$LoginLink'      => Director::absoluteURL(Security::Link('login')),
+			'$LoginLink'      => Director::absoluteURL(singleton('Security')->Link('login')),
 			'$ConfirmLink'    => Director::absoluteURL(Controller::join_links (
 				$page->Link('confirm'),
 				$member->ID,
 				"?key={$member->ValidationKey}"
 			)),
-			'$LostPasswordLink' => Director::absoluteURL(Security::Link('lostpassword')),
+			'$LostPasswordLink' => Director::absoluteURL(singleton('Security')->Link('lostpassword')),
 			'$Member.Created'   => $member->obj('Created')->Nice()
 		);
 
