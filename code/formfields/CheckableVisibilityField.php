@@ -85,6 +85,17 @@ class CheckableVisibilityField extends FormField {
 		return $this->child->dataValue();
 	}
 
+	public function setForm($form) {
+		$this->child->setForm($form);
+		$this->checkbox->setForm($form);
+
+		if($this->child instanceof FileField) {
+			$form->setEncType(Form::ENC_TYPE_MULTIPART);
+		}
+
+		return parent::setForm($form);
+	}
+
 	public function Field($properties = array()) {
 		return $this->child->Field() . ' ' . $this->checkbox->Field();
 	}
