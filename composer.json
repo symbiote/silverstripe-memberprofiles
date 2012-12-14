@@ -1,0 +1,17 @@
+{
+	"name": "silverstripe/memberprofiles",
+	"description": "Member registration and profile management",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "member", "profile", "registration"],
+	"license": "BSD-3-Clause",
+	"authors": [
+		{
+			"name": "Andrew Short",
+			"email": "andrewjshort@gmail.com"
+		}
+	],
+	"require": {
+		"silverstripe/framework": "3.*",
+		"silverstripe/cms": "3.*"
+	}
+}
