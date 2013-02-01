@@ -159,6 +159,12 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'Required' => function($val, $obj) { return $obj->dbObject('Required')->Nice(); }
 		));
 
+		if(class_exists('GridFieldOrderableRows')) {
+			$grid->addComponent(new GridFieldOrderableRows('Sort'));
+		} elseif(class_exists('GridFieldSortableRows')) {
+			$grid->addComponent(new GridFieldSortableRows('Sort'));
+		}
+
 		if(!$this->AllowProfileViewing) {
 			$disabledNote = new LiteralField('PublisProfileDisabledNote', sprintf(
 				'<p class="message notice">%s</p>', _t(

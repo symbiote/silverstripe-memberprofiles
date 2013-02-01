@@ -13,5 +13,8 @@
 	"require": {
 		"silverstripe/framework": "3.*",
 		"silverstripe/cms": "3.*"
+	},
+	"suggest": {
+		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
 	}
 }

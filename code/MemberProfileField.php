@@ -16,7 +16,8 @@ class MemberProfileField extends DataObject {
 		'Note'                    => 'Varchar(255)',
 		'CustomError'             => 'Varchar(255)',
 		'Unique'                  => 'Boolean',
-		'Required'                => 'Boolean'
+		'Required'                => 'Boolean',
+		'Sort'                    => 'Int'
 	);
 
 	public static $has_one = array (
@@ -32,9 +33,7 @@ class MemberProfileField extends DataObject {
 		'Required'               => 'Required'
 	);
 
-	public static $extensions = array(
-		// 'Orderable'
-	);
+	public static $default_sort = 'Sort';
 
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
@@ -132,6 +131,15 @@ class MemberProfileField extends DataObject {
 
 		return $fields;
 	}
+
+	protected function onBeforeWrite() {
+		parent::onBeforeWrite();
+
+		if(!$this->Sort) {
+			$this->Sort = MemberProfileField::get()->max('Sort') + 1;
+		}
+	}
+
 
 	/**
 	 * @uses   MemberProfileField::getDefaultTitle
