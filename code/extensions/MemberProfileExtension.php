@@ -84,22 +84,27 @@ class MemberProfileExtension extends DataExtension {
 	}
 
 	public function updateCMSFields(FieldList $fields) {
-		$mainFields = $fields->fieldByName("Root")->fieldByName("Main")->Children;
-
 		$fields->removeByName('ValidationKey');
 		$fields->removeByName('NeedsValidation');
 		$fields->removeByName('NeedsApproval');
 		$fields->removeByName('ProfilePageID');
 		$fields->removeByName('PublicFieldsRaw');
 
-		if ($this->owner->NeedsApproval) {
+		// Remove member profile fields, as they may have been added by this method being called
+		// multiple times.
+		$fields->removeByName('ApprovalHeader');
+		$fields->removeByName('ApprovalNote');
+		$fields->removeByName('ConfirmationHeader');
+		$fields->removeByName('ConfirmationNote');
+
+		if($this->owner->NeedsApproval) {
 			$note = _t(
 				'MemberProfiles.NOLOGINUNTILAPPROVED',
 				'This user has not yet been approved. They cannot log in until their account is approved.'
 			);
 
-			$mainFields->merge(array(
-				new HeaderField('ApprovalHheader', _t('MemberProfiles.REGAPPROVAL', 'Registration Approval')),
+			$fields->addFieldsToTab('Root.Main', array(
+				new HeaderField('ApprovalHeader', _t('MemberProfiles.REGAPPROVAL', 'Registration Approval')),
 				new LiteralField('ApprovalNote', "<p>$note</p>"),
 				new DropdownField('NeedsApproval', '', array(
 					true  => _t('MemberProfiles.DONOTCHANGE', 'Do not change'),
@@ -108,8 +113,8 @@ class MemberProfileExtension extends DataExtension {
 			));
 		}
 
-		if($this->owner->NeedsValidation) $mainFields->merge(array(
-			new HeaderField(_t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
+		if($this->owner->NeedsValidation) $fields->addFieldsToTab('Root.Main', array(
+			new HeaderField('ConfirmationHeader', _t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')),
 			new LiteralField('ConfirmationNote', '<p>' . _t (
 				'MemberProfiles.NOLOGINTILLCONFIRMED',
 				'The member cannot log in until their account is confirmed.'
