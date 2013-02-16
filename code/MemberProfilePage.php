@@ -111,14 +111,15 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root', new TabSet('Profile'));
-		$fields->addFieldToTab('Root', new Tab('ContentBlocks'));
-		$fields->addFieldToTab('Root', new Tab('Email'));
+		$fields->addFieldToTab('Root', new TabSet('Profile', _t('MemberProfiles.PROFILE', 'Profile')));
+		$fields->addFieldToTab('Root', new Tab('ContentBlocks', _t('MemberProfiles.CONTENTBLOCKS', 'Content Blocks')));
+		$fields->addFieldToTab('Root', new Tab('Email', _t('MemberProfiles.Email', 'Email')));
 		$fields->fieldByName('Root.Main')->setTitle(_t('MemberProfiles.MAIN', 'Main'));
 
 		$fields->addFieldsToTab('Root.Profile', array(
 			new Tab(
-				'Fields',
+                		'Fields',
+				_t('MemberProfiles.FIELDS', 'Fields'),
 				new GridField(
 					'Fields',
 					_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields'),
@@ -130,6 +131,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			new Tab(
 				'Groups',
+                		_t('MemberProfiles.GROUPS', 'Groups'),
 				$groups = new TreeMultiselectField(
 					'Groups',
 					_t('MemberProfiles.GROUPS', 'Groups'),
@@ -143,6 +145,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			new Tab(
 				'PublicProfile',
+                		_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'),
 				new GridField(
 					'Sections',
 					_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections'),
@@ -185,7 +188,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		));
 
 		$selectable->setDescription(_t(
-			'MemberProfiles.GROUPSNOTE',
+			'MemberProfiles.SELECTABLENOTE',
 			'Users can choose to belong to these groups, if the  "Groups" field ' .
 			'is enabled in the "Fields" tab.'
 		));
@@ -195,7 +198,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		foreach(array('Profile', 'Registration', 'AfterRegistration') as $type) {
 			$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
 				"{$type}Toggle",
-				FormField::name_to_label($type),
+				 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
 				array(
 					new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
 					$content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
@@ -209,22 +212,22 @@ class MemberProfilePage extends Page implements PermissionProvider {
 				'EmailType',
 				_t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
 				array(
-					'Validation'   => 'Require email validation',
-					'Confirmation' => 'Send a confirmation email',
-					'None'         => 'None'
+					'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Require email validation'),
+					'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email'),
+					'None'         => _t('MemberProfiles.NONE', 'None')
 				)
 			),
-			new ToggleCompositeField('EmailContentToggle', 'Email Content', array(
-				new TextField('EmailSubject', 'Email subject'),
-				new TextField('EmailFrom', 'Email from'),
-				new TextareaField('EmailTemplate', 'Email template'),
+			new ToggleCompositeField('EmailContentToggle',  _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
+				new TextField('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
+				new TextField('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
+				new TextareaField('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
 				new LiteralField('TemplateNote', sprintf(
 					'<div class="field">%s</div>', MemberConfirmationEmail::TEMPLATE_NOTE
 				))
 			)),
-			new ToggleCompositeField('ConfirmationContentToggle', 'Confirmation Content', array(
-				new TextField('ConfirmationTitle', 'Title'),
-				$confContent  = new HtmlEditorField('ConfirmationContent', 'Content')
+			new ToggleCompositeField('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), array(
+				new TextField('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
+				$confContent  = new HtmlEditorField('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
 			))
 		));
 		$confContent->setRows(15);
