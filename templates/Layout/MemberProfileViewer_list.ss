@@ -32,7 +32,7 @@
 		<% if Members.MoreThanOnePage %>
 			<div id="MemberListPagination" class="pagination">
 				<% if Members.NotFirstPage %>
-					<a class="prev" href="$Members.PrevLink"><% _t('PREV', 'Prev') %></a>
+					<a class="prev" href="$Members.PrevLink"><%t PREV 'Prev' %></a>
 				<% end_if %>
 				<span class="pageLinks">
 					<% control Members.PaginationSummary(4) %>
@@ -48,7 +48,7 @@
 					<% end_control %>
 				</span>
 				<% if Members.NotLastPage %>
-					<a class="next" href="$Members.NextLink"><% _t('NEXT', 'Next') %></a>
+					<a class="next" href="$Members.NextLink"><%t NEXT 'Next' %></a>
 				<% end_if %>
 			</div>
 		<% end_if %>
