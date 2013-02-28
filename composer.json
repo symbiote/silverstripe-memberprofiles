@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/memberprofiles",
+	"name": "ajshort/silverstripe-memberprofiles",
 	"description": "Member registration and profile management",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "member", "profile", "registration"],
@@ -16,5 +16,15 @@
 	},
 	"suggest": {
 		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
+	},
+	"replace": {
+		"silverstripe/memberprofiles": "*"
+	},
+	"extra": {
+		"screenshots": [
+			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
+			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/cms-profile-fields.png",
+			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/member-list.png"
+		]
 	}
 }
