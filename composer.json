@@ -21,6 +21,7 @@
 		"silverstripe/memberprofiles": "*"
 	},
 	"extra": {
+		"installer-name": "memberprofiles",
 		"screenshots": [
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/cms-profile-fields.png",
