@@ -48,7 +48,7 @@ class MemberApprovalController extends Page_Controller {
 		$member->write();
 
 		$title   = _t('MemberProfiles.MEMBERAPPROVED', 'Member Approved');
-		$content = _t('MemberProfiles.MEMBERAPPROVED', 'The member "%s" has been approved and can now log in.');
+		$content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
 		$content = sprintf($content, Convert::raw2xml("$member->Name <$member->Email>"));
 
 		return $this->render(array(
