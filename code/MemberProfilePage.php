@@ -25,6 +25,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowProfileEditing'      => 'Boolean',
 		'AllowAdding'              => 'Boolean',
 		'RegistrationRedirect'     => 'Boolean',
+		'ProfileEditRedirect'      => 'Boolean',
 		'RequireApproval'          => 'Boolean',
 		'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
 		'EmailFrom'                => 'Varchar(255)',
@@ -36,6 +37,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	public static $has_one = array(
 		'PostRegistrationTarget' => 'SiteTree',
+		'PostProfileEditTarget'  => 'SiteTree',
 	);
 
 	public static $has_many = array (
@@ -271,6 +273,15 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			new TreeDropdownField(
 				'PostRegistrationTargetID',
+				_t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
+				'SiteTree'
+			),
+			new CheckboxField(
+				'ProfileEditRedirect',
+				_t('MemberProfiles.REDIRECTAFTERPROFILEEDIT', 'Redirect after profile edit?')
+			),
+			new TreeDropdownField(
+				'PostProfileEditTargetID',
 				_t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
 				'SiteTree'
 			)
@@ -565,6 +576,13 @@ class MemberProfilePage_Controller extends Page_Controller {
 			_t('MemberProfiles.PROFILEUPDATED', 'Your profile has been updated.'),
 			'good'
 		);
+                
+		if ($this->ProfileEditRedirect) {
+			if ($this->PostProfileEditTargetID) {
+				$this->redirect($this->PostProfileEditTarget()->Link());
+				return;
+			}
+		}
 		return $this->redirectBack();
 	}
 
