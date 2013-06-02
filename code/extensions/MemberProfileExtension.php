@@ -7,14 +7,14 @@
  */
 class MemberProfileExtension extends DataExtension {
 
-	public static $db = array(
+	private static $db = array(
 		'ValidationKey'   => 'Varchar(40)',
 		'NeedsValidation' => 'Boolean',
 		'NeedsApproval'   => 'Boolean',
 		'PublicFieldsRaw' => 'Text'
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 	'ProfilePage' => 'MemberProfilePage'
 	);
 

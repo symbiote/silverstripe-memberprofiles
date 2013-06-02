@@ -7,7 +7,7 @@
  */
 class MemberProfileViewer extends Page_Controller {
 
-	public static $url_handlers = array(
+	private static $url_handlers = array(
 		''           => 'handleList',
 		'$MemberID!' => 'handleView'
 	);
