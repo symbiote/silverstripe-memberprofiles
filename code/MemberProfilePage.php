@@ -693,12 +693,11 @@ class MemberProfilePage_Controller extends Page_Controller {
 			));
 		}
 		
-		if(!$member->NeedsValidation)
-		{
+		if(!$member->NeedsValidation) {
 			// Already approved
 			return array(
 				'Title' => _t('MemberProfiles.ALREADYAPPROVED', 'Already Approved'),
-				'Content' => _t('MemberProfiles.ALREADYAPPROVEDNOTE', '<p>This member has already been approved</p>'));
+				'Content' => '<p>' . _t('MemberProfiles.ALREADYAPPROVEDNOTE', 'This member has already been approved') . '</p>');
 		}
 
 		if($member->ValidationKey != $key || !$member->NeedsValidation) {
