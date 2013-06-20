@@ -677,19 +677,28 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return array
 	 */
 	public function confirm($request) {
-		if(Member::currentUser()) {
-			return Security::permissionFailure ($this, _t (
-				'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
-				'You cannot confirm account while you are logged in.'
-			));
-		}
-
 		if (
 			$this->EmailType != 'Validation'
 			|| (!$id = $request->param('ID')) || (!$key = $request->getVar('key')) || !is_numeric($id)
 			|| !$member = DataObject::get_by_id('Member', $id)
 		) {
 			$this->httpError(404);
+		}
+		
+		$currMember = Member::currentUser();
+		if($currMember && $currMember->ID != $member->ID) {
+			return Security::permissionFailure ($this, _t (
+				'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
+				'You cannot confirm account while you are logged in.'
+			));
+		}
+		
+		if(!$member->NeedsValidation)
+		{
+			// Already approved
+			return array(
+				'Title' => _t('MemberProfiles.ALREADYAPPROVED', 'Already Approved'),
+				'Content' => _t('MemberProfiles.ALREADYAPPROVEDNOTE', '<p>This member has already been approved</p>'));
 		}
 
 		if($member->ValidationKey != $key || !$member->NeedsValidation) {
