@@ -129,6 +129,8 @@ class MemberProfileField extends DataObject {
 			$fields->makeFieldReadonly('Required');
 		}
 
+		$this->extend('updateCMSFields', $fields);
+
 		return $fields;
 	}
 
