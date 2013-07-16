@@ -481,7 +481,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if(class_exists('SpamProtectorManager')) {
 			SpamProtectorManager::update_form($form);
 		}
-
+		$this->extend('updateRegisterForm', $form);
 		return $form;
 	}
 
@@ -532,7 +532,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return Form
 	 */
 	public function ProfileForm() {
-		return new Form (
+		$form = new Form (
 			$this,
 			'ProfileForm',
 			$this->getProfileFields('Profile'),
@@ -541,6 +541,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 			),
 			new MemberProfileValidator($this->Fields(), Member::currentUser())
 		);
+		$this->extend('updateProfileForm', $form);
+		return $form;
 	}
 
 	/**
