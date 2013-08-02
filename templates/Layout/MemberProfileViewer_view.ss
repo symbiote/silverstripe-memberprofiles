@@ -1,4 +1,4 @@
-<% require css(memberprofiles/css/MemberProfileViewer.css) %>
+<% require themedCSS('MemberProfileViewer', 'memberprofiles') %>
 
 <div class="content-container typography>">
 	<h1>$Title</h1>
