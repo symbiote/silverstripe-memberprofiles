@@ -46,7 +46,7 @@ class MemberProfileValidator extends RequiredFields {
 			);
 
 			if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID)) {
-				$fieldInstance = $this->form->dataFieldByName($field);
+				$fieldInstance = $this->form->Fields()->dataFieldByName($field);
 
 				if($fieldInstance->getCustomValidationMessage()) {
 					$message = $fieldInstance->getCustomValidationMessage();
