@@ -7,7 +7,10 @@ Maintainer Contacts
 
 Requirements
 ------------
-* SilverStripe 3.0 (Use the 0.5 branch for 2.4 support)
+
+* SilverStripe 3.1 - [master branch](https://github.com/ajshort/silverstripe-memberprofiles)
+* SilverStripe 3.0 - [1.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/1.0)
+* SilverStripe 2.4 - [0.5 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/0.5)
 
 Installation Instructions
 -------------------------
