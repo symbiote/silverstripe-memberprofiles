@@ -7,19 +7,19 @@
  */
 class MemberProfileSection extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'CustomTitle' => 'Varchar(100)'
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'Parent' => 'MemberProfilePage'
 	);
 
-	public static $extensions = array(
+	private static $extensions = array(
 		// 'Orderable'
 	);
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'DefaultTitle' => 'Title',
 		'CustomTitle'  => 'Custom Title'
 	);

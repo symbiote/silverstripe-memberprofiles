@@ -4,11 +4,11 @@
  */
 class MemberApprovalController extends Page_Controller {
 
-	public static $url_handlers = array(
+	private static $url_handlers = array(
 		'$ID' => 'index'
 	);
 
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'index'
 	);
 
