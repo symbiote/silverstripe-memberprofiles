@@ -13,7 +13,7 @@
  */
 class MemberProfilePage extends Page implements PermissionProvider {
 
-	public static $db = array (
+	private static $db = array (
 		'ProfileTitle'             => 'Varchar(255)',
 		'RegistrationTitle'        => 'Varchar(255)',
 		'AfterRegistrationTitle'   => 'Varchar(255)',
@@ -34,22 +34,22 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'ConfirmationContent'      => 'HTMLText'
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'PostRegistrationTarget' => 'SiteTree',
 	);
 
-	public static $has_many = array (
+	private static $has_many = array (
 		'Fields'   => 'MemberProfileField',
 		'Sections' => 'MemberProfileSection'
 	);
 
-	public static $many_many = array (
+	private static $many_many = array (
 		'Groups'           => 'Group',
 		'SelectableGroups' => 'Group',
 		'ApprovalGroups'   => 'Group'
 	);
 
-	public static $defaults = array (
+	private static $defaults = array (
 		'ProfileTitle'             => 'Edit Profile',
 		'RegistrationTitle'        => 'Register / Log In',
 		'AfterRegistrationTitle'   => 'Registration Successful',
@@ -85,9 +85,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'ProfileVisibility'      => 'Edit')
 	);
 
-	public static $description = '';
+	private static $description = '';
 
-	public static $icon = 'memberprofiles/images/memberprofilepage.png';
+	private static $icon = 'memberprofiles/images/memberprofilepage.png';
 
 	/**
 	 * If profile editing is disabled, but the current user can add members,
@@ -361,7 +361,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
  */
 class MemberProfilePage_Controller extends Page_Controller {
 
-	public static $allowed_actions = array (
+	private static $allowed_actions = array (
 		'index',
 		'RegisterForm',
 		'afterregistration',

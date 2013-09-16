@@ -4,7 +4,7 @@
  */
 class MemberProfileField extends DataObject {
 
-	public static $db = array (
+	private static $db = array (
 		'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
 		'RegistrationVisibility'  => 'Enum("Edit, Readonly, Hidden", "Hidden")',
 		'MemberListVisible'       => 'Boolean',
@@ -20,11 +20,11 @@ class MemberProfileField extends DataObject {
 		'Sort'                    => 'Int'
 	);
 
-	public static $has_one = array (
+	private static $has_one = array (
 		'ProfilePage' => 'MemberProfilePage'
 	);
 
-	public static $summary_fields = array (
+	private static $summary_fields = array (
 		'DefaultTitle'           => 'Field',
 		'ProfileVisibility'      => 'Profile Visibility',
 		'RegistrationVisibility' => 'Registration Visibility',
@@ -33,7 +33,7 @@ class MemberProfileField extends DataObject {
 		'Required'               => 'Required'
 	);
 
-	public static $default_sort = 'Sort';
+	private static $default_sort = 'Sort';
 
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
@@ -184,7 +184,7 @@ class MemberProfileField extends DataObject {
 	public function isAlwaysRequired() {
 		return in_array (
 			$this->MemberField,
-			array(Member::get_unique_identifier_field(), 'Password')
+			array(Config::inst()->get('Member', 'unique_identifier_field'), 'Password')
 		);
 	}
 
@@ -192,7 +192,7 @@ class MemberProfileField extends DataObject {
 	 * @return bool
 	 */
 	public function isAlwaysUnique() {
-		return $this->MemberField == Member::get_unique_identifier_field();
+		return $this->MemberField == Config::inst()->get('Member', 'unique_identifier_field');
 	}
 
 	/**
