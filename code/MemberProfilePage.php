@@ -195,16 +195,27 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 		$fields->removeByName('Content', true);
 
-		foreach(array('Profile', 'Registration', 'AfterRegistration') as $type) {
-			$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
-				"{$type}Toggle",
-				 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
-				array(
-					new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
-					$content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
-				)
-			));
-			$content->setRows(15);
+		if($this->AllowRegistration){
+			$contentFields[] = 'Registration';
+			$contentFields[] = 'AfterRegistration';
+		}
+
+		if($this->AllowProfileEditing){
+			$contentFields[] = 'Profile';
+		}
+
+		if (isset($contentFields)) {	
+			foreach($contentFields as $type) {
+				$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
+					"{$type}Toggle",
+					 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
+					array(
+						new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
+						$content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
+					)
+				));
+				$content->setRows(15);
+			}
 		}
 
 		$fields->addFieldsToTab('Root.Email', array(
