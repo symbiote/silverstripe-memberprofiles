@@ -195,7 +195,17 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 		$fields->removeByName('Content', true);
 
-		foreach(array('Profile', 'Registration', 'AfterRegistration') as $type) {
+		$contentFields = array();
+		if($this->AllowRegistration){
+			$contentFields[] = 'Registration';
+			$contentFields[] = 'AfterRegistration';
+		}
+
+		if($this->AllowProfileEditing){
+			$contentFields[] = 'Profile';
+		}
+
+		foreach($contentFields as $type) {
 			$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
 				"{$type}Toggle",
 				 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
@@ -206,6 +216,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			));
 			$content->setRows(15);
 		}
+		
 
 		$fields->addFieldsToTab('Root.Email', array(
 			new OptionsetField(
