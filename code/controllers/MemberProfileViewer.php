@@ -7,7 +7,9 @@
  */
 class MemberProfileViewer extends Page_Controller {
 	
-	private static $allowed_actions = array ('handleList', 'handleShow'
+	private static $allowed_actions = array (
+		'handleList', 
+		'handleShow'
 	);
 
 	private static $url_handlers = array(
