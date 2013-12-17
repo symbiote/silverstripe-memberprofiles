@@ -490,7 +490,20 @@ class MemberProfilePage_Controller extends Page_Controller {
 		);
 
 		if(class_exists('SpamProtectorManager')) {
-			SpamProtectorManager::update_form($form);
+			if (class_exists('MollomSpamProtector')) {
+				
+				// form => mollom fields mapping
+				$fieldMap = array();
+				foreach($this->getProfileFields('Registration') as $field) {
+					$temp = array($field->name => 'member_'.strtolower($field->name));
+					$fieldMap = array_merge($fieldMap, $temp);
+				}
+				
+				$protector = SpamProtectorManager::update_form($form, null, $fieldMap);
+			}
+			else {
+				SpamProtectorManager::update_form($form);
+			}
 		}
 		$this->extend('updateRegisterForm', $form);
 		return $form;
