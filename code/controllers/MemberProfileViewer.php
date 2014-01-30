@@ -12,6 +12,11 @@ class MemberProfileViewer extends Page_Controller {
 		'$MemberID!' => 'handleView'
 	);
 
+	private static $allowed_actions = array(
+		'handleList',
+		'handleView'
+	);
+
 	protected $parent, $name;
 
 	/**
