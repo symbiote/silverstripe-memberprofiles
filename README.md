@@ -65,7 +65,28 @@ registration. This requires the "RegistrationRedirect" property to be set
 on the After Registration tab. 
 
 If you like, you can manually set a redirection target by setting
-Session::set('MemberProfile.REDIRECT') to a URL value. 
+Session::set('MemberProfile.REDIRECT') to a URL value.
+
+Examples
+--------
+
+### Custom Fields
+
+This example shows how to add a custom phone number field to the `Member` object which is available on the member profile page. You do this by using an extension to add the database field, and then hooking into `Member::updateMemberFormFields` to add the form field. The module then picks this form field up and makes it available in the CMS.
+
+```php
+class MemberExtension extends DataExtension {
+
+  private static $db = array(
+    'PhoneNumber' => 'Text'
+  );
+
+  public function updateMemberFormFields(FieldList $fields) {
+    $fields->push(new TextField('PhoneNumber', 'Phone number'));
+  }
+
+}
+```
 
 Known Issues
 ------------
