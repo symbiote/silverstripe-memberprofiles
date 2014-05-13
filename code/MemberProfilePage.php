@@ -501,6 +501,34 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
+			
+			//Send notification email to Approval Group
+			if(!$this->RequireApproval) {
+				$groups = $this->ApprovalGroups();
+				$emails = array();
+	
+				if ($groups) foreach ($groups as $group) {
+					foreach ($group->Members() as $_member) {
+						if ($member->Email) $emails[] = $_member->Email;
+					}
+				}
+	
+				if ($emails) {
+					$email   = new Email();
+					$config  = SiteConfig::current_site_config();
+					
+					$email->setSubject("New Registration for $config->Title");
+					$email->setBcc(implode(',', array_unique($emails)));
+					$email->setTemplate('MemberRegistrationNotificationEmail');
+					$email->populateTemplate(array(
+						'SiteConfig'  => $config,
+						'Member'      => $member
+					));
+	
+					$email->send();
+				}
+			}
+			
 			if(!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
 				$member->logIn();
 			}
