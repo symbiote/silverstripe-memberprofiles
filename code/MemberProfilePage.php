@@ -772,7 +772,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 			if ($groups) foreach ($groups as $group) {
 				foreach ($group->Members() as $_member) {
-					if ($member->Email) $emails[] = $_member->Email;
+					if ($_member->Email) $emails[] = $_member->Email;
 				}
 			}
 
