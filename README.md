@@ -3,7 +3,7 @@ SilverStripe Member Profile Pages Module
 
 Maintainer Contacts
 -------------------
-*  Andrew Short (<andrewjshort@gmail.com>)
+*  Marcus Nyeholt (<marcus@gmail.com>)
 
 Requirements
 ------------
