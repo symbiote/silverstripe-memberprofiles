@@ -18,7 +18,8 @@
 		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
 	},
 	"replace": {
-		"silverstripe/memberprofiles": "*"
+		"silverstripe/memberprofiles": "self.version",
+		"ajshort/silverstripe-memberprofiles": "self.version"
 	},
 	"extra": {
 		"installer-name": "memberprofiles",
