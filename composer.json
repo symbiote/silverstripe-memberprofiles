@@ -1,5 +1,5 @@
 {
-	"name": "heffaklump90/memberprofiles",
+	"name": "silverstripe-australia/memberprofiles",
 	"description": "Member registration and profile management",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "member", "profile", "registration"],
