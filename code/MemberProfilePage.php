@@ -471,7 +471,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this->httpError(404);
 		}
 
-		return new MemberProfileViewer($this, 'show');
+		return MemberProfileViewer::create($this, 'show');
 	}
 
 	/**
