@@ -744,6 +744,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$member->ValidationKey   = null;
 		$member->write();
 
+		$this->extend('onConfirm', $member);
+
 		$member->logIn();
 
 		return array (
