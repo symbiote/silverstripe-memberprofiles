@@ -196,12 +196,12 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		$fields->removeByName('Content', true);
 
 		$contentFields = array();
-		if($this->AllowRegistration){
+		if($this->AllowRegistration) {
 			$contentFields[] = 'Registration';
 			$contentFields[] = 'AfterRegistration';
 		}
 
-		if($this->AllowProfileEditing){
+		if($this->AllowProfileEditing) {
 			$contentFields[] = 'Profile';
 		}
 
