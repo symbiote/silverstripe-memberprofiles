@@ -158,7 +158,7 @@ class MemberProfileField extends DataObject {
 	/**
 	 * Get the default title for this field from the form field.
 	 *
-	 * @param  bool $force Force a non-empty title to be returned.
+	 * @param bool $force Force a non-empty title to be returned.
 	 * @return string
 	 */
 	public function getDefaultTitle($force = true) {

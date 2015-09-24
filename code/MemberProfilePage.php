@@ -704,7 +704,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * Allows the user to confirm their account by clicking on the validation link in
 	 * the confirmation email.
 	 *
-	 * @param  HTTPRequest $request
+	 * @param HTTPRequest $request
 	 * @return array
 	 */
 	public function confirm($request) {
@@ -805,7 +805,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
-	 * @param  string $context
+	 * @param string $context
 	 * @return FieldSet
 	 */
 	protected function getProfileFields($context) {
