@@ -76,8 +76,8 @@ class MemberConfirmationEmail extends Email {
 	/**
 	 * Replaces variables inside an email template according to {@link TEMPLATE_NOTE}.
 	 *
-	 * @param  string $string
-	 * @param  Member $member
+	 * @param string $string
+	 * @param Member $member
 	 * @return string
 	 */
 	public static function get_parsed_string($string, $member, $page) {
