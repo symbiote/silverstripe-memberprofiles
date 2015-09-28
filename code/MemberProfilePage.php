@@ -63,26 +63,32 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	/**
 	 * An array of default settings for some standard member fields.
+	 *
+	 * @var array
 	 */
 	public static $profile_field_defaults = array(
 		'Email' => array(
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit',
-			'PublicVisibility'       => 'MemberChoice'),
+			'PublicVisibility'       => 'MemberChoice'
+		),
 		'FirstName' => array(
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit',
 			'MemberListVisible'      => true,
-			'PublicVisibility'       => 'Display'),
+			'PublicVisibility'       => 'Display'
+		),
 		'Surname' => array(
 			'RegistrationVisibility'  => 'Edit',
 			'ProfileVisibility'       => 'Edit',
 			'MemberListVisible'       => true,
 			'PublicVisibility'        => 'MemberChoice',
-			'PublicVisibilityDefault' => true),
+			'PublicVisibilityDefault' => true
+		),
 		'Password' => array(
 			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit')
+			'ProfileVisibility'      => 'Edit'
+		)
 	);
 
 	private static $description = '';
@@ -97,7 +103,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	 */
 	public function Link($action = null) {
 		if(
-			   !$action
+			!$action
 			&& Member::currentUserID()
 			&& !$this->AllowProfileEditing
 			&& $this->CanAddMembers()
@@ -118,7 +124,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 		$fields->addFieldsToTab('Root.Profile', array(
 			new Tab(
-                		'Fields',
+				'Fields',
 				_t('MemberProfiles.FIELDS', 'Fields'),
 				new GridField(
 					'Fields',
@@ -131,7 +137,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			new Tab(
 				'Groups',
-                		_t('MemberProfiles.GROUPS', 'Groups'),
+				_t('MemberProfiles.GROUPS', 'Groups'),
 				$groups = new TreeMultiselectField(
 					'Groups',
 					_t('MemberProfiles.GROUPS', 'Groups'),
@@ -145,7 +151,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			),
 			new Tab(
 				'PublicProfile',
-                		_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'),
+				_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'),
 				new GridField(
 					'Sections',
 					_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections'),
@@ -364,7 +370,6 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	public function CanAddMembers() {
 		return $this->AllowAdding && singleton('Member')->canCreate();
 	}
-
 }
 
 /**
@@ -827,12 +832,15 @@ class MemberProfilePage_Controller extends Page_Controller {
 		}
 
 		if ($this->AllowProfileViewing
-		    && $profileFields->find('PublicVisibility', 'MemberChoice')
+			&& $profileFields->find('PublicVisibility', 'MemberChoice')
 		) {
-			$fields->push(new LiteralField('VisibilityNote', '<p>' . _t(
-				'MemberProfiles.CHECKVISNOTE',
-				'Check fields below to make them visible on your public ' .
-				'profile.') . '</p>'));
+			$fields->push(new LiteralField(
+				'VisibilityNote',
+				'<p>' . _t(
+					'MemberProfiles.CHECKVISNOTE',
+					'Check fields below to make them visible on your public profile.'
+				) . '</p>'
+			));
 		}
 
 		foreach($profileFields as $profileField) {
@@ -885,5 +893,4 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$this->extend('updateProfileFields', $fields);
 		return $fields;
 	}
-
 }
