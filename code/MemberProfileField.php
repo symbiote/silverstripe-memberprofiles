@@ -60,7 +60,7 @@ class MemberProfileField extends DataObject {
 		$fields->removeByName('ProfilePageID');
 
 		$fields->fieldByName('Root.Main')->getChildren()->changeFieldOrder(array(
-			'CustomTitle',$
+			'CustomTitle',
 			'DefaultValue',
 			'Note',
 			'ProfileVisibility',
