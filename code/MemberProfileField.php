@@ -58,6 +58,7 @@ class MemberProfileField extends DataObject {
 
 		$fields->removeByName('MemberField');
 		$fields->removeByName('ProfilePageID');
+		$fields->removeByName('Sort');
 
 		$fields->fieldByName('Root.Main')->getChildren()->changeFieldOrder(array(
 			'CustomTitle',
