@@ -93,7 +93,7 @@ class MemberProfileField extends DataObject {
 				_t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
 				$memberField->getSource()
 			));
-			$default->setHasEmptyDefault(true);
+			$default->setEmptyString(' ');
 		} elseif($memberField instanceof TextField) {
 			$fields->replaceField('DefaultValue', new TextField(
 				'DefaultValue', _t('MemberProfiles.DEFAULTVALUE', 'Default Value')
