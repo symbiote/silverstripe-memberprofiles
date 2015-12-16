@@ -803,7 +803,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 				$email->send();
 			}
 		} elseif($this->EmailType != 'None') {
-			$email = new MemberConfirmationEmail($this, $member);
+			$email = MemberConfirmationEmail::create($this, $member);
 			$email->send();
 		}
 
