@@ -22,6 +22,9 @@
 		"ajshort/silverstripe-memberprofiles": "self.version"
 	},
 	"extra": {
+		"branch-alias": {
+			"dev-master": "1.2.x-dev"
+		},
 		"installer-name": "memberprofiles",
 		"screenshots": [
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
