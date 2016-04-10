@@ -355,7 +355,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 	}
 
 	public function onAfterWrite() {
-		if ($this->isChanged('ID')) {
+		if ($this->isChanged('ID', 2)) {
 			$section = new MemberProfileFieldsSection();
 			$section->ParentID = $this->ID;
 			$section->write();
