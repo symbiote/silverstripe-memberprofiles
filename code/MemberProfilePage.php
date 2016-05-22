@@ -612,7 +612,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * @return Form
 	 */
 	public function AddForm() {
-		return new Form (
+		$form = new Form (
 			$this,
 			'AddForm',
 			$this->getProfileFields('Add'),
@@ -621,6 +621,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 			),
 			new MemberProfileValidator($this->Fields())
 		);
+		
+		$this->extend('updateAddForm', $form);
+		return $form;
 	}
 
 	/**
