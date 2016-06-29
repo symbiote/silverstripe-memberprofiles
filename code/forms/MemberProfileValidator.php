@@ -61,6 +61,22 @@ class MemberProfileValidator extends RequiredFields {
 				$this->validationError($field, $message, 'required');
 			}
 		}
+		
+		// Create a dummy member as this is required for custom password validators
+		if($data['Password'] !== "") {
+			if(is_null($member)) $member = Member::create();
+
+			if($validator = $member::password_validator()) {
+				$results = $validator->validate($data['Password'], $member);
+
+				if(!$results->valid()) {
+					$valid = false;
+					foreach($results->messageList() as $key => $value) {
+						$this->validationError('Password', $value, 'required');
+					}
+				}
+			}
+		}
 
 		return $valid && parent::php($data);
 	}
