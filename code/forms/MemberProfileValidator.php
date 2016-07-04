@@ -19,7 +19,11 @@ class MemberProfileValidator extends RequiredFields {
 		$this->member = $member;
 
 		foreach($this->fields as $field) {
-			if($field->Required) $this->addRequiredField($field->MemberField);
+			if($field->Required) {
+				if($field->ProfileVisibility !== 'Readonly' && Member::currentUser()) {
+					$this->addRequiredField($field->MemberField);
+				}
+			}
 			if($field->Unique)   $this->unique[] = $field->MemberField;
 		}
 
