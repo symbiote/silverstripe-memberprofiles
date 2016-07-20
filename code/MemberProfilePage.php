@@ -456,9 +456,14 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$form->loadDataFrom($member);
 
 		if($password = $form->Fields()->fieldByName('Password')) {
-			$password->setCanBeEmpty(false);
-			$password->setValue(null);
-			$password->setCanBeEmpty(true);
+			if ($password->hasMethod('setCanBeEmpty')) {
+				$password->setCanBeEmpty(false);
+				$password->setValue(null);
+				$password->setCanBeEmpty(true);
+			} else {
+				// If Password field is ReadonlyField or similar
+				$password->setValue(null);
+			}
 		}
 
 		return array (
