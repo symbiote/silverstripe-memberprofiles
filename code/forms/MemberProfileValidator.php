@@ -67,7 +67,7 @@ class MemberProfileValidator extends RequiredFields {
 		}
 		
 		// Create a dummy member as this is required for custom password validators
-		if($data['Password'] !== "") {
+		if(isset($data['Password']) && $data['Password'] !== "") {
 			if(is_null($member)) $member = Member::create();
 
 			if($validator = $member::password_validator()) {
