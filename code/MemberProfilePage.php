@@ -858,7 +858,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 			// handle the special case of the Groups control so that only allowed groups can be selected
 			if ($name == 'Groups') {
-				$availableGroups = $this->data()->SelectableGroups();
+				$availableGroups = $this->data()->SelectableGroups()->map('ID', 'Title');
 				$memberField->setSource($availableGroups);
 			}
 
