@@ -3,7 +3,7 @@ SilverStripe Member Profile Pages Module
 
 Maintainer Contacts
 -------------------
-*  Marcus Nyeholt (<marcus@gmail.com>)
+*  Marcus Nyeholt (<marcus@silverstripe.com.au>)
 
 Requirements
 ------------
