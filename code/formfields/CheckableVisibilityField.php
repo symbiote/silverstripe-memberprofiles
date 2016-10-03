@@ -60,8 +60,11 @@ class CheckableVisibilityField extends FormField {
 	public function saveInto(DataObjectInterface $record) {
 		$child = clone $this->child;
 		$child->setName($this->name);
-		$child->saveInto($record);
-
+        
+        if (!($this->child instanceof ReadonlyField)) {
+            $child->saveInto($record);
+        }
+		
 		$public = $record->getPublicFields();
 
 		if ($this->checkbox->dataValue()) {
