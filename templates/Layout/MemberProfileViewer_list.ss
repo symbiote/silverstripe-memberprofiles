@@ -1,4 +1,4 @@
-<% require css(memberprofiles/css/MemberProfileViewer.css) %>
+<% require themedCSS('MemberProfileViewer', 'memberprofiles') %>
 
 <div class="content-container typography">
 	<h1>$Title</h1>
@@ -39,11 +39,11 @@
 						<% if CurrentBool %>
 							<span class="current">$PageNum</span>
 						<% else %>
-								<% if PageNum %>
-									<a href="$Link">$PageNum</a>
-								<% else %>
-									&hellip;
-								<% end_if %>
+							<% if PageNum %>
+								<a href="$Link">$PageNum</a>
+							<% else %>
+								&hellip;
+							<% end_if %>
 						<% end_if %>
 					<% end_loop %>
 				</span>
