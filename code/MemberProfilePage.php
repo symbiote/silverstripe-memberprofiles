@@ -793,22 +793,24 @@ class MemberProfilePage_Controller extends Page_Controller {
 			}
 
 			if ($emails) {
-				$email   = new Email();
-				$config  = SiteConfig::current_site_config();
-				$approve = Controller::join_links(
-					Director::baseURL(), 'member-approval', $member->ID, '?token=' . $member->ValidationKey
-				);
-
-				$email->setSubject("Registration Approval Requested for $config->Title");
-				$email->setBcc(implode(',', array_unique($emails)));
-				$email->setTemplate('MemberRequiresApprovalEmail');
-				$email->populateTemplate(array(
-					'SiteConfig'  => $config,
-					'Member'      => $member,
-					'ApproveLink' => Director::absoluteURL($approve)
-				));
-
-				$email->send();
+				foreach(array_unique($emails) as $uniqueemail) {
+					$email   = new Email();
+					$config  = SiteConfig::current_site_config();
+					$approve = Controller::join_links(
+						Director::baseURL(), 'member-approval', $member->ID, '?token=' . $member->ValidationKey
+					);
+					
+					$email->setTo($uniqueemail);
+					$email->setSubject("Registration Approval Requested for $config->Title");
+					$email->setTemplate('MemberRequiresApprovalEmail');
+					$email->populateTemplate(array(
+						'SiteConfig'  => $config,
+						'Member'      => $member,
+						'ApproveLink' => Director::absoluteURL($approve)
+					));
+	
+					$email->send();
+				}
 			}
 		} elseif($this->EmailType != 'None') {
 			$email = MemberConfirmationEmail::create($this, $member);
