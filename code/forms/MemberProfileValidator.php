@@ -48,7 +48,7 @@ class MemberProfileValidator extends RequiredFields {
 			$isEmail = $field === 'Email';
 			$emailOK = !$isEmail;
 			if ($isEmail) {
-				$member = Member::get()->filter('Email', strtolower($data['Email']))->first();
+				$member = Member::get()->filter('Email:nocase', strtolower($data['Email']))->first();
 				$emailOK = !$member;
 			}
 			if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID) || !$emailOK) {
