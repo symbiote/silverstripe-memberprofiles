@@ -7,25 +7,25 @@
 		<table id="member-list">
 			<thead>
 				<tr>
-					<% control Members.First %>
-						<% control Fields %>
+					<% with Members.First %>
+						<% loop Fields %>
 							<% if Sortable %>
 								<th><a href="$Top.Link?sort=$Name">$Title</a></th>
 							<% else %>
 								<th>$Title</th>
 							<% end_if %>
-						<% end_control %>
-					<% end_control %>
+						<% end_loop %>
+					<% end_with %>
 				</tr>
 			</thead>
 			<tbody>
-				<% control Members %>
+				<% loop Members %>
 					<tr class="$EvenOdd">
-						<% control Fields %>
+						<% loop Fields %>
 							<td><a href="$Link">$Value</a></td>
-						<% end_control %>
+						<% end_loop %>
 					</tr>
-				<% end_control %>
+				<% end_loop %>
 			</tbody>
 		</table>
 
@@ -35,7 +35,7 @@
 					<a class="prev" href="$Members.PrevLink"><%t PREV 'Prev' %></a>
 				<% end_if %>
 				<span class="pageLinks">
-					<% control Members.PaginationSummary(4) %>
+					<% loop Members.PaginationSummary(4) %>
 						<% if CurrentBool %>
 							<span class="current">$PageNum</span>
 						<% else %>
@@ -45,7 +45,7 @@
 									&hellip;
 								<% end_if %>
 						<% end_if %>
-					<% end_control %>
+					<% end_loop %>
 				</span>
 				<% if Members.NotLastPage %>
 					<a class="next" href="$Members.NextLink"><%t NEXT 'Next' %></a>

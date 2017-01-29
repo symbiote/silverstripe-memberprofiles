@@ -471,7 +471,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			$this->httpError(404);
 		}
 
-		return new MemberProfileViewer($this, 'show');
+		return MemberProfileViewer::create($this, 'show');
 	}
 
 	/**
@@ -489,8 +489,9 @@ class MemberProfilePage_Controller extends Page_Controller {
 			new MemberProfileValidator($this->Fields())
 		);
 
-		if(class_exists('SpamProtectorManager')) {
-			SpamProtectorManager::update_form($form);
+		
+		if($form->hasExtension('FormSpamProtectionExtension')) {
+			$form->enableSpamProtection( );
 		}
 		$this->extend('updateRegisterForm', $form);
 		return $form;
