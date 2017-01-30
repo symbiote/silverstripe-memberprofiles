@@ -49,7 +49,13 @@ class MemberProfileValidator extends RequiredFields {
 				sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
 			);
 
-			if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID)) {
+			$isEmail = $field === 'Email';
+			$emailOK = !$isEmail;
+			if ($isEmail) {
+				$member = Member::get()->filter('Email:nocase', $data['Email'])->first();
+				$emailOK = !$member;
+			}
+			if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID) || !$emailOK) {
 				$fieldInstance = $this->form->Fields()->dataFieldByName($field);
 
 				if($fieldInstance->getCustomValidationMessage()) {
