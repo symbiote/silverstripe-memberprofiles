@@ -26,13 +26,13 @@ class MemberApprovalController extends Page_Controller {
 		$token = $request->getVar('token');
 
 		if (!$id || !ctype_digit($id)) {
-			$this->httpError(404, 'A member ID was not specified.');
+			return $this->httpError(404, 'A member ID was not specified.');
 		}
 
 		$member = DataObject::get_by_id('Member', $id);
 
 		if (!$member) {
-			$this->httpError(404, 'The specified member could not be found.');
+			return $this->httpError(404, 'The specified member could not be found.');
 		}
 
 		if (!$member->canEdit()) {
@@ -62,7 +62,8 @@ class MemberApprovalController extends Page_Controller {
 			if (!$controller->canView()) {
 				return Security::permissionFailure();
 			}
-			return $controller->Link('EditForm/field/Members/item/'.$member->ID.'/edit#MemberProfileRegistrationApproval');
+			$link = $controller->Link('EditForm/field/Members/item/'.$member->ID.'/edit#MemberProfileRegistrationApproval');
+			return $this->redirect($link);
 		}
 
 		$member->NeedsApproval = false;
