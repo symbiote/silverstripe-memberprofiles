@@ -104,6 +104,8 @@ class MemberProfileExtension extends DataExtension {
 			);
 
 			$fields->addFieldsToTab('Root.Main', array(
+				// ApprovalAnchor is used by MemberApprovalController (2017-02-01)
+				new LiteralField('ApprovalAnchor', "<div id=\"MemberProfileRegistrationApproval\"></div>"),
 				new HeaderField('ApprovalHeader', _t('MemberProfiles.REGAPPROVAL', 'Registration Approval')),
 				new LiteralField('ApprovalNote', "<p>$note</p>"),
 				new DropdownField('NeedsApproval', '', array(

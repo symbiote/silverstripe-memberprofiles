@@ -88,6 +88,15 @@ class MemberExtension extends DataExtension {
 }
 ```
 
+Configuration
+------------
+```yml
+MemberApprovalController:
+  # Redirect the user to the 'admin/Security' member edit page instead
+  # of immediately approving after visiting the approve link.
+  redirect_to_admin: false
+```
+
 Known Issues
 ------------
 [Issue Tracker](http://github.com/ajshort/silverstripe-memberprofiles/issues)
