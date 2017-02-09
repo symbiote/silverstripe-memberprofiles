@@ -52,8 +52,14 @@ class MemberProfileValidator extends RequiredFields {
 			$isEmail = $field === 'Email';
 			$emailOK = !$isEmail;
 			if ($isEmail) {
-				$member = Member::get()->filter('Email:nocase', $data['Email'])->first();
-				$emailOK = !$member;
+				$existing = Member::get()->filter('Email:nocase', $data['Email']);
+
+				// This ensures the existing member isn't the same as the current member, in case they're updating information.
+
+				if($current = Member::currentUserID()) {
+					$existing = $existing->filter('ID:not', $current);
+				}
+				$emailOK = !$existing->first();
 			}
 			if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID) || !$emailOK) {
 				$fieldInstance = $this->form->Fields()->dataFieldByName($field);
