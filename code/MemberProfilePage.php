@@ -29,7 +29,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
 		'EmailFrom'                => 'Varchar(255)',
 		'EmailSubject'             => 'Varchar(255)',
-		'EmailTemplate'            => 'Text',
+		'EmailTemplate'            => 'HTMLText',
 		'ConfirmationTitle'        => 'Varchar(255)',
 		'ConfirmationContent'      => 'HTMLText'
 	);
@@ -237,7 +237,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			new ToggleCompositeField('EmailContentToggle',  _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
 				new TextField('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
 				new TextField('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
-				new TextareaField('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
+				new HTMLEditorField('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
 				new LiteralField('TemplateNote', sprintf(
 					'<div class="field">%s</div>', MemberConfirmationEmail::TEMPLATE_NOTE
 				))
