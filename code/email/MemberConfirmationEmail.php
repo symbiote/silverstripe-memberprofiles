@@ -5,6 +5,15 @@
  * @package silverstripe-memberprofiles
  */
 class MemberConfirmationEmail extends Email {
+	/**
+	 * @var Member
+	 */
+	protected $member = null;
+
+	/**
+	 * @var MemberProfilePage
+	 */
+	protected $page = null;
 
 	/**
 	 * The default confirmation email subject if none is provided.
@@ -74,43 +83,88 @@ class MemberConfirmationEmail extends Email {
 ';
 
 	/**
-	 * Replaces variables inside an email template according to {@link TEMPLATE_NOTE}.
+	 * Deprecated. For backwards compatibility.
 	 *
 	 * @param string $string
 	 * @param Member $member
 	 * @return string
 	 */
 	public static function get_parsed_string($string, $member, $page) {
+		$class = get_called_class();
+		$inst = new $class($page, $member, true);
+		return $inst->getParsedString($string);
+	}
+
+	/**
+	 * Replaces variables inside an email template according to {@link TEMPLATE_NOTE}.
+	 *
+	 * @param string $string
+	 * @param Member $member
+	 * @return string
+	 */
+	public function getParsedString($string) {
+		$absoluteBaseURL = $this->BaseURL();
 		$variables = array (
 			'$SiteName'       => SiteConfig::current_site_config()->Title,
-			'$LoginLink'      => Director::absoluteURL(singleton('Security')->Link('login')),
-			'$ConfirmLink'    => Director::absoluteURL(Controller::join_links (
-				$page->Link('confirm'),
-				$member->ID,
-				"?key={$member->ValidationKey}"
-			)),
-			'$LostPasswordLink' => Director::absoluteURL(singleton('Security')->Link('lostpassword')),
-			'$Member.Created'   => $member->obj('Created')->Nice()
+			'$LoginLink'      => Controller::join_links(
+				$absoluteBaseURL, 
+				singleton('Security')->Link('login')
+			),
+			'$ConfirmLink'    => Controller::join_links(
+				$absoluteBaseURL,
+				$this->page->Link('confirm'),
+				$this->member->ID,
+				"?key={$this->member->ValidationKey}"
+			),
+			'$LostPasswordLink' => Controller::join_links(
+				$absoluteBaseURL,
+				singleton('Security')->Link('lostpassword')
+			),
+			'$Member.Created'   => $this->member->obj('Created')->Nice()
 		);
-
 		foreach(array('Name', 'FirstName', 'Surname', 'Email') as $field) {
-			$variables["\$Member.$field"] = $member->$field;
+			$variables["\$Member.$field"] = $this->member->$field;
 		}
+		$this->extend('updateEmailVariables', $variables);
 
 		return str_replace(array_keys($variables), array_values($variables), $string);
+	}
+
+	public function BaseURL() {
+		$absoluteBaseURL = parent::BaseURL();
+		$this->extend('updateBaseURL', $absoluteBaseURL);
+		return $absoluteBaseURL;
 	}
 
 	/**
 	 * @param MemberProfilePage $page
 	 * @param Member $member
 	 */
-	public function __construct($page, $member) {
-		$from    = $page->EmailFrom ? $page->EmailFrom : Email::getAdminEmail();
-		$to      = $member->Email;
-		$subject = self::get_parsed_string($page->EmailSubject, $member, $page);
-		$body    = self::get_parsed_string($page->EmailTemplate, $member, $page);
+	public function __construct($page, $member, $isSingleton = false) {
+		parent::__construct();
 
-		parent::__construct($from, $to, $subject, $body);
+		$this->page = $page;
+		$this->member = $member;
+
+		if (!$isSingleton) {
+			$this->from    = $page->EmailFrom ? $page->EmailFrom : Email::getAdminEmail();
+			$this->to      = $member->Email;
+			$this->subject = $this->getParsedString($page->EmailSubject);
+			$this->body    = $this->getParsedString($page->EmailTemplate);
+		}
 	}
 
+	/**
+	 * @return MemberProfilePage
+	 */
+	public function getPage() {
+		return $this->page;
+	}
+
+	/**
+	 * @return Member
+	 */
+	public function getMember() {
+		return $this->member;
+	}
 }
