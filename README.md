@@ -88,6 +88,33 @@ class MemberExtension extends DataExtension {
 }
 ```
 
+### Modify Email URL
+
+This example shows how to override the base URL so that MemberProfilePage will work with the Multisites module.
+
+```yml
+MemberConfirmationEmail:
+  extensions:
+    - 'MemberConfirmationEmailExtension'
+```
+
+```php
+
+class MemberConfirmationEmailExtension extends Extension {
+	public function updateBaseURL(&$absoluteBaseURL) {
+		$page = $this->owner->getPage();
+		if (!$page) {
+			return;
+		}
+		$site = $page->Site();
+		if (!$site || !$site->exists()) {
+			return;
+		}
+		$absoluteBaseURL = $site->AbsoluteLink();
+	}
+}
+```
+
 Configuration
 ------------
 ```yml
