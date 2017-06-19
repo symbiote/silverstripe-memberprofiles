@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe-australia/memberprofiles",
+	"name": "symbiote/silverstripe-memberprofiles",
 	"description": "Member registration and profile management",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "member", "profile", "registration"],
@@ -23,7 +23,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.4.x-dev"
+			"dev-master": "2.0.x-dev"
 		},
 		"installer-name": "memberprofiles",
 		"screenshots": [
