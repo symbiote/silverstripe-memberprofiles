@@ -18,10 +18,10 @@
 		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
 	},
 	"extra": {
+		"installer-name": "memberprofiles",
 		"branch-alias": {
 			"dev-master": "2.0.x-dev"
 		},
-		"installer-name": "memberprofiles",
 		"screenshots": [
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/cms-profile-fields.png",
