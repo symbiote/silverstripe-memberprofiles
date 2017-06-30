@@ -249,6 +249,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		));
 		$confContent->setRows(15);
 
+		$this->extend('updateCMSFields', $fields);
+
 		return $fields;
 	}
 
