@@ -529,10 +529,6 @@ class MemberProfilePageController extends PageController {
             $field->setTitle($profileField->Title);
             $field->setDescription($profileField->Note);
 
-            if ($profileField->MemberField == 'YearStarted') {
-                $field->setHTML5(true);
-            }
-
             if($context == 'Registration' && $profileField->DefaultValue) {
                 $field->setValue($profileField->DefaultValue);
             }
