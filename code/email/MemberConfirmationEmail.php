@@ -4,6 +4,12 @@
  *
  * @package silverstripe-memberprofiles
  */
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\Control\Email\Email;
+use SilverStripe\Control\Controller;
+use SilverStripe\SiteConfig\SiteConfig;
+
 class MemberConfirmationEmail extends Email {
 	/**
 	 * @var Member
@@ -107,7 +113,7 @@ class MemberConfirmationEmail extends Email {
 		$variables = array (
 			'$SiteName'       => SiteConfig::current_site_config()->Title,
 			'$LoginLink'      => Controller::join_links(
-				$absoluteBaseURL, 
+				$absoluteBaseURL,
 				singleton('Security')->Link('login')
 			),
 			'$ConfirmLink'    => Controller::join_links(

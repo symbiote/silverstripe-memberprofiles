@@ -5,6 +5,17 @@
  *
  * @package silverstripe-memberprofiles
  */
+
+namespace Silverstripe\MemberProfiles;
+use Silverstripe\MemberProfiles\MemberConfirmationEmail;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\ORM\DataExtension;
+use Silverstripe\MemberProfiles\MemberProfilePage;
+
 class MemberProfileExtension extends DataExtension {
 
 	private static $db = array(
@@ -15,7 +26,7 @@ class MemberProfileExtension extends DataExtension {
 	);
 
 	private static $has_one = array(
-	'ProfilePage' => 'MemberProfilePage'
+	'ProfilePage' => MemberProfilePage::class
 	);
 
 	public function getPublicFields() {

@@ -1,8 +1,15 @@
 <?php
+
+namespace Silverstripe\MemberProfiles;
+use PageController;
+use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Convert;
+
 /**
  * @package silverstripe-memberprofiles
  */
-class MemberApprovalController extends Page_Controller {
+class MemberApprovalController extends PageController {
 
 	private static $url_handlers = array(
 		'$ID' => 'index'

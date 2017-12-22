@@ -5,6 +5,15 @@
  * @package    silverstripe-memberprofiles
  * @subpackage formfields
  */
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\Forms\FormField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\FileField;
+use SilverStripe\Forms\Form;
+
 class CheckableVisibilityField extends FormField {
 
 	protected $child, $checkbox, $alwaysVisible = false;
@@ -60,11 +69,11 @@ class CheckableVisibilityField extends FormField {
 	public function saveInto(DataObjectInterface $record) {
 		$child = clone $this->child;
 		$child->setName($this->name);
-        
+
         if (!($this->child instanceof ReadonlyField)) {
             $child->saveInto($record);
         }
-		
+
 		$public = $record->getPublicFields();
 
 		if ($this->checkbox->dataValue()) {

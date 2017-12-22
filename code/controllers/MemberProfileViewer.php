@@ -1,11 +1,20 @@
 <?php
+
+namespace Silverstripe\MemberProfiles;
+use PageController;
+use SilverStripe\ORM\PaginatedList;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\Controller;
+
 /**
  * Handles displaying member's public profiles.
  *
  * @package    silverstripe-memberprofiles
  * @subpackage controllers
  */
-class MemberProfileViewer extends Page_Controller {
+class MemberProfileViewer extends PageController {
 
 	private static $url_handlers = array(
 		''           => 'handleList',

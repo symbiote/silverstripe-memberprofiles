@@ -3,7 +3,15 @@
  * This validator provides the unique and required functionality for {@link MemberProfileField}s.
  *
  * @package silverstripe-memberprofiles
+ *
  */
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\Forms\RequiredFields;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Core\Convert;
+use SilverStripe\Security\Member;
+
 class MemberProfileValidator extends RequiredFields {
 
 	protected $fields, $member, $unique = array();
@@ -45,7 +53,7 @@ class MemberProfileValidator extends RequiredFields {
 
 		foreach($this->unique as $field) {
 			$other = DataObject::get_one (
-				'Member',
+				Member::class,
 				sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
 			);
 
@@ -77,7 +85,7 @@ class MemberProfileValidator extends RequiredFields {
 				$this->validationError($field, $message, 'required');
 			}
 		}
-		
+
 		// Create a dummy member as this is required for custom password validators
 		if(isset($data['Password']) && $data['Password'] !== "") {
 			if(is_null($member)) $member = Member::create();
