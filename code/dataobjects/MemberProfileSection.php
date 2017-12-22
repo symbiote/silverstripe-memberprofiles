@@ -1,4 +1,12 @@
 <?php
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\HiddenField;
+use Exception;
+use Silverstripe\MemberProfiles\MemberProfilePage;
+
 /**
  * A section of a public profile page.
  *
@@ -7,12 +15,14 @@
  */
 class MemberProfileSection extends DataObject {
 
+    private static $table_name = 'MemberProfileSection';
+
 	private static $db = array(
 		'CustomTitle' => 'Varchar(100)'
 	);
 
 	private static $has_one = array(
-		'Parent' => 'MemberProfilePage'
+		'Parent' => MemberProfilePage::class
 	);
 
 	private static $extensions = array(

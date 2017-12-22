@@ -2,7 +2,21 @@
 /**
  * @package silverstripe-memberprofiles
  */
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\View\Requirements;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Core\Config\Config;
+use Silverstripe\MemberProfiles\MemberProfilePage;
+use SilverStripe\Security\Member;
+
 class MemberProfileField extends DataObject {
+
+    private static $table_name = 'MemberProfileField';
 
 	private static $db = array (
 		'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
@@ -21,7 +35,7 @@ class MemberProfileField extends DataObject {
 	);
 
 	private static $has_one = array (
-		'ProfilePage' => 'MemberProfilePage'
+		'ProfilePage' => MemberProfilePage::class
 	);
 
 	private static $summary_fields = array (
@@ -176,7 +190,7 @@ class MemberProfileField extends DataObject {
 
 	protected function getMemberFields() {
 		if (!self::$member_fields) {
-			self::$member_fields = singleton('Member')->getMemberFormFields();
+			self::$member_fields = singleton(Member::class)->getMemberFormFields();
 		}
 		return self::$member_fields;
 	}
@@ -187,7 +201,7 @@ class MemberProfileField extends DataObject {
 	public function isAlwaysRequired() {
 		return in_array (
 			$this->MemberField,
-			array(Config::inst()->get('Member', 'unique_identifier_field'), 'Password')
+			array(Config::inst()->get(Member::class, 'unique_identifier_field'), 'Password')
 		);
 	}
 
@@ -195,7 +209,7 @@ class MemberProfileField extends DataObject {
 	 * @return bool
 	 */
 	public function isAlwaysUnique() {
-		return $this->MemberField == Config::inst()->get('Member', 'unique_identifier_field');
+		return $this->MemberField == Config::inst()->get(Member::class, 'unique_identifier_field');
 	}
 
 	/**

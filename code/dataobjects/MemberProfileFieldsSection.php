@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A profile section that displays a list of fields that have been marked as
  * public.
@@ -6,6 +7,13 @@
  * @package    silverstripe-memberprofiles
  * @subpackage dataobjects
  */
+
+namespace Silverstripe\MemberProfiles;
+use Silverstripe\MemberProfiles\MemberProfileSection;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+
+
 class MemberProfileFieldsSection extends MemberProfileSection {
 
 	public function getDefaultTitle() {

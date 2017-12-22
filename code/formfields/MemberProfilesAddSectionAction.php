@@ -5,6 +5,17 @@
  *
  * @package silverstripe-memberprofiles
  */
+
+namespace Silverstripe\MemberProfiles;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use SilverStripe\Forms\GridField\GridField_HTMLProvider;
+use SilverStripe\View\Requirements;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\View\ArrayData;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Control\Controller;
+
 class MemberProfilesAddSectionAction extends GridFieldDetailForm implements GridField_HTMLProvider {
 
 	public function getURLHandlers($gridField) {
@@ -47,11 +58,11 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 		$class = $request->param('ClassName');
 
 		if(!is_subclass_of($class, 'MemberProfileSection')) {
-			return new SS_HTTPResponse('An invalid section type was specified', 404);
+			return new HTTPResponse('An invalid section type was specified', 404);
 		}
 
 		if(!array_key_exists($class, $this->getAddableSections($grid))) {
-			return new SS_HTTPResponse('The section already exists', 400);
+			return new HTTPResponse('The section already exists', 400);
 		}
 
 		$handler = $this->getItemRequestClass();
@@ -66,6 +77,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 		);
 		$handler->setTemplate($this->template);
 
+        // TODO DataModel is removed in 4.0
 		return $handler->handleRequest($request, DataModel::inst());
 	}
 
@@ -87,16 +99,3 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 
 }
 
-class MemberProfilesAddSectionAction_ItemRequest extends GridFieldDetailForm_ItemRequest {
-
-	public function Link($action = null) {
-		if($this->record->ID) {
-			return parent::Link($action);
-		} else {
-			return Controller::join_links(
-				$this->gridField->Link(), 'addsection', get_class($this->record)
-			);
-		}
-	}
-
-}

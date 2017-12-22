@@ -1,6 +1,6 @@
 ---
 Name: extensions
 ---
-Member:
+SilverStripe\Security\Member:
   extensions:
-    ['MemberProfileExtension']
+    ['Silverstripe\MemberProfiles\MemberProfileExtension']
