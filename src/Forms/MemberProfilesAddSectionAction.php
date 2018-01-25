@@ -1,4 +1,17 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Forms;
+use SilverStripe\Control\Controller;
+use SilverStripe\View\Requirements;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\View\ArrayData;
+use Symbiote\MemberProfiles\Model\MemberProfileSection;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use SilverStripe\Forms\GridField\GridField_HTMLProvider;
+use SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest;
+
 /**
  * A grid field section that allows one instance of each section subclass to be
  * created.
@@ -26,8 +39,8 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 			$links[Controller::join_links($base, $class)] = $title;
 		}
 
-		Requirements::javascript('memberprofiles/javascript/MemberProfilesAddSection.js');
-		Requirements::css('memberprofiles/css/MemberProfilesAddSection.css');
+		Requirements::javascript('memberprofiles/client/javascript/MemberProfilesAddSection.js');
+		Requirements::css('memberprofiles/client/css/MemberProfilesAddSection.css');
 
 		$select = new DropdownField("{$grid->getName()}[SectionClass]", '', $links);
 		$select->setEmptyString(_t('MemberProfiles.SECTIONTYPE', '(Section type)'));
@@ -46,12 +59,12 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 	public function handleAddSection($grid, $request) {
 		$class = $request->param('ClassName');
 
-		if(!is_subclass_of($class, 'MemberProfileSection')) {
-			return new SS_HTTPResponse('An invalid section type was specified', 404);
+		if(!is_subclass_of($class, MemberProfileSection::class)) {
+			return new HTTPResponse('An invalid section type was specified', 404);
 		}
 
 		if(!array_key_exists($class, $this->getAddableSections($grid))) {
-			return new SS_HTTPResponse('The section already exists', 400);
+			return new HTTPResponse('The section already exists', 400);
 		}
 
 		$handler = $this->getItemRequestClass();
@@ -66,12 +79,12 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 		);
 		$handler->setTemplate($this->template);
 
-		return $handler->handleRequest($request, DataModel::inst());
+		return $handler->handleRequest($request);
 	}
 
 	protected function getAddableSections($grid) {
 		$list    = $grid->getList();
-		$classes = ClassInfo::subclassesFor('MemberProfileSection');
+		$classes = ClassInfo::subclassesFor(MemberProfileSection::class);
 		$result  = array();
 		$base    = $grid->Link();
 

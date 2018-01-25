@@ -1,8 +1,19 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Controllers;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Security;
+use SilverStripe\Admin\SecurityAdmin;
+use SilverStripe\Core\Convert;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use PageController;
+
 /**
  * @package silverstripe-memberprofiles
  */
-class MemberApprovalController extends Page_Controller {
+class MemberApprovalController extends PageController {
 
 	private static $url_handlers = array(
 		'$ID' => 'index'
@@ -29,7 +40,7 @@ class MemberApprovalController extends Page_Controller {
 			return $this->httpError(404, 'A member ID was not specified.');
 		}
 
-		$member = DataObject::get_by_id('Member', $id);
+		$member = DataObject::get_by_id(Member::class, $id);
 
 		if (!$member) {
 			return $this->httpError(404, 'The specified member could not be found.');
@@ -58,7 +69,7 @@ class MemberApprovalController extends Page_Controller {
 		}
 
 		if ($this->config()->redirect_to_admin) {
-			$controller = singleton('SecurityAdmin');
+			$controller = singleton(SecurityAdmin::class);
 			if (!$controller->canView()) {
 				return Security::permissionFailure();
 			}

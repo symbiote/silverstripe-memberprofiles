@@ -1,4 +1,13 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Forms;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\FileField;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormField;
+
 /**
  * A wrapper around a field to add a checkbox to optionally mark it as visible.
  *
@@ -60,11 +69,11 @@ class CheckableVisibilityField extends FormField {
 	public function saveInto(DataObjectInterface $record) {
 		$child = clone $this->child;
 		$child->setName($this->name);
-        
+
         if (!($this->child instanceof ReadonlyField)) {
             $child->saveInto($record);
         }
-		
+
 		$public = $record->getPublicFields();
 
 		if ($this->checkbox->dataValue()) {

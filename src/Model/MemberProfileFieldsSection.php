@@ -1,4 +1,10 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Model;
+use Symbiote\MemberProfiles\Model\MemberProfileFieldsSection;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+
 /**
  * A profile section that displays a list of fields that have been marked as
  * public.
@@ -13,7 +19,7 @@ class MemberProfileFieldsSection extends MemberProfileSection {
 	}
 
 	public function forTemplate() {
-		return $this->renderWith('MemberProfileFieldsSection');
+		return $this->renderWith(MemberProfileFieldsSection::class);
 	}
 
 	public function Fields() {

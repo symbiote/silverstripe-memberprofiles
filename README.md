@@ -8,7 +8,8 @@ Maintainer Contacts
 Requirements
 ------------
 
-* SilverStripe 3.1 & 3.2 - [master branch](https://github.com/ajshort/silverstripe-memberprofiles)
+* SilverStripe 4 - [master branch](https://github.com/ajshort/silverstripe-memberprofiles)
+* SilverStripe 3.1 & 3.2 - [2.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/2.0)
 * SilverStripe 3.0 - [1.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/1.0)
 * SilverStripe 2.4 - [0.5 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/0.5)
 
@@ -47,7 +48,7 @@ belong to these groups in order to edit their profile on this profile page.
 In addition to the fixed group membership, users are also able to select optional
 groups to belong to (if desired). The list of groups they can select from is
 chosen in the bottom group list. To actually let users select, the "Groups"
-field must be made editable in the list of fields above. 
+field must be made editable in the list of fields above.
 
 ### Validation
 The "Validation" tab makes it possible to enable email validation, which means
@@ -62,7 +63,7 @@ actions.
 You can link to the profile page with the optional ?BackURL= parameter
 which will set a URL that the user will be redirected to after they complete
 registration. This requires the "RegistrationRedirect" property to be set
-on the After Registration tab. 
+on the After Registration tab.
 
 If you like, you can manually set a redirection target by setting
 Session::set('MemberProfile.REDIRECT') to a URL value.

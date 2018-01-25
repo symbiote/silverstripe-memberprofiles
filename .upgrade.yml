@@ -1,0 +1,16 @@
+mappings:
+  MemberProfilePage_Controller: Symbiote\MemberProfiles\Controllers\MemberProfilePage_Controller
+  MemberApprovalController: Symbiote\MemberProfiles\Controllers\MemberApprovalController
+  MemberProfileViewer: Symbiote\MemberProfiles\Controllers\MemberProfileViewer
+  MemberConfirmationEmail: Symbiote\MemberProfiles\Email\MemberConfirmationEmail
+  MemberProfileValidator: Symbiote\MemberProfiles\Forms\MemberProfileValidator
+  MemberProfilesAddSectionAction: Symbiote\MemberProfiles\Forms\MemberProfilesAddSectionAction
+  MemberProfilesAddSectionAction_ItemRequest: Symbiote\MemberProfiles\Forms\MemberProfilesAddSectionAction_ItemRequest
+  CheckableVisibilityField: Symbiote\MemberProfiles\Forms\CheckableVisibilityField
+  MemberProfilePage: Symbiote\MemberProfiles\Model\MemberProfilePage
+  MemberProfileSection: Symbiote\MemberProfiles\Model\MemberProfileSection
+  MemberProfileFieldsSection: Symbiote\MemberProfiles\Model\MemberProfileFieldsSection
+  MemberProfileField: Symbiote\MemberProfiles\Model\MemberProfileField
+  MemberConfirmationAdminTest: Symbiote\MemberProfiles\Tests\MemberConfirmationAdminTest
+  MemberConfirmationEmailTest: Symbiote\MemberProfiles\Tests\MemberConfirmationEmailTest
+  MemberProfileExtension: Symbiote\MemberProfiles\Extensions\MemberProfileExtension
