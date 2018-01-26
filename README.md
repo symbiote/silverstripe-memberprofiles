@@ -1,3 +1,9 @@
+SS4 Upgrade progress
+
+√ Namespacing and updating for namespacing
+- Error when adding public profile section to ProfilePage in the CMS.
+- Run cs-fixer
+
 SilverStripe Member Profile Pages Module
 ========================================
 

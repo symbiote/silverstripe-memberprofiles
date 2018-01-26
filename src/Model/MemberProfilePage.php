@@ -3,7 +3,8 @@
 namespace Symbiote\MemberProfiles\Model;
 use Page;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
-use SilverStripe\Forms\HTMLEditor\HTMLEditorFieldHtmlEditorField;
+use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\CMS\Model\SiteTree;
 use Symbiote\MemberProfiles\Model\MemberProfileField;
 use Symbiote\MemberProfiles\Model\MemberProfileSection;
@@ -199,7 +200,12 @@ class MemberProfilePage extends Page implements PermissionProvider {
 			'Required' => function($val, $obj) { return $obj->dbObject('Required')->Nice(); }
 		));
 
-		$grid->addComponent(new GridFieldOrderableRows('Sort'));
+        if (class_exists('GridFieldOrderableRows')) {
+            $grid->addComponent(new GridFieldOrderableRows('Sort'));
+        } else if (class_exists('GridFieldSortableRows')) {
+            $grid->addComponent(new GridFieldSortableRows('Sort'));
+        }
+
 
 		if(!$this->AllowProfileViewing) {
 			$disabledNote = new LiteralField('PublisProfileDisabledNote', sprintf(

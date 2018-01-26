@@ -1,6 +1,9 @@
 <?php
+// TODO this should be in the Controller namespace but that causes issues
+// in SiteTree::getControllerName, so needs to be the same as MemberProfilePage
+// Model for now
 
-namespace Symbiote\MemberProfiles\Controllers;
+namespace Symbiote\MemberProfiles\Model;
 use SilverStripe\Control\Session;
 use SilverStripe\Security\Member;
 use Symbiote\MemberProfiles\Model\MemberProfilePage;
@@ -24,7 +27,7 @@ use PageController;
 /**
  *
  */
-class MemberProfilePage_Controller extends PageController {
+class MemberProfilePageController extends PageController {
 
 	private static $allowed_actions = array (
 		'index',
@@ -38,8 +41,8 @@ class MemberProfilePage_Controller extends PageController {
 	);
 
 	/**
-	 * @uses   MemberProfilePage_Controller::indexRegister
-	 * @uses   MemberProfilePage_Controller::indexProfile
+	 * @uses   MemberProfilePageController::indexRegister
+	 * @uses   MemberProfilePageController::indexProfile
 	 * @return array
 	 */
 	public function index() {
@@ -134,7 +137,7 @@ class MemberProfilePage_Controller extends PageController {
 	}
 
 	/**
-	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @uses   MemberProfilePageController::getProfileFields
 	 * @return Form
 	 */
 	public function RegisterForm() {
@@ -199,7 +202,7 @@ class MemberProfilePage_Controller extends PageController {
 	}
 
 	/**
-	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @uses   MemberProfilePageController::getProfileFields
 	 * @return Form
 	 */
 	public function ProfileForm() {
