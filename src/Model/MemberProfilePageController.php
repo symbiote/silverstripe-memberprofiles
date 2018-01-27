@@ -22,6 +22,7 @@ use SilverStripe\SiteConfig\SiteConfig;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Forms\LiteralField;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
+use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
 use PageController;
 
 /**

@@ -151,7 +151,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 		$fields->addFieldToTab('Root', new TabSet('Profile', _t('MemberProfiles.PROFILE', 'Profile')));
 		$fields->addFieldToTab('Root', new Tab('ContentBlocks', _t('MemberProfiles.CONTENTBLOCKS', 'Content Blocks')));
-		$fields->addFieldToTab('Root', new Tab(Email::class, _t('MemberProfiles.Email', Email::class)));
+		$fields->addFieldToTab('Root', new Tab('Email', _t('MemberProfiles.Email', 'Email')));
 		$fields->fieldByName('Root.Main')->setTitle(_t('MemberProfiles.MAIN', 'Main'));
 
 		$fields->addFieldsToTab('Root.Profile', array(
