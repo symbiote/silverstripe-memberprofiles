@@ -36,6 +36,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 		}
 
 		foreach($addable as $class => $title) {
+            $class = urlencode($class);
 			$links[Controller::join_links($base, $class)] = $title;
 		}
 
@@ -57,9 +58,8 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 	}
 
 	public function handleAddSection($grid, $request) {
-		$class = $request->param('ClassName');
-
-		if(!is_subclass_of($class, MemberProfileSection::class)) {
+		$class = urldecode($request->param('ClassName'));
+		if(!is_subclass_of($class, 'Symbiote\MemberProfiles\Model\MemberProfileSection')) {
 			return new HTTPResponse('An invalid section type was specified', 404);
 		}
 
@@ -74,7 +74,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 			$grid,
 			$this,
 			$record,
-			$grid->getForm()->Controller(),
+			$grid->getForm()->getController(),
 			$this->name
 		);
 		$handler->setTemplate($this->template);
@@ -107,7 +107,7 @@ class MemberProfilesAddSectionAction_ItemRequest extends GridFieldDetailForm_Ite
 			return parent::Link($action);
 		} else {
 			return Controller::join_links(
-				$this->gridField->Link(), 'addsection', get_class($this->record)
+				$this->gridField->Link(), 'addsection', urlencode(get_class($this->record))
 			);
 		}
 	}
