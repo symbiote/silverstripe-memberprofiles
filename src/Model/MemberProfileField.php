@@ -47,6 +47,8 @@ class MemberProfileField extends DataObject {
 
 	private static $default_sort = 'Sort';
 
+	private static $table_name = 'MemberProfileField';
+
 	/**
 	 * Temporary local cache of form fields - otherwise we can potentially be calling
 	 * getMemberFormFields 20 - 30 times per request via getDefaultTitle.

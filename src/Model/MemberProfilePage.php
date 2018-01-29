@@ -93,6 +93,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
 	);
 
+    private static $table_name = 'MemberProfilePage';
+
 	/**
 	 * An array of default settings for some standard member fields.
 	 *

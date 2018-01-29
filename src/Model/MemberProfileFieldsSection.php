@@ -14,6 +14,8 @@ use SilverStripe\View\ArrayData;
  */
 class MemberProfileFieldsSection extends MemberProfileSection {
 
+    private static $table_name = 'MemberProfileFieldsSection';
+
 	public function getDefaultTitle() {
 		return _t('MemberProfiles.PROFILEFIELDSLIST', 'Profile Fields List');
 	}

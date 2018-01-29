@@ -31,6 +31,8 @@ class MemberProfileSection extends DataObject {
 		'CustomTitle'  => 'Custom Title'
 	);
 
+    private static $table_name = 'MemberProfileSection';
+
 	protected $member;
 
 	/**

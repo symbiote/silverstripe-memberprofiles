@@ -1,0 +1,9 @@
+---
+Name: memberprofileslegacy
+---
+SilverStripe\ORM\DatabaseAdmin:
+  classname_value_remapping:
+    MemberProfilePage: Symbiote\MemberProfiles\Model\MemberProfilePage
+    MemberProfileSection: Symbiote\MemberProfiles\Model\MemberProfileSection
+    MemberProfileFieldsSection: Symbiote\MemberProfiles\Model\MemberProfileFieldsSection
+    MemberProfileField: Symbiote\MemberProfiles\Model\MemberProfileField
