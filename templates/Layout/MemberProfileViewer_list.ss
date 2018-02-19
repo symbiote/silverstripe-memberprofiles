@@ -1,8 +1,8 @@
-<% require css(memberprofiles/css/MemberProfileViewer.css) %>
+<% require css(memberprofiles/client/css/MemberProfileViewer.css) %>
 
 <div class="content-container typography">
 	<h1>$Title</h1>
-	
+
 	<div class="content">
 		<table id="member-list">
 			<thead>

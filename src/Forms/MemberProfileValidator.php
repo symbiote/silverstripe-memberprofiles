@@ -1,4 +1,12 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Forms;
+use SilverStripe\Security\Member;
+use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Email\Email;
+use SilverStripe\Forms\RequiredFields;
+
 /**
  * This validator provides the unique and required functionality for {@link MemberProfileField}s.
  *
@@ -45,14 +53,14 @@ class MemberProfileValidator extends RequiredFields {
 
 		foreach($this->unique as $field) {
 			$other = DataObject::get_one (
-				'Member',
+				Member::class,
 				sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
 			);
 
-			$isEmail = $field === 'Email';
+			$isEmail = $field === Email::class;
 			$emailOK = !$isEmail;
 			if ($isEmail) {
-				$existing = Member::get()->filter('Email:nocase', $data['Email']);
+				$existing = Member::get()->filter('Email:nocase', $data[Email::class]);
 
 				// This ensures the existing member isn't the same as the current member, in case they're updating information.
 
@@ -77,7 +85,7 @@ class MemberProfileValidator extends RequiredFields {
 				$this->validationError($field, $message, 'required');
 			}
 		}
-		
+
 		// Create a dummy member as this is required for custom password validators
 		if(isset($data['Password']) && $data['Password'] !== "") {
 			if(is_null($member)) $member = Member::create();

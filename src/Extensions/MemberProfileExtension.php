@@ -1,4 +1,15 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Extensions;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\ORM\DataExtension;
+
 /**
  * Adds validation fields to the Member object, as well as exposing the user's
  * status in the CMS.
@@ -15,7 +26,7 @@ class MemberProfileExtension extends DataExtension {
 	);
 
 	private static $has_one = array(
-	'ProfilePage' => 'MemberProfilePage'
+	'ProfilePage' => MemberProfilePage::class
 	);
 
 	public function getPublicFields() {

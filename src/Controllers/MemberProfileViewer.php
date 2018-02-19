@@ -1,11 +1,21 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Controllers;
+use SilverStripe\ORM\PaginatedList;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
+use SilverStripe\Security\Member;
+use SilverStripe\Control\Controller;
+use PageController;
+
 /**
  * Handles displaying member's public profiles.
  *
  * @package    silverstripe-memberprofiles
  * @subpackage controllers
  */
-class MemberProfileViewer extends Page_Controller {
+class MemberProfileViewer extends PageController {
 
 	private static $url_handlers = array(
 		''           => 'handleList',
@@ -81,7 +91,7 @@ class MemberProfileViewer extends Page_Controller {
 			'Members' => $list
 		));
 		return $controller->renderWith(array(
-			'MemberProfileViewer_list', 'MemberProfileViewer', 'Page'
+			'MemberProfileViewer_list', MemberProfileViewer::class, 'Page'
 		));
 	}
 
@@ -124,7 +134,7 @@ class MemberProfileViewer extends Page_Controller {
 			'IsSelf'   => $member->ID == Member::currentUserID()
 		));
 		return $controller->renderWith(array(
-			'MemberProfileViewer_view', 'MemberProfileViewer', 'Page'
+			'MemberProfileViewer_view', MemberProfileViewer::class, 'Page'
 		));
 	}
 

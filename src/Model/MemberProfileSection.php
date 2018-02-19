@@ -1,4 +1,11 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Model;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\ORM\DataObject;
+
 /**
  * A section of a public profile page.
  *
@@ -12,7 +19,7 @@ class MemberProfileSection extends DataObject {
 	);
 
 	private static $has_one = array(
-		'Parent' => 'MemberProfilePage'
+		'Parent' => MemberProfilePage::class
 	);
 
 	private static $extensions = array(
@@ -23,6 +30,8 @@ class MemberProfileSection extends DataObject {
 		'DefaultTitle' => 'Title',
 		'CustomTitle'  => 'Custom Title'
 	);
+
+    private static $table_name = 'MemberProfileSection';
 
 	protected $member;
 
@@ -69,7 +78,7 @@ class MemberProfileSection extends DataObject {
 	 * @return string
 	 */
 	public function getDefaultTitle() {
-		throw new Exception("Please implement getDefaultTitle() on {$this->class}.");
+		throw new \Exception("Please implement getDefaultTitle() on {$this->class}.");
 	}
 
 	/**

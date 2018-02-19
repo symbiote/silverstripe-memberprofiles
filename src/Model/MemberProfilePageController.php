@@ -1,381 +1,34 @@
 <?php
-/**
- * A MemberProfilePage allows the administratior to set up a page with a subset of the
- * fields available on the member object, then allow members to register and edit
- * their profile using these fields.
- *
- * Members who have permission to create new members can also be allowed to
- * create new members via this page.
- *
- * It also supports email validation.
- *
- * @package silverstripe-memberprofiles
- */
-class MemberProfilePage extends Page implements PermissionProvider {
+// TODO this should be in the Controller namespace but that causes issues
+// in SiteTree::getControllerName, so needs to be the same as MemberProfilePage
+// Model for now
 
-	private static $db = array (
-		'ProfileTitle'             => 'Varchar(255)',
-		'RegistrationTitle'        => 'Varchar(255)',
-		'AfterRegistrationTitle'   => 'Varchar(255)',
-		'ProfileContent'           => 'HTMLText',
-		'RegistrationContent'      => 'HTMLText',
-		'AfterRegistrationContent' => 'HTMLText',
-		'AllowRegistration'        => 'Boolean',
-		'AllowProfileViewing'      => 'Boolean',
-		'AllowProfileEditing'      => 'Boolean',
-		'AllowAdding'              => 'Boolean',
-		'RegistrationRedirect'     => 'Boolean',
-		'RequireApproval'          => 'Boolean',
-		'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
-		'EmailFrom'                => 'Varchar(255)',
-		'EmailSubject'             => 'Varchar(255)',
-		'EmailTemplate'            => 'Text',
-		'ConfirmationTitle'        => 'Varchar(255)',
-		'ConfirmationContent'      => 'HTMLText'
-	);
-
-	private static $has_one = array(
-		'PostRegistrationTarget' => 'SiteTree',
-	);
-
-	private static $has_many = array (
-		'Fields'   => 'MemberProfileField',
-		'Sections' => 'MemberProfileSection'
-	);
-
-	private static $many_many = array (
-		'Groups'           => 'Group',
-		'SelectableGroups' => 'Group',
-		'ApprovalGroups'   => 'Group'
-	);
-
-	private static $defaults = array (
-		'ProfileTitle'             => 'Edit Profile',
-		'RegistrationTitle'        => 'Register / Log In',
-		'AfterRegistrationTitle'   => 'Registration Successful',
-		'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
-		'AllowRegistration'        => true,
-		'AllowProfileViewing'      => true,
-		'AllowProfileEditing'      => true,
-		'ConfirmationTitle'        => 'Account Confirmed',
-		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
-	);
-
-	/**
-	 * An array of default settings for some standard member fields.
-	 *
-	 * @var array
-	 */
-	public static $profile_field_defaults = array(
-		'Email' => array(
-			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit',
-			'PublicVisibility'       => 'MemberChoice'
-		),
-		'FirstName' => array(
-			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit',
-			'MemberListVisible'      => true,
-			'PublicVisibility'       => 'Display'
-		),
-		'Surname' => array(
-			'RegistrationVisibility'  => 'Edit',
-			'ProfileVisibility'       => 'Edit',
-			'MemberListVisible'       => true,
-			'PublicVisibility'        => 'MemberChoice',
-			'PublicVisibilityDefault' => true
-		),
-		'Password' => array(
-			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit'
-		)
-	);
-
-	private static $description = '';
-
-	private static $icon = 'memberprofiles/images/memberprofilepage.png';
-
-	/**
-	 * If profile editing is disabled, but the current user can add members,
-	 * just link directly to the add action.
-	 *
-	 * @param string $action
-	 */
-	public function Link($action = null) {
-		if(
-			!$action
-			&& Member::currentUserID()
-			&& !$this->AllowProfileEditing
-			&& $this->CanAddMembers()
-		) {
-			$action = 'add';
-		}
-
-		return parent::Link($action);
-	}
-
-	public function getCMSFields() {
-		$fields = parent::getCMSFields();
-
-		$fields->addFieldToTab('Root', new TabSet('Profile', _t('MemberProfiles.PROFILE', 'Profile')));
-		$fields->addFieldToTab('Root', new Tab('ContentBlocks', _t('MemberProfiles.CONTENTBLOCKS', 'Content Blocks')));
-		$fields->addFieldToTab('Root', new Tab('Email', _t('MemberProfiles.Email', 'Email')));
-		$fields->fieldByName('Root.Main')->setTitle(_t('MemberProfiles.MAIN', 'Main'));
-
-		$fields->addFieldsToTab('Root.Profile', array(
-			new Tab(
-				'Fields',
-				_t('MemberProfiles.FIELDS', 'Fields'),
-				new GridField(
-					'Fields',
-					_t('MemberProfiles.PROFILEFIELDS', 'Profile Fields'),
-					$this->Fields(),
-					$grid = GridFieldConfig_RecordEditor::create()
-						->removeComponentsByType('GridFieldDeleteAction')
-						->removeComponentsByType('GridFieldAddNewButton')
-				)
-			),
-			new Tab(
-				'Groups',
-				_t('MemberProfiles.GROUPS', 'Groups'),
-				$groups = new TreeMultiselectField(
-					'Groups',
-					_t('MemberProfiles.GROUPS', 'Groups'),
-					'Group'
-				),
-				$selectable = new TreeMultiselectField(
-					'SelectableGroups',
-					_t('MemberProfiles.SELECTABLEGROUPS', 'Selectable Groups'),
-					'Group'
-				)
-			),
-			new Tab(
-				'PublicProfile',
-				_t('MemberProfiles.PUBLICPROFILE', 'Public Profile'),
-				new GridField(
-					'Sections',
-					_t('MemberProfiles.PROFILESECTIONS', 'Profile Sections'),
-					$this->Sections(),
-					GridFieldConfig_RecordEditor::create()
-						->removeComponentsByType('GridFieldAddNewButton')
-						->addComponent(new MemberProfilesAddSectionAction())
-				)
-			)
-		));
-
-		$grid->getComponentByType('GridFieldDataColumns')->setFieldFormatting(array(
-			'Unique'   => function($val, $obj) { return $obj->dbObject('Unique')->Nice(); },
-			'Required' => function($val, $obj) { return $obj->dbObject('Required')->Nice(); }
-		));
-
-		if(class_exists('GridFieldOrderableRows')) {
-			$grid->addComponent(new GridFieldOrderableRows('Sort'));
-		} elseif(class_exists('GridFieldSortableRows')) {
-			$grid->addComponent(new GridFieldSortableRows('Sort'));
-		}
-
-		if(!$this->AllowProfileViewing) {
-			$disabledNote = new LiteralField('PublisProfileDisabledNote', sprintf(
-				'<p class="message notice">%s</p>', _t(
-					'MemberProfiles.PUBLICPROFILEDISABLED',
-					'Public profiles are currently disabled, you can enable them ' .
-					'in the "Settings" tab.'
-				)
-			));
-			$fields->insertBefore($disabledNote, 'Sections');
-		}
-
-		$groups->setDescription(_t(
-			'MemberProfiles.GROUPSNOTE',
-			'Any users registering via this page will always be added to ' .
-			'these groups (if registration is enabled). Conversely, a member ' .
-			'must belong to these groups in order to edit their profile on ' .
-			'this page.'
-		));
-
-		$selectable->setDescription(_t(
-			'MemberProfiles.SELECTABLENOTE',
-			'Users can choose to belong to these groups, if the  "Groups" field ' .
-			'is enabled in the "Fields" tab.'
-		));
-
-		$fields->removeByName('Content', true);
-
-		$contentFields = array();
-		if($this->AllowRegistration) {
-			$contentFields[] = 'Registration';
-			$contentFields[] = 'AfterRegistration';
-		}
-
-		if($this->AllowProfileEditing) {
-			$contentFields[] = 'Profile';
-		}
-
-		foreach($contentFields as $type) {
-			$fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
-				"{$type}Toggle",
-				 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
-				array(
-					new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
-					$content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
-				)
-			));
-			$content->setRows(15);
-		}
-
-
-		$fields->addFieldsToTab('Root.Email', array(
-			new OptionsetField(
-				'EmailType',
-				_t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
-				array(
-					'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Require email validation'),
-					'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email'),
-					'None'         => _t('MemberProfiles.NONE', 'None')
-				)
-			),
-			new ToggleCompositeField('EmailContentToggle',  _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
-				new TextField('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
-				new TextField('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
-				new TextareaField('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
-				new LiteralField('TemplateNote', sprintf(
-					'<div class="field">%s</div>', MemberConfirmationEmail::TEMPLATE_NOTE
-				))
-			)),
-			new ToggleCompositeField('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), array(
-				new TextField('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
-				$confContent  = new HtmlEditorField('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
-			))
-		));
-		$confContent->setRows(15);
-
-		return $fields;
-	}
-
-	public function getSettingsFields() {
-		$fields = parent::getSettingsFields();
-
-		$fields->addFieldToTab('Root', new Tab('Profile'), 'Settings');
-		$fields->addFieldsToTab('Root.Profile', array(
-			new CheckboxField(
-				'AllowRegistration',
-				_t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
-			),
-			new CheckboxField(
-				'AllowProfileEditing',
-				_t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
-			),
-			new CheckboxField(
-				'AllowAdding',
-				_t('MemberProfiles.ALLOWADD', 'Allow adding members via this page')
-			),
-			new CheckboxField(
-				'AllowProfileViewing',
-				_t('MemberProfiles.ALLOWPROFILEVIEWING', 'Enable public profiles?')
-			),
-			new CheckboxField(
-				'RequireApproval',
-				_t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
-			),
-			$approval = new TreeMultiselectField(
-				'ApprovalGroups',
-				_t('MemberProfiles.APPROVALGROUPS', 'Approval Groups'),
-				'Group'
-			),
-			new CheckboxField(
-				'RegistrationRedirect',
-				_t('MemberProfiles.REDIRECTAFTERREG', 'Redirect after registration?')
-			),
-			new TreeDropdownField(
-				'PostRegistrationTargetID',
-				_t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
-				'SiteTree'
-			)
-		));
-
-		$approval->setDescription(_t(
-			'MemberProfiles.NOTIFYTHESEGROUPS',
-			'These groups will be notified to approve new registrations'
-		));
-
-		return $fields;
-	}
-
-	/**
-	 * Get either the default or custom email template.
-	 *
-	 * @return string
-	 */
-	public function getEmailTemplate() {
-		return ($t = $this->getField('EmailTemplate')) ? $t : MemberConfirmationEmail::DEFAULT_TEMPLATE;
-	}
-
-	/**
-	 * Get either the default or custom email subject line.
-	 *
-	 * @return string
-	 */
-	public function getEmailSubject() {
-		return ($s = $this->getField('EmailSubject')) ? $s : MemberConfirmationEmail::DEFAULT_SUBJECT;
-	}
-
-	/**
-	 * Returns a list of profile field objects after synchronising them with the
-	 * Member form fields.
-	 *
-	 * @return HasManyList
-	 */
-	public function Fields() {
-		$list     = $this->getComponents('Fields');
-		$fields   = singleton('Member')->getMemberFormFields()->dataFields();
-		$included = array();
-
-		foreach($list as $profileField) {
-			if(!array_key_exists($profileField->MemberField, $fields)) {
-				$profileField->delete();
-			} else {
-				$included[] = $profileField->MemberField;
-			}
-		}
-
-		foreach($fields as $name => $field) {
-			if(!in_array($name, $included)) {
-				$profileField = new MemberProfileField();
-				$profileField->MemberField = $name;
-
-				if(isset(self::$profile_field_defaults[$name])) {
-					$profileField->update(self::$profile_field_defaults[$name]);
-				}
-
-				$list->add($profileField);
-			}
-		}
-
-		return $list;
-	}
-
-	public function onAfterWrite() {
-		if ($this->isChanged('ID', 2)) {
-			$section = new MemberProfileFieldsSection();
-			$section->ParentID = $this->ID;
-			$section->write();
-		}
-
-		parent::onAfterWrite();
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function CanAddMembers() {
-		return $this->AllowAdding && singleton('Member')->canCreate();
-	}
-}
+namespace Symbiote\MemberProfiles\Model;
+use SilverStripe\Control\Session;
+use SilverStripe\Security\Member;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use SilverStripe\Security\Security;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\FieldList;
+use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
+use SilverStripe\Forms\Form;
+use SilverStripe\Control\Director;
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Email\Email;
+use SilverStripe\SiteConfig\SiteConfig;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
+use SilverStripe\Forms\LiteralField;
+use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
+use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
+use PageController;
 
 /**
  *
  */
-class MemberProfilePage_Controller extends Page_Controller {
+class MemberProfilePageController extends PageController {
 
 	private static $allowed_actions = array (
 		'index',
@@ -389,8 +42,8 @@ class MemberProfilePage_Controller extends Page_Controller {
 	);
 
 	/**
-	 * @uses   MemberProfilePage_Controller::indexRegister
-	 * @uses   MemberProfilePage_Controller::indexProfile
+	 * @uses   MemberProfilePageController::indexRegister
+	 * @uses   MemberProfilePageController::indexProfile
 	 * @return array
 	 */
 	public function index() {
@@ -400,7 +53,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		$mode = Member::currentUser() ? 'profile' : 'register';
 		$data = Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
 		if (is_array($data)) {
-			return $this->customise($data)->renderWith(array('MemberProfilePage_'.$mode, 'MemberProfilePage', 'Page'));
+			return $this->customise($data)->renderWith(array('MemberProfilePage_'.$mode, MemberProfilePage::class, 'Page'));
 		}
 		return $data;
 	}
@@ -434,7 +87,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 */
 	protected function indexProfile() {
 		if(!$this->AllowProfileEditing) {
-			if($this->AllowAdding && Injector::inst()->get('Member')->canCreate()) {
+			if($this->AllowAdding && Injector::inst()->get(Member::class)->canCreate()) {
 				return $this->redirect($this->Link('add'));
 			}
 
@@ -485,7 +138,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
-	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @uses   MemberProfilePageController::getProfileFields
 	 * @return Form
 	 */
 	public function RegisterForm() {
@@ -550,7 +203,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	}
 
 	/**
-	 * @uses   MemberProfilePage_Controller::getProfileFields
+	 * @uses   MemberProfilePageController::getProfileFields
 	 * @return Form
 	 */
 	public function ProfileForm() {
@@ -597,7 +250,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 	 * members.
 	 */
 	public function add($request) {
-		if(!$this->AllowAdding || !Injector::inst()->get('Member')->canCreate()) {
+		if(!$this->AllowAdding || !Injector::inst()->get(Member::class)->canCreate()) {
 			return Security::permissionFailure($this, _t (
 				'MemberProfiles.CANNOTADDMEMBERS',
 				'You cannot add members via this page.'
@@ -610,7 +263,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			'Form'    => $this->AddForm()
 		);
 
-		return $this->customise($data)->renderWith(array('MemberProfilePage_add', 'MemberProfilePage', 'Page'));
+		return $this->customise($data)->renderWith(array('MemberProfilePage_add', MemberProfilePage::class, 'Page'));
 	}
 
 	/**
@@ -626,7 +279,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 			),
 			new MemberProfileValidator($this->Fields())
 		);
-		
+
 		$this->extend('updateAddForm', $form);
 		return $form;
 	}
@@ -645,7 +298,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 
 	public function LoginLink() {
 		return Controller::join_links(
-			Injector::inst()->get('Security')->Link(),
+			Injector::inst()->get(Security::class)->Link(),
 			'login',
 			'?BackURL=' . urlencode($this->Link())
 		);
@@ -731,7 +384,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if (
 			$this->EmailType != 'Validation'
 			|| (!$id = $request->param('ID')) || (!$key = $request->getVar('key')) || !is_numeric($id)
-			|| !$member = DataObject::get_by_id('Member', $id)
+			|| !$member = DataObject::get_by_id(Member::class, $id)
 		) {
 			$this->httpError(404);
 		}
@@ -831,7 +484,7 @@ class MemberProfilePage_Controller extends Page_Controller {
 		if(Member::currentUser() && $context != 'Add') {
 			$memberFields = Member::currentUser()->getMemberFormFields();
 		} else {
-			$memberFields = singleton('Member')->getMemberFormFields();
+			$memberFields = singleton(Member::class)->getMemberFormFields();
 		}
 
 		// use the default registration fields for adding members

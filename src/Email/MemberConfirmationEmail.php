@@ -1,4 +1,11 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Email;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Email\Email;
+
 /**
  * An email sent to the user with a link to validate and activate their account.
  *
@@ -107,8 +114,8 @@ class MemberConfirmationEmail extends Email {
 		$variables = array (
 			'$SiteName'       => SiteConfig::current_site_config()->Title,
 			'$LoginLink'      => Controller::join_links(
-				$absoluteBaseURL, 
-				singleton('Security')->Link('login')
+				$absoluteBaseURL,
+				singleton(Security::class)->Link('login')
 			),
 			'$ConfirmLink'    => Controller::join_links(
 				$absoluteBaseURL,
@@ -118,11 +125,11 @@ class MemberConfirmationEmail extends Email {
 			),
 			'$LostPasswordLink' => Controller::join_links(
 				$absoluteBaseURL,
-				singleton('Security')->Link('lostpassword')
+				singleton(Security::class)->Link('lostpassword')
 			),
 			'$Member.Created'   => $this->member->obj('Created')->Nice()
 		);
-		foreach(array('Name', 'FirstName', 'Surname', 'Email') as $field) {
+		foreach(array('Name', 'FirstName', 'Surname', Email::class) as $field) {
 			$variables["\$Member.$field"] = $this->member->$field;
 		}
 		$this->extend('updateEmailVariables', $variables);

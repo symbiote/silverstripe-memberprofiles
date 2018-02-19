@@ -1,23 +1,26 @@
 <?php
 
+use Symbiote\MemberProfiles\Model\MemberProfileField;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
+
 global $lang;
 
-$lang['en_US']['MemberProfileField']['PLURALNAME'] = array(
+$lang['en_US'][MemberProfileField::class]['PLURALNAME'] = array(
 	'Member Profile Fields',
 	50,
 	'Pural name of the object, used in dropdowns and to generally identify a collection of this object in the interface'
 );
-$lang['en_US']['MemberProfileField']['SINGULARNAME'] = array(
+$lang['en_US'][MemberProfileField::class]['SINGULARNAME'] = array(
 	'Member Profile Field',
 	50,
 	'Singular name of the object, used in dropdowns and to generally identify a single object in the interface'
 );
-$lang['en_US']['MemberProfilePage']['PLURALNAME'] = array(
+$lang['en_US'][MemberProfilePage::class]['PLURALNAME'] = array(
 	'Member Profile Pags',
 	50,
 	'Pural name of the object, used in dropdowns and to generally identify a collection of this object in the interface'
 );
-$lang['en_US']['MemberProfilePage']['SINGULARNAME'] = array(
+$lang['en_US'][MemberProfilePage::class]['SINGULARNAME'] = array(
 	'Member Profile Page',
 	50,
 	'Singular name of the object, used in dropdowns and to generally identify a single object in the interface'

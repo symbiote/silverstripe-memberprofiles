@@ -1,4 +1,8 @@
 <?php
+
+use SilverStripe\i18n\i18n;
+use Symbiote\MemberProfiles\Model\MemberProfileField;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
 /**
  * Spanish (Spain) language pack.
  *
@@ -17,22 +21,22 @@ if(array_key_exists('es_ES', $lang) && is_array($lang['es_ES'])) {
 	$lang['es_ES'] = $lang['en_US'];
 }
 
-$lang['es_ES']['MemberProfileField']['PLURALNAME'] = array(
+$lang['es_ES'][MemberProfileField::class]['PLURALNAME'] = array(
 	'Campos del Perfil del Miembro',
 	50,
 	'Nombre del objeto en plural, usado en las listas y generalmente identifica una coleccion de este objeto en la interface'
 );
-$lang['es_ES']['MemberProfileField']['SINGULARNAME'] = array(
+$lang['es_ES'][MemberProfileField::class]['SINGULARNAME'] = array(
 	'Campo del perfil del miembro',
 	50,
 	'Nombre del objeto en singular, usado en las listas y generalmente identifica un único objeto en la interface'
 );
-$lang['es_ES']['MemberProfilePage']['PLURALNAME'] = array(
+$lang['es_ES'][MemberProfilePage::class]['PLURALNAME'] = array(
 	'Páginas del Perfil del Miembro',
 	50,
 	'Nombre del objeto en plural, usado en las listas y generalmente identifica una coleccion de este objeto en la interface'
 );
-$lang['es_ES']['MemberProfilePage']['SINGULARNAME'] = array(
+$lang['es_ES'][MemberProfilePage::class]['SINGULARNAME'] = array(
 	'Página del Perfil del Miembro',
 	50,
 	'Nombre del objeto en singular, usado en las listas y generalmente identifica un único objeto en la interface'

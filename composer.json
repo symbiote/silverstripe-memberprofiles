@@ -11,16 +11,19 @@
 		}
 	],
 	"require": {
-		"silverstripe/framework": "3.*",
-		"silverstripe/cms": "3.*"
+		"silverstripe/framework": "~4.0",
+		"silverstripe/cms": "~4.0"
 	},
 	"suggest": {
 		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
 	},
 	"extra": {
+        "expose": [
+            "client"
+        ],
 		"installer-name": "memberprofiles",
 		"branch-alias": {
-			"dev-master": "2.0.x-dev"
+			"dev-master": "3.0.x-dev"
 		},
 		"screenshots": [
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
@@ -28,6 +31,12 @@
 			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/member-list.png"
 		]
 	},
+    "autoload": {
+        "psr-4": {
+            "Symbiote\\MemberProfiles\\": "src/",
+            "Symbiote\\MemberProfiles\\Tests\\": "tests/"
+        }
+    },
 	"replace": {
 		"silverstripe/memberprofiles": "self.version",
 		"ajshort/silverstripe-memberprofiles": "self.version",

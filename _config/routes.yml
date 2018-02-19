@@ -2,6 +2,6 @@
 Name: routes
 After: framework/routes#coreroutes
 ---
-Director:
+SilverStripe\Control\Director:
   rules:
-    'member-approval': 'MemberApprovalController'
+    member-approval: Symbiote\MemberProfiles\Controllers\MemberApprovalController

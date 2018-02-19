@@ -1,29 +1,19 @@
 de:
-  MemberProfileField:
-    PLURALNAME: 'Mitglieds-Profil Felder'
-    SINGULARNAME: 'Mitglieds-Profil Feld'
-  MemberProfilePage:
-    PLURALNAME: 'Mitglieds-Profil Seiten'
-    SINGULARNAME: 'Mitglieds-Profil Seite'
-    DESCRIPTION: 'Profil & Registrierungsseiten für Mitglieder'
-  MemberProfiles: 
-    ADD: 'hinzufügen'
+  MemberProfiles:
+    ADD: hinzufügen
     ADDMEMBER: 'Mitglied hinzufügen'
     ADDMEMBERLINK: 'Sie können diese Seite benutzen, um <a href="{addLink}">einen neuen Benutzer hinzuzufügen</a>.'
     AFTERREGISTRATION: 'Nach Anmeldung'
-    ALLOWREG: 'Registrierung erlauben auf dieser Seite'
-    ALLOWEDITING: 'Bearbeiten erlauben'
     ALLOWADD: 'Hinzufügen erlauben'
+    ALLOWEDITING: 'Bearbeiten erlauben'
     ALLOWPROFILEVIEWING: 'Profil ansehen erlauben'
+    ALLOWREG: 'Registrierung erlauben auf dieser Seite'
     ALREADYAPPROVED: 'Bereits bestätigt'
     ALREADYAPPROVEDNOTE: 'Dieses Mitglied wurde bereits bestätigt'
     ALWAYSDISPLAY: 'Immer anzeigen'
-    APPROVALGROUPS: 'Bestätigungsgruppen'
-    APPROVALREQUIRED: 'Ein neues Mitglied hat sich für {siteTitle} registriert und benötigt eine Bestätigung um sich einloggen zu können:'
+    APPROVALGROUPS: Bestätigungsgruppen
     APPROVALLINK: 'Bitte besuchen Sie den folgenden Link um das neue Mitglied zu bestätigen. Sobald es bestätigt wurde, bekommt dieses eine E-Mail, sofern dies konfiguriert wurde. Wenn Sie das Mitglied nicht bestätigen, wird es sich nicht einloggen können.'
-    REDIRECTAFTERREG: 'Nach Anmeldung umleiten'
-    REDIRECT_TARGET: 'Zu dieser Seite umleiten'
-    REDIRECTTOPAGE: 'Zu Seite umleiten'
+    APPROVALREQUIRED: 'Ein neues Mitglied hat sich für {siteTitle} registriert und benötigt eine Bestätigung um sich einloggen zu können:'
     CANNOTADDMEMBERS: 'Sie können keine Nutzer hinzufügen'
     CANNOTCONFIRMLOGGEDIN: 'Sie können die Anmeldung nicht bestätigen solange sie angemeldet sind.'
     CANNOTEDIT: 'Sie können Ihr Profil nicht über diese Seite bearbeiten.'
@@ -31,66 +21,75 @@ de:
     CHECKVISNOTE: 'Markiere diese Felder, um sie im öffentlichen Profil anzuzeigen.'
     CONFIRMCONTENT: 'Inhalt der Bestätigung'
     CONFIRMNOTE: 'Diese Meldung wird gezeigt, wenn der User sein Konto bestätigt.'
-    CONTENT: 'Inhalt'
-    CONTENTBLOCKS: 'Inhaltsblöcke'
-    DEFAULTVALUE: 'Standardwert'
+    CONTENT: Inhalt
+    CONTENTBLOCKS: Inhaltsblöcke
     DEFAULTPUBLIC: 'Öffentlich als Standardeinstellung?'
+    DEFAULTVALUE: Standardwert
     DONTDISPLAY: 'Nicht anzeigen'
     EDITPROFILE: 'Profil bearbeiten'
-    EMAIL: 'E-Mail'
+    EMAIL: E-Mail
     EMAILCONFIRMATION: 'Bestätigung per E-Mail'
-    EMAILCONTENT: 'E-Mail-Inhalt'
-    EMAILFROM: 'E-Mail-Absender'
-    EMAILSETTINGS: 'E-Mail-Einstellungen'
-    EMAILSUBJECT: 'E-Mail-Betreff'
-    EMAILTEMPLATE: 'E-Mail-Vorlage'
+    EMAILCONTENT: E-Mail-Inhalt
+    EMAILFROM: E-Mail-Absender
+    EMAILSETTINGS: E-Mail-Einstellungen
+    EMAILSUBJECT: E-Mail-Betreff
+    EMAILTEMPLATE: E-Mail-Vorlage
     EMAILVALID: 'E-Mail-Validierung einschalten'
-    EMAILVALIDATION: 'E-Mail-Validierung'
+    EMAILVALIDATION: E-Mail-Validierung
     FIELDOPTIONS: 'Felder Optionen'
-    FIELDS: 'Felder'
-    GROUPS: 'Guppen'
+    FIELDS: Felder
+    GROUPS: Guppen
     GROUPSETTINGS: 'Gruppen Einstellungen'
     GROUPSNOTE: 'Jedes Mitglied, der sich über diese Seite registriert, wird diesen Gruppen zugefügt (wenn Registrierung eingeschaltet ist). Zudem muss ein Mitglied dieser Gruppe angehören, um sein Profil auf dieser Seite bearbeiten zu können.'
-    LOGINHEADER: 'Einloggen'
     LOGIN: 'Wenn Sie bereits ein Konto besitzen, können Sie sich <a href="{loginLink}">hier einloggen</a>.'
-    MAIN: 'Inhalt'
+    LOGINHEADER: Einloggen
+    MAIN: Inhalt
     MANUALLYCONFIRM: 'Manuell bestätigen'
     MEMBERADDED: 'Ein neues Mitglied wurde hinzugefügt.'
     MEMBERAPPROVED: 'Mitglied bestätigt'
     MEMBERAPPROVEDCONTENT: 'Das Mitglied "%s" wurde bestätigt und kann sich nun anmelden.'
     MEMBERCHOICE: 'Erlaube dem Mitglied zu wählen'
-    MEMBERFIELD: 'Mitglieds-Feld'
+    MEMBERFIELD: Mitglieds-Feld
     MEMBERWITHSAME: 'Es ist bereits ein Mitglied mit dem selben %s vorhanden.'
-    NAME: 'Name'
+    NAME: Name
     NEEDSVALIDATIONTOLOGIN: 'Sie müssen Ihre Anmeldung zuerst bestätigen, bevor Sie sich einloggen können.'
     NOLOGINTILLCONFIRMED: 'Das Konto wird erst aktiv nachdem es bestätigt wurde.'
-    NONE: 'Keine'
+    NONE: Keine
     NOTIFYTHESEGROUPS: 'Diese Gruppen werden benachrichtigt'
-    PAGESETTINGS: 'Seiten-Einstellungen'
-    PROFILE: 'Profil'
-    PROFILEFIELDS: 'Profil-Felder'
-    PROFILEREGFIELDS: 'Profil-/Registrierungs-Felder'
-    PROFILESECTIONS: 'Profil-Abschnitte'
+    PAGESETTINGS: Seiten-Einstellungen
+    PROFILE: Profil
+    PROFILEFIELDS: Profil-Felder
+    PROFILEREGFIELDS: Profil-/Registrierungs-Felder
+    PROFILESECTIONS: Profil-Abschnitte
     PROFILEUPDATED: 'Ihr Profil wurde aktualisiert.'
-    PUBLICPROFILEDISABLED: 'Öffentliches Profil ist inaktiv'
     PUBLICPROFILE: 'Öffentliches Profil'
-    REDIRECT: 'Umleiten'
-    REGISTER: 'Registrieren'
-    REGISTERED: 'Registriert'
-    REGISTRATION: 'Registrierung'
-    REGSETTINGS: 'Registrierungseinstellungen'
+    PUBLICPROFILEDISABLED: 'Öffentliches Profil ist inaktiv'
+    REDIRECT: Umleiten
+    REDIRECTAFTERREG: 'Nach Anmeldung umleiten'
+    REDIRECTTOPAGE: 'Zu Seite umleiten'
+    REDIRECT_TARGET: 'Zu dieser Seite umleiten'
+    REGISTER: Registrieren
+    REGISTERED: Registriert
+    REGISTRATION: Registrierung
+    REGSETTINGS: Registrierungseinstellungen
     REQUIREREGAPPROVAL: 'Benötigt Bestätigung zur Registrierung'
     RESEND: 'nochmals versenden'
-    SAVE: 'Speichern'
+    SAVE: Speichern
     SELECTABLEGROUPS: 'wählbare Gruppen'
     SELECTABLENOTE: 'Mitglieder können wählen in welche Gruppe sie gehören, wenn "Gruppen" aktiv ist für dieses Feld'
     THISISYOURPROFILE: 'Dies ist ihr Profil!'
-    TITLE: 'Titel'
-    UNCONFIRMED: 'Unbestätigt'
-    VALIDATION: 'Validierung'
+    TITLE: Titel
+    UNCONFIRMED: Unbestätigt
+    VALIDATION: Validierung
     VALIDEMAILSUBJECT: 'Betreff Validierungs-E-Mail'
-    VALIDOPTIONS: 'Validierungsoptionen'
-    VISIBILITY: 'Sichtbarkeit'
+    VALIDOPTIONS: Validierungsoptionen
+    VISIBILITY: Sichtbarkeit
     VISIBLEMEMLISTINGPAGE: 'Auf der Mitgliedsliste anzeigen?'
     YOURPROFILE: 'Ihr Profil'
-    
+  Symbiote\MemberProfiles\Model\MemberProfileField:
+    PLURALNAME: 'Mitglieds-Profil Felder'
+    SINGULARNAME: 'Mitglieds-Profil Feld'
+  Symbiote\MemberProfiles\Model\MemberProfilePage:
+    DESCRIPTION: 'Profil & Registrierungsseiten für Mitglieder'
+    PLURALNAME: 'Mitglieds-Profil Seiten'
+    SINGULARNAME: 'Mitglieds-Profil Seite'

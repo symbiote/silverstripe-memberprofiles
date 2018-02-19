@@ -1,12 +1,12 @@
 Group:
-    group:
-        Title: Group
-        Code: Group
+  group:
+    Title: Group
+    Code: group
 
 Member:
-    unconfirmed:
-        FirstName: Test
-        Surname: User
-        Email: test@example.com
-        NeedsValidation: 1
-        Groups: =>Group.group
+  unconfirmed:
+    FirstName: Test
+    Surname: User
+    Email: test@example.com
+    NeedsValidation: 1
+    Groups: =>Group.group

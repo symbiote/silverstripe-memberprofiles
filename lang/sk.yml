@@ -1,45 +1,36 @@
 sk:
-  MemberProfileField:
-    DefaultTitle: Pole
-    PLURALNAME: 'Políčka'
-    SINGULARNAME: 'Políčko'
-  MemberProfilePage:
-    DESCRIPTION: 'Stránka slúži na správu profilu, pridávanie a registráciu užívateľov.'
-    PLURALNAME: 'Profilové stránky'
-    SINGULARNAME: 'Profilová stránka'
   MemberProfile:
     Registered: Registrovaný
-  MemberProfiles: 
+  MemberProfiles:
     ADD: Pridať
     ADDMEMBER: 'Pridať člena'
     ADDMEMBERLINK: 'Na pridanie nového člena môžete použiť <a href="{addLink}">túto stránku</a>.'
     ADDSECTION: 'Pridať sekciu'
     AFTERREGISTRATION: 'Po registrácii'
-    ALLOWREG: 'Povoliť registráciu prostredníctvom tejto stránky?'
-    ALLOWEDITING: 'Povoliť užívateľom úpravu ich profilu?'
     ALLOWADD: 'Povoliť pridávanie užívateľov prostredníctvom tejto stránky?'
+    ALLOWEDITING: 'Povoliť užívateľom úpravu ich profilu?'
     ALLOWPROFILEVIEWING: 'Povoliť verejné profily?'
+    ALLOWREG: 'Povoliť registráciu prostredníctvom tejto stránky?'
     ALREADYAPPROVED: 'Už potvrdené'
     ALREADYAPPROVEDNOTE: 'Tento člen už bol schválený.'
-    ALWAYSDISPLAY: 'Zobraziť'
+    ALWAYSDISPLAY: Zobraziť
     APPROVALGROUPS: 'Schvaľovacie skupiny'
-    APPROVALREQUIRED: 'Nový člen sa zaregistroval na {siteTitle} a potrebuje schváliť, aby sa mohol prihlásiť:'
     APPROVALLINK: 'Pre schválenie tohto člena navštívte prosím nasledujúci odkaz. Po schválení mu bude zaslaný potvrdzujúci e-mail (ak bol nakonfigurovaný). Ak tohto člena neschválite, nebude sa môcť prihlásiť.'
-    APPROVETHISMEMBER: 'Schváliť'
+    APPROVALREQUIRED: 'Nový člen sa zaregistroval na {siteTitle} a potrebuje schváliť, aby sa mohol prihlásiť:'
+    APPROVETHISMEMBER: Schváliť
     CANNOTADDMEMBERS: 'Prostredníctvom tejto stránky nemôžete pridávať nových užívateľov.'
     CANNOTCONFIRMLOGGEDIN: 'Nemôžete potvrdiť účet, kým ste prihlásený.'
     CANNOTEDIT: 'Prostredníctvom tejto stránky nie je možné upravovať si profil.'
     CANNOTREGPLEASELOGIN: 'Nemôžete sa zaregistrovať na tejto stránke. Prosím, prihláste sa na úpravu svojho profilu.'
     CHECKVISNOTE: 'Ak zaškrtnete políčko v poli, tak pole môže byť viditeľné ostatným návštevníkom.'
     CONFIRMCONTENT: 'Obsah potvrdenia (na stránke)'
-    CONTENT: 'Obsah'
+    CONTENT: Obsah
     CONTENTBLOCKS: 'Obsahové bloky'
-    DEFAULTVALUE: 'Predvolená hodnota'
     DEFAULTPUBLIC: 'Označiť ako verejný v predvolenom režime?'
-    DONOTCHANGE: 'Neschváliť'
-    DONTDISPLAY: 'Nezobrazovať'
+    DEFAULTVALUE: 'Predvolená hodnota'
+    DONOTCHANGE: Neschváliť
+    DONTDISPLAY: Nezobrazovať
     EDITPROFILE: 'Upraviť profil'
-    Email: E-Mail
     EMAILCONFIRMATION: 'Zaslať potvrdzovací e-mail'
     EMAILCONTENT: 'Obsah e-mailu'
     EMAILFROM: 'E-mail odosielateľa'
@@ -48,49 +39,58 @@ sk:
     EMAILTEMPLATE: 'Vzor e-mailovej správy'
     EMAILVALID: 'E-Mail-Validierung einschalten'
     EMAILVALIDATION: 'Vyžadovať overenie e-mailu'
+    Email: E-Mail
     FIELDS: 'Políčka profilu'
-    GROUPS: 'Skupiny'
+    GROUPS: Skupiny
     GROUPSNOTE: 'Akýkoľvek užívateľ, ktorý sa zaregistruje prostredníctvom tejto stránky bude vždy priadaný do týchto skupín (ak je registrácia povolená) a zároveň každý člen musí patriť k týmto skupinám, aby mohol upravovať svoj profil.'
-    LOGINHEADER: Prihlásenie
     LOGIN: 'Ak už máte účet, možete sa <a href="{loginLink}">prihlásiť tu</a>.'
+    LOGINHEADER: Prihlásenie
     MAIN: 'Hlavný obsah'
-    MANUALLYCONFIRM: 'Potvrdiť'
+    MANUALLYCONFIRM: Potvrdiť
     MEMBERADDED: 'Nový člen bol úspešne pridaný.'
     MEMBERAPPROVED: 'Člen schválený'
     MEMBERAPPROVEDCONTENT: 'Člen "%s" bol úspešne schválený a môže sa prihlásiť.'
     MEMBERCHOICE: 'Povoliť výber členovi'
-    MEMBERFIELD: 'Pole'
+    MEMBERFIELD: Pole
     MEMBERLIST: 'Zoznam členov'
     MEMBERPROFILETITLE: 'Profil %s'
     MEMBERWITHSAME: '%s už používa iný člen.'
-    Name: 'Meno'
     NEEDSVALIDATIONTOLOGIN: 'Musíte overiť váš účet, než sa budete môcť prihlásiť.'
     NOLOGINTILLCONFIRMED: 'Člen sa nemôže prihlásiť, kým jeho účet ešte nebol potvrdený.'
     NOLOGINUNTILAPPROVED: 'Tento člen ešte nebol schválený. Člen sa bude môcť prihlásiť až po schválení.'
-    NONE: 'Žiadne'
+    NONE: Žiadne
     NOTIFYTHESEGROUPS: 'Tieto skupiny budú oznámené na schválenie nových registrácií.'
-    PROFILE: 'Profil'
+    Name: Meno
+    PROFILE: Profil
     PROFILEFIELDS: 'Políčka profilu'
     PROFILEFIELDSLIST: 'Zoznam polí profilu'
     PROFILESECTIONS: 'Profilové sekcie'
-    PROFILEUPDATED: Váš profil bol úspešne zmenený.
-    PUBLICPROFILEDISABLED: 'Verejné profily nie sú povolené, môžete ich povoliť v záložke "Nastavenia".'
+    PROFILEUPDATED: 'Váš profil bol úspešne zmenený.'
     PUBLICPROFILE: 'Verejný profil'
+    PUBLICPROFILEDISABLED: 'Verejné profily nie sú povolené, môžete ich povoliť v záložke "Nastavenia".'
     REDIRECTAFTERREG: 'Presmerovať po registrácii?'
     REDIRECTTOPAGE: 'Presmerovať na stránku'
     REGAPPROVAL: 'Schválenie registrácie'
-    REGISTER: 'Registrovať'
-    REGISTRATION: 'Registrácia'
+    REGISTER: Registrovať
+    REGISTRATION: Registrácia
     REQUIREREGAPPROVAL: 'Vyžadovať schválenie registrácie administrátorom?'
     RESEND: 'Znovu poslať žiadosť'
-    SAVE: 'Uložiť'
+    SAVE: Uložiť
     SECTIONTYPE: 'Typ sekcie'
     SELECTABLEGROUPS: 'Voliteľné skupiny'
     SELECTABLENOTE: 'Užívatelia si môžu vybrať, do ktorých skupín budú patriť, ak je políčko "Groups" v záložke "Políčka profilu" povolené.'
     THISISYOURPROFILE: 'To je váš profil!'
-    TITLE: 'Titulok'
-    UNCONFIRMED: 'Nepotvrdiť'
-    VALIDATION: 'Validácia'
-    VISIBILITY: 'Viditeľnosť'
+    TITLE: Titulok
+    UNCONFIRMED: Nepotvrdiť
+    VALIDATION: Validácia
+    VISIBILITY: Viditeľnosť
     VISIBLEMEMLISTINGPAGE: 'Zobraziť na stánke zoznamu členov?'
     YOURPROFILE: 'Váš profil'
+  Symbiote\MemberProfiles\Model\MemberProfileField:
+    DefaultTitle: Pole
+    PLURALNAME: Políčka
+    SINGULARNAME: Políčko
+  Symbiote\MemberProfiles\Model\MemberProfilePage:
+    DESCRIPTION: 'Stránka slúži na správu profilu, pridávanie a registráciu užívateľov.'
+    PLURALNAME: 'Profilové stránky'
+    SINGULARNAME: 'Profilová stránka'

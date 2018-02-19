@@ -1,4 +1,14 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Tests;
+use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Security\Security;
+use SilverStripe\Control\Director;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
+use SilverStripe\Dev\SapphireTest;
+
 /**
  * Tests for {@link MemberConfirmationEmail}.
  *
@@ -38,7 +48,7 @@ class MemberConfirmationEmailTest extends SapphireTest {
 		$expected = "<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: " . SiteConfig::current_site_config()->Title . "</li>
-			<li>Login Link: " . Director::absoluteURL(Security::Link('login')) . "</li>
+			<li>Login Link: " . singleton(Security::class)->Link('login') . "</li>
 			<li>Member:
 				<ul>
 					<li>Since: " . $member->obj('Created')->Nice() . "</li>

@@ -1,4 +1,14 @@
 <?php
+
+namespace Symbiote\MemberProfiles\Tests;
+use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Admin\SecurityAdmin;
+use SilverStripe\Security\Group;
+use SilverStripe\Forms\Form;
+use SilverStripe\Control\Controller;
+use SilverStripe\Dev\FunctionalTest;
+
 /**
  * Tests manually confirming users in the admin panel.
  *
@@ -14,7 +24,7 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 	 * @covers MemberProfileExtension::updateCMSFields
 	 */
 	public function testManualConfirmation() {
-		$member = $this->objFromFixture('Member', 'unconfirmed');
+		$member = $this->objFromFixture(Member::class, 'unconfirmed');
 		$this->assertEquals(true, (bool) $member->NeedsValidation);
 
 		$this->getSecurityAdmin();
@@ -22,7 +32,7 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 			'ManualEmailValidation' => 'confirm'
 		));
 
-		$member = DataObject::get_by_id('Member', $member->ID);
+		$member = DataObject::get_by_id(Member::class, $member->ID);
 		$this->assertEquals(false, (bool) $member->NeedsValidation);
 	}
 
@@ -31,7 +41,7 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 	 * @covers MemberProfileExtension::updateCMSFields
 	 */
 	public function testResendConfirmationEmail() {
-		$member = $this->objFromFixture('Member', 'unconfirmed');
+		$member = $this->objFromFixture(Member::class, 'unconfirmed');
 		$this->assertEquals(true, (bool) $member->NeedsValidation);
 
 		$this->getSecurityAdmin();
@@ -39,16 +49,16 @@ class MemberConfirmationAdminTest extends FunctionalTest {
 			'ManualEmailValidation' => 'resend'
 		));
 
-		$member = DataObject::get_by_id('Member', $member->ID);
+		$member = DataObject::get_by_id(Member::class, $member->ID);
 		$this->assertEquals(true, (bool) $member->NeedsValidation);
 
 		$this->assertEmailSent($member->Email);
 	}
 
 	protected function getSecurityAdmin() {
-		$member = $this->objFromFixture('Member', 'unconfirmed');
+		$member = $this->objFromFixture(Member::class, 'unconfirmed');
 		$admin  = new SecurityAdmin();
-		$group  = $this->objFromFixture('Group', 'group');
+		$group  = $this->objFromFixture(Group::class, 'group');
 
 		Form::disable_all_security_tokens();
 		$this->logInWithPermission('ADMIN');
