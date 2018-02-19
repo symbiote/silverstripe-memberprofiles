@@ -1,9 +1,3 @@
-SS4 Upgrade progress
-
-√ Namespacing and updating for namespacing
-- Error when adding public profile section to ProfilePage in the CMS.
-- Run cs-fixer
-
 SilverStripe Member Profile Pages Module
 ========================================
 
@@ -14,7 +8,7 @@ Maintainer Contacts
 Requirements
 ------------
 
-* SilverStripe 4 - [master branch](https://github.com/ajshort/silverstripe-memberprofiles)
+* SilverStripe 4 - [master branch CURRENTLY ALPHA](https://github.com/ajshort/silverstripe-memberprofiles)
 * SilverStripe 3.1 & 3.2 - [2.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/2.0)
 * SilverStripe 3.0 - [1.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/1.0)
 * SilverStripe 2.4 - [0.5 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/0.5)
@@ -133,4 +127,4 @@ MemberApprovalController:
 
 Known Issues
 ------------
-[Issue Tracker](http://github.com/ajshort/silverstripe-memberprofiles/issues)
+- [SS4](https://github.com/symbiote/silverstripe-memberprofiles/pull/137)

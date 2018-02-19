@@ -4,7 +4,6 @@ namespace Symbiote\MemberProfiles\Forms;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Control\Email\Email;
 use SilverStripe\Forms\RequiredFields;
 
 /**
@@ -57,10 +56,10 @@ class MemberProfileValidator extends RequiredFields {
 				sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
 			);
 
-			$isEmail = $field === Email::class;
+			$isEmail = $field === 'Email';
 			$emailOK = !$isEmail;
 			if ($isEmail) {
-				$existing = Member::get()->filter('Email:nocase', $data[Email::class]);
+				$existing = Member::get()->filter('Email:nocase', $data['Email']);
 
 				// This ensures the existing member isn't the same as the current member, in case they're updating information.
 

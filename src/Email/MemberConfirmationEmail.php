@@ -129,7 +129,7 @@ class MemberConfirmationEmail extends Email {
 			),
 			'$Member.Created'   => $this->member->obj('Created')->Nice()
 		);
-		foreach(array('Name', 'FirstName', 'Surname', Email::class) as $field) {
+		foreach(array('Name', 'FirstName', 'Surname', 'Email') as $field) {
 			$variables["\$Member.$field"] = $this->member->$field;
 		}
 		$this->extend('updateEmailVariables', $variables);
