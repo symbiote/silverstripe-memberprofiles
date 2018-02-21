@@ -1,10 +1,9 @@
 <?php
 
-namespace Symbiote\MemberProfiles\Controllers;
+namespace Symbiote\MemberProfiles\Pages;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
 use PageController;

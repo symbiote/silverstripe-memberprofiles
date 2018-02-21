@@ -1,6 +1,6 @@
 <?php
 
-namespace Symbiote\MemberProfiles\Model;
+namespace Symbiote\MemberProfiles\Pages;
 use Page;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
@@ -12,7 +12,6 @@ use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\Tab;
-use SilverStripe\Control\Email\Email;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;

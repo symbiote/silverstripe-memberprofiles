@@ -1,7 +1,6 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Model;
-use Symbiote\MemberProfiles\Model\MemberProfileSection;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 

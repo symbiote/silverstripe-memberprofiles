@@ -1,7 +1,7 @@
 <?php
 
 use Symbiote\MemberProfiles\Model\MemberProfileField;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 
 global $lang;
 

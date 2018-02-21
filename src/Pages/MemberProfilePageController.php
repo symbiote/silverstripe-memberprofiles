@@ -1,17 +1,12 @@
 <?php
-// TODO this should be in the Controller namespace but that causes issues
-// in SiteTree::getControllerName, so needs to be the same as MemberProfilePage
-// Model for now
 
-namespace Symbiote\MemberProfiles\Model;
+namespace Symbiote\MemberProfiles\Pages;
 use SilverStripe\Control\Session;
 use SilverStripe\Security\Member;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
 use SilverStripe\Security\Security;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\FieldList;
-use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 use SilverStripe\Forms\Form;
 use SilverStripe\Control\Director;
 use SilverStripe\ORM\ValidationException;
@@ -19,10 +14,12 @@ use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\SiteConfig\SiteConfig;
-use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Forms\LiteralField;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfileViewer;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
-use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
+use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 use PageController;
 
 /**

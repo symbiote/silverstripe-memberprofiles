@@ -1,6 +1,6 @@
 <?php
 
-namespace Symbiote\MemberProfiles\Controllers;
+namespace Symbiote\MemberProfiles\Pages;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;

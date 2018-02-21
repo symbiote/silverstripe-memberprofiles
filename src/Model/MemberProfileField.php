@@ -1,7 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Model;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\HeaderField;
