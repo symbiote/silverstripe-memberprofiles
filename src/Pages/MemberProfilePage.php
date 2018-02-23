@@ -126,7 +126,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
 	private static $description = '';
 
-	private static $icon = 'memberprofiles/images/memberprofilepage.png';
+	private static $icon = 'memberprofiles/client/images/memberprofilepage.png';
 
 	/**
 	 * If profile editing is disabled, but the current user can add members,
