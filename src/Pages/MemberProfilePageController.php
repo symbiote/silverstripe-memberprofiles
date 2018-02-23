@@ -15,6 +15,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\View\Requirements;
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use Symbiote\MemberProfiles\Pages\MemberProfileViewer;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
@@ -523,8 +524,13 @@ class MemberProfilePageController extends PageController {
 				$field = $field->performReadonlyTransformation();
 			}
 
-			$field->setTitle($profileField->Title);
-			$field->setDescription($profileField->Note);
+			if($name == 'Password') {
+                Requirements::javascript("memberprofiles/client/javascript/ConfirmedPasswordField.js");
+            }
+
+            // The follow two if-conditions were added since the SS4 migration because a Password label disappeared
+			if($profileField->Title) $field->setTitle($profileField->Title);
+            if($profileField->Note) $field->setDescription($profileField->Note);
 
 			if($context == 'Registration' && $profileField->DefaultValue) {
 				$field->setValue($profileField->DefaultValue);
