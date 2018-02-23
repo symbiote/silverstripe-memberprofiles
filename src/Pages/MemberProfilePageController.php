@@ -47,12 +47,8 @@ class MemberProfilePageController extends PageController {
 		if (isset($_GET['BackURL'])) {
 			Session::set('MemberProfile.REDIRECT', $_GET['BackURL']);
 		}
-		$mode = Member::currentUser() ? 'profile' : 'register';
-		$data = Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
-		if (is_array($data)) {
-			return $this->customise($data)->renderWith(array('MemberProfilePage_'.$mode, MemberProfilePage::class, 'Page'));
-		}
-		return $data;
+
+		return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
 	}
 
 	/**
@@ -66,11 +62,14 @@ class MemberProfilePageController extends PageController {
 			'You cannot register on this profile page. Please login to edit your profile.'
 		));
 
-		return array (
-			'Title'   => $this->obj('RegistrationTitle'),
-			'Content' => $this->obj('RegistrationContent'),
-			'Form'    => $this->RegisterForm()
-		);
+		$data = array(
+            'Type'    => 'Register',
+            'Title'   => $this->obj('RegistrationTitle'),
+            'Content' => $this->obj('RegistrationContent'),
+            'Form'    => $this->RegisterForm()
+        );
+
+		return $this->customise($data);
 	}
 
 	/**
@@ -116,11 +115,14 @@ class MemberProfilePageController extends PageController {
 			}
 		}
 
-		return array (
-			'Title' => $this->obj('ProfileTitle'),
-			'Content' => $this->obj('ProfileContent'),
-			'Form'  => $form
-		);
+		$data = array(
+            'Type'    => 'Profile',
+            'Title'   => $this->obj('ProfileTitle'),
+            'Content' => $this->obj('ProfileContent'),
+            'Form'    => $form
+        );
+
+		return $this->customise($data);
 	}
 
 	/**
@@ -255,12 +257,13 @@ class MemberProfilePageController extends PageController {
 		}
 
 		$data = array(
+			'Type'    => 'Add',
 			'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'),
 			'Content' => '',
 			'Form'    => $this->AddForm()
 		);
 
-		return $this->customise($data)->renderWith(array('MemberProfilePage_add', MemberProfilePage::class, 'Page'));
+		return $this->customise($data);
 	}
 
 	/**

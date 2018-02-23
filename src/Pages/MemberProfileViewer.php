@@ -87,11 +87,11 @@ class MemberProfileViewer extends PageController {
 		$this->data()->Parent = $this->parent;
 
 		$controller = $this->customise(array(
+			'Type'    => 'List',
 			'Members' => $list
 		));
-		return $controller->renderWith(array(
-			'MemberProfileViewer_list', MemberProfileViewer::class, 'Page'
-		));
+
+		return $controller;
 	}
 
 	/**
@@ -128,13 +128,13 @@ class MemberProfileViewer extends PageController {
 		$this->data()->Parent = $this->parent;
 
 		$controller = $this->customise(array(
+			'Type'     => 'View',
 			'Member'   => $member,
 			'Sections' => $sectionsList,
 			'IsSelf'   => $member->ID == Member::currentUserID()
 		));
-		return $controller->renderWith(array(
-			'MemberProfileViewer_view', MemberProfileViewer::class, 'Page'
-		));
+
+        return $controller;
 	}
 
 	/**
