@@ -47,7 +47,12 @@ class MemberProfileViewer extends PageController {
 	 */
 	public function handleList($request) {
 		$fields  = $this->parent->Fields()->filter('MemberListVisible', true);
-		$members = $this->parent->Groups()->relation('Members');
+
+		$groups = $this->parent->Groups();
+        if($groups->Count()) {
+            // todo: this ->relation method does not seem to work: no Members are found
+            $members = $groups->relation('Members');
+        } else $members = Member::get();
 		$members = new PaginatedList($members, $request);
 
 		$list = new PaginatedList(new ArrayList(), $request);
@@ -109,7 +114,7 @@ class MemberProfileViewer extends PageController {
 		$member = Member::get()->byID($id);
 		$groups = $this->parent->Groups();
 
-		if(!$member->inGroups($groups)) {
+		if($groups->Count() && !$member->inGroups($groups)) {
 			$this->httpError(403);
 		}
 
