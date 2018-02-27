@@ -103,7 +103,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'Email' => array(
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit',
-			'PublicVisibility'       => 'MemberChoice'
+			'PublicVisibility'       => 'MemberChoice',
+			'Unique'                 => true,
+			'Required'               => true
 		),
 		'FirstName' => array(
 			'RegistrationVisibility' => 'Edit',
@@ -120,7 +122,8 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		),
 		'Password' => array(
 			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit'
+			'ProfileVisibility'      => 'Edit',
+			'Required'               => true
 		)
 	);
 
