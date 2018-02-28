@@ -1,32 +1,32 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Pages;
+use Psr\Container\NotFoundExceptionInterface;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
+use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
-use SilverStripe\Control\Director;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Control\Controller;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Control\Email\Email;
-use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
-use Symbiote\MemberProfiles\Pages\MemberProfilePage;
-use Symbiote\MemberProfiles\Pages\MemberProfileViewer;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
 use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
-use PageController;
 
 /**
  *
  */
-class MemberProfilePageController extends PageController {
+class MemberProfilePageController extends \PageController {
 
 	private static $allowed_actions = array (
 		'index',
@@ -166,7 +166,10 @@ class MemberProfilePageController extends PageController {
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
 			if(!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
-				$member->logIn();
+                try {
+                    Injector::inst()->get(IdentityStore::class)->logIn($member);
+                } catch (NotFoundExceptionInterface $e) {
+                }
 			}
 
 			if ($this->RegistrationRedirect) {
@@ -400,7 +403,11 @@ class MemberProfilePageController extends PageController {
 
 		$this->extend('onConfirm', $member);
 
-		$member->logIn();
+        try {
+            Injector::inst()->get(IdentityStore::class)->logIn($member);
+        } catch (NotFoundExceptionInterface $e) {
+            // todo: do something interesting, like telling the user to go to Security/login
+        }
 
 		return array (
 			'Title'   => $this->obj('ConfirmationTitle'),
