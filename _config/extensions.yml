@@ -1,5 +1,5 @@
 ---
-Name: extensions
+Name: memberprofiles-extensions
 ---
 SilverStripe\Security\Member:
   extensions:
