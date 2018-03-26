@@ -204,7 +204,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 
         if (class_exists('GridFieldOrderableRows')) {
             $grid->addComponent(new GridFieldOrderableRows('Sort'));
-        } else if (class_exists('GridFieldSortableRows')) {
+        } else if (class_exists(GridFieldSortableRows::class)) {
             $grid->addComponent(new GridFieldSortableRows('Sort'));
         }
 
