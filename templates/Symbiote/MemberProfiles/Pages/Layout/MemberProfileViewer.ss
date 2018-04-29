@@ -1,4 +1,4 @@
-<% require css(memberprofiles/client/css/MemberProfileViewer.css) %>
+<% require css(symbiote/silverstripe-memberprofiles: client/css/MemberProfileViewer.css) %>
 <div class="content-container typography">
 	<h1>$Title</h1>
 
