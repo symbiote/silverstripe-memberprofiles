@@ -1,45 +1,39 @@
 {
-	"name": "symbiote/silverstripe-memberprofiles",
-	"description": "Member registration and profile management",
-	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "member", "profile", "registration"],
-	"license": "BSD-3-Clause",
-	"authors": [
-		{
-			"name": "Andrew Short",
-			"email": "andrewjshort@gmail.com"
-		}
-	],
-	"require": {
-		"silverstripe/framework": "~4.0",
-		"silverstripe/cms": "~4.0"
-	},
-	"suggest": {
-		"ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
-	},
-	"extra": {
+    "name": "symbiote/silverstripe-memberprofiles",
+    "description": "Member registration and profile management",
+    "type": "silverstripe-vendormodule",
+    "keywords": ["silverstripe", "member", "profile", "registration"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Andrew Short",
+            "email": "andrewjshort@gmail.com"
+        }
+    ],
+    "require": {
+        "silverstripe/framework": "~4.0",
+        "silverstripe/cms": "~4.0"
+    },
+    "suggest": {
+        "ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
+    },
+    "extra": {
         "expose": [
             "client"
         ],
-		"installer-name": "memberprofiles",
-		"branch-alias": {
-			"dev-master": "3.0.x-dev"
-		},
-		"screenshots": [
-			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/edit-profile.png",
-			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/cms-profile-fields.png",
-			"http://ajshort.github.com/silverstripe-memberprofiles/screenshots/member-list.png"
-		]
-	},
-    "autoload": {
-        "psr-4": {
-            "Symbiote\\MemberProfiles\\": "src/",
-            "Symbiote\\MemberProfiles\\Tests\\": "tests/"
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
         }
     },
-	"replace": {
-		"silverstripe/memberprofiles": "self.version",
-		"ajshort/silverstripe-memberprofiles": "self.version",
-		"silverstripe-australia/memberprofiles": "self.version"
-	}
+    "autoload": {
+      "psr-4": {
+          "Symbiote\\MemberProfiles\\": "src/",
+          "Symbiote\\MemberProfiles\\Tests\\": "tests/"
+      }
+    },
+    "replace": {
+        "silverstripe/memberprofiles": "self.version",
+        "ajshort/silverstripe-memberprofiles": "self.version",
+        "silverstripe-australia/memberprofiles": "self.version"
+    }
 }
