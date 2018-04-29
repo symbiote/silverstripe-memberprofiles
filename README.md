@@ -8,16 +8,16 @@ Maintainer Contacts
 Requirements
 ------------
 
-* SilverStripe 4 - [master branch CURRENTLY ALPHA](https://github.com/ajshort/silverstripe-memberprofiles)
-* SilverStripe 3.1 & 3.2 - [2.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/2.0)
+* SilverStripe 4 - [master branch (currently alpha)](https://github.com/ajshort/silverstripe-memberprofiles)
+* SilverStripe 3.1+ - [2.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/2.0)
 * SilverStripe 3.0 - [1.0 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/1.0)
 * SilverStripe 2.4 - [0.5 branch](https://github.com/ajshort/silverstripe-memberprofiles/tree/0.5)
 
 Installation Instructions
 -------------------------
 
-1. Place this directory in the root of your SilverStripe installation.
-2. Visit yoursite.com/dev/build to rebuild the database.
+1. `composer install symbiote/silverstripe-memberprofiles`, or download this module into the root of your SilverStripe installation.
+2. Visit `yoursite.com/dev/build` to rebuild the database.
 
 Usage Overview
 --------------
@@ -66,7 +66,7 @@ registration. This requires the "RegistrationRedirect" property to be set
 on the After Registration tab.
 
 If you like, you can manually set a redirection target by setting
-Session::set('MemberProfile.REDIRECT') to a URL value.
+`Session::set('MemberProfile.REDIRECT')` to a URL value.
 
 Examples
 --------
@@ -94,7 +94,7 @@ class MemberExtension extends DataExtension {
 This example shows how to override the base URL so that MemberProfilePage will work with the Multisites module.
 
 ```yml
-MemberConfirmationEmail:
+Symbiote\MemberProfiles\Email\MemberConfirmationEmail:
   extensions:
     - 'MemberConfirmationEmailExtension'
 ```
@@ -119,7 +119,7 @@ class MemberConfirmationEmailExtension extends Extension {
 Configuration
 ------------
 ```yml
-MemberApprovalController:
+Symbiote\MemberProfiles\Pages\MemberApprovalController:
   # Redirect the user to the 'admin/Security' member edit page instead
   # of immediately approving after visiting the approve link.
   redirect_to_admin: false
@@ -127,4 +127,5 @@ MemberApprovalController:
 
 Known Issues
 ------------
-- [SS4](https://github.com/symbiote/silverstripe-memberprofiles/pull/137)
+- [SS4 upgrade](https://github.com/symbiote/silverstripe-memberprofiles/pull/137#issuecomment-364824650)
+- [Members List](https://github.com/symbiote/silverstripe-memberprofiles/pull/138#issuecomment-368744525)
