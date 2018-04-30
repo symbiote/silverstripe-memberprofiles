@@ -2,7 +2,7 @@
 
 use SilverStripe\i18n\i18n;
 use Symbiote\MemberProfiles\Model\MemberProfileField;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 /**
  * Spanish (Spain) language pack.
  *

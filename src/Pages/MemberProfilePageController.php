@@ -1,34 +1,32 @@
 <?php
-// TODO this should be in the Controller namespace but that causes issues
-// in SiteTree::getControllerName, so needs to be the same as MemberProfilePage
-// Model for now
 
-namespace Symbiote\MemberProfiles\Model;
+namespace Symbiote\MemberProfiles\Pages;
+use Psr\Container\NotFoundExceptionInterface;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
+use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
 use SilverStripe\Security\Security;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\FieldList;
-use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
-use SilverStripe\Forms\Form;
-use SilverStripe\Control\Director;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\Control\Controller;
-use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
-use SilverStripe\SiteConfig\SiteConfig;
-use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\Requirements;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
-use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
-use PageController;
+use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 
 /**
  *
  */
-class MemberProfilePageController extends PageController {
+class MemberProfilePageController extends \PageController {
 
 	private static $allowed_actions = array (
 		'index',
@@ -50,12 +48,8 @@ class MemberProfilePageController extends PageController {
 		if (isset($_GET['BackURL'])) {
 			Session::set('MemberProfile.REDIRECT', $_GET['BackURL']);
 		}
-		$mode = Member::currentUser() ? 'profile' : 'register';
-		$data = Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
-		if (is_array($data)) {
-			return $this->customise($data)->renderWith(array('MemberProfilePage_'.$mode, MemberProfilePage::class, 'Page'));
-		}
-		return $data;
+
+		return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
 	}
 
 	/**
@@ -69,11 +63,14 @@ class MemberProfilePageController extends PageController {
 			'You cannot register on this profile page. Please login to edit your profile.'
 		));
 
-		return array (
-			'Title'   => $this->obj('RegistrationTitle'),
-			'Content' => $this->obj('RegistrationContent'),
-			'Form'    => $this->RegisterForm()
-		);
+		$data = array(
+            'Type'    => 'Register',
+            'Title'   => $this->obj('RegistrationTitle'),
+            'Content' => $this->obj('RegistrationContent'),
+            'Form'    => $this->RegisterForm()
+        );
+
+		return $this->customise($data);
 	}
 
 	/**
@@ -119,11 +116,14 @@ class MemberProfilePageController extends PageController {
 			}
 		}
 
-		return array (
-			'Title' => $this->obj('ProfileTitle'),
-			'Content' => $this->obj('ProfileContent'),
-			'Form'  => $form
-		);
+		$data = array(
+            'Type'    => 'Profile',
+            'Title'   => $this->obj('ProfileTitle'),
+            'Content' => $this->obj('ProfileContent'),
+            'Form'    => $form
+        );
+
+		return $this->customise($data);
 	}
 
 	/**
@@ -166,7 +166,10 @@ class MemberProfilePageController extends PageController {
 	public function register($data, Form $form) {
 		if($member = $this->addMember($form)) {
 			if(!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
-				$member->logIn();
+                try {
+                    Injector::inst()->get(IdentityStore::class)->logIn($member);
+                } catch (NotFoundExceptionInterface $e) {
+                }
 			}
 
 			if ($this->RegistrationRedirect) {
@@ -258,12 +261,13 @@ class MemberProfilePageController extends PageController {
 		}
 
 		$data = array(
+			'Type'    => 'Add',
 			'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'),
 			'Content' => '',
 			'Form'    => $this->AddForm()
 		);
 
-		return $this->customise($data)->renderWith(array('MemberProfilePage_add', MemberProfilePage::class, 'Page'));
+		return $this->customise($data);
 	}
 
 	/**
@@ -399,7 +403,11 @@ class MemberProfilePageController extends PageController {
 
 		$this->extend('onConfirm', $member);
 
-		$member->logIn();
+        try {
+            Injector::inst()->get(IdentityStore::class)->logIn($member);
+        } catch (NotFoundExceptionInterface $e) {
+            // todo: do something interesting, like telling the user to go to Security/login
+        }
 
 		return array (
 			'Title'   => $this->obj('ConfirmationTitle'),
@@ -523,8 +531,13 @@ class MemberProfilePageController extends PageController {
 				$field = $field->performReadonlyTransformation();
 			}
 
-			$field->setTitle($profileField->Title);
-			$field->setDescription($profileField->Note);
+			if($name == 'Password') {
+                Requirements::javascript("symbiote/silverstripe-memberprofiles: client/javascript/ConfirmedPasswordField.js");
+            }
+
+            // The follow two if-conditions were added since the SS4 migration because a Password label disappeared
+			if($profileField->Title) $field->setTitle($profileField->Title);
+            if($profileField->Note) $field->setDescription($profileField->Note);
 
 			if($context == 'Registration' && $profileField->DefaultValue) {
 				$field->setValue($profileField->DefaultValue);

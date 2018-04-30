@@ -154,7 +154,7 @@ class MemberConfirmationEmail extends Email {
 		$this->member = $member;
 
 		if (!$isSingleton) {
-			$this->from    = $page->EmailFrom ? $page->EmailFrom : Email::getAdminEmail();
+			$this->from    = $page->EmailFrom ? $page->EmailFrom : Email::config()->get('admin_email');
 			$this->to      = $member->Email;
 			$this->subject = $this->getParsedString($page->EmailSubject);
 			$this->body    = $this->getParsedString($page->EmailTemplate);

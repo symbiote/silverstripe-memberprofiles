@@ -89,7 +89,7 @@ de:
   Symbiote\MemberProfiles\Model\MemberProfileField:
     PLURALNAME: 'Mitglieds-Profil Felder'
     SINGULARNAME: 'Mitglieds-Profil Feld'
-  Symbiote\MemberProfiles\Model\MemberProfilePage:
+  Symbiote\MemberProfiles\Pages\MemberProfilePage:
     DESCRIPTION: 'Profil & Registrierungsseiten für Mitglieder'
     PLURALNAME: 'Mitglieds-Profil Seiten'
     SINGULARNAME: 'Mitglieds-Profil Seite'

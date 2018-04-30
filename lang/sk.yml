@@ -90,7 +90,7 @@ sk:
     DefaultTitle: Pole
     PLURALNAME: Políčka
     SINGULARNAME: Políčko
-  Symbiote\MemberProfiles\Model\MemberProfilePage:
+  Symbiote\MemberProfiles\Pages\MemberProfilePage:
     DESCRIPTION: 'Stránka slúži na správu profilu, pridávanie a registráciu užívateľov.'
     PLURALNAME: 'Profilové stránky'
     SINGULARNAME: 'Profilová stránka'

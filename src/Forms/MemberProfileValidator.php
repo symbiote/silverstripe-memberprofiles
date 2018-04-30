@@ -92,7 +92,7 @@ class MemberProfileValidator extends RequiredFields {
 			if($validator = $member::password_validator()) {
 				$results = $validator->validate($data['Password'], $member);
 
-				if(!$results->valid()) {
+				if(!$results->isValid()) {
 					$valid = false;
 					foreach($results->messageList() as $key => $value) {
 						$this->validationError('Password', $value, 'required');

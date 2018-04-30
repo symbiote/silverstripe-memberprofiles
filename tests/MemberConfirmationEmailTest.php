@@ -1,7 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Tests;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;

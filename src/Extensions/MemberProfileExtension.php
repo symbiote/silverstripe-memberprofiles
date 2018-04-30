@@ -1,7 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Extensions;
-use Symbiote\MemberProfiles\Model\MemberProfilePage;
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\FieldList;
@@ -26,7 +26,7 @@ class MemberProfileExtension extends DataExtension {
 	);
 
 	private static $has_one = array(
-	'ProfilePage' => MemberProfilePage::class
+	    'ProfilePage' => MemberProfilePage::class
 	);
 
 	public function getPublicFields() {

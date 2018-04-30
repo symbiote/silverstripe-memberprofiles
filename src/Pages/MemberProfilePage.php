@@ -1,6 +1,6 @@
 <?php
 
-namespace Symbiote\MemberProfiles\Model;
+namespace Symbiote\MemberProfiles\Pages;
 use Page;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
@@ -12,7 +12,6 @@ use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\Tab;
-use SilverStripe\Control\Email\Email;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
@@ -90,7 +89,7 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'AllowProfileViewing'      => true,
 		'AllowProfileEditing'      => true,
 		'ConfirmationTitle'        => 'Account Confirmed',
-		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thankyou!</p>'
+		'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'
 	);
 
     private static $table_name = 'MemberProfilePage';
@@ -104,7 +103,9 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		'Email' => array(
 			'RegistrationVisibility' => 'Edit',
 			'ProfileVisibility'      => 'Edit',
-			'PublicVisibility'       => 'MemberChoice'
+			'PublicVisibility'       => 'MemberChoice',
+			'Unique'                 => true,
+			'Required'               => true
 		),
 		'FirstName' => array(
 			'RegistrationVisibility' => 'Edit',
@@ -121,13 +122,14 @@ class MemberProfilePage extends Page implements PermissionProvider {
 		),
 		'Password' => array(
 			'RegistrationVisibility' => 'Edit',
-			'ProfileVisibility'      => 'Edit'
+			'ProfileVisibility'      => 'Edit',
+			'Required'               => true
 		)
 	);
 
 	private static $description = '';
 
-	private static $icon = 'memberprofiles/images/memberprofilepage.png';
+	private static $icon = 'symbiote/silverstripe-memberprofiles: client/images/memberprofilepage.png';
 
 	/**
 	 * If profile editing is disabled, but the current user can add members,

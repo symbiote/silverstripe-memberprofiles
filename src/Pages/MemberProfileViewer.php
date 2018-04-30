@@ -1,10 +1,9 @@
 <?php
 
-namespace Symbiote\MemberProfiles\Controllers;
+namespace Symbiote\MemberProfiles\Pages;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use Symbiote\MemberProfiles\Controllers\MemberProfileViewer;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
 use PageController;
@@ -48,7 +47,12 @@ class MemberProfileViewer extends PageController {
 	 */
 	public function handleList($request) {
 		$fields  = $this->parent->Fields()->filter('MemberListVisible', true);
-		$members = $this->parent->Groups()->relation('Members');
+
+		$groups = $this->parent->Groups();
+        if($groups->Count()) {
+            // todo: this ->relation method does not seem to work: no Members are found
+            $members = $groups->relation('Members');
+        } else $members = Member::get();
 		$members = new PaginatedList($members, $request);
 
 		$list = new PaginatedList(new ArrayList(), $request);
@@ -88,11 +92,11 @@ class MemberProfileViewer extends PageController {
 		$this->data()->Parent = $this->parent;
 
 		$controller = $this->customise(array(
+			'Type'    => 'List',
 			'Members' => $list
 		));
-		return $controller->renderWith(array(
-			'MemberProfileViewer_list', MemberProfileViewer::class, 'Page'
-		));
+
+		return $controller;
 	}
 
 	/**
@@ -110,7 +114,7 @@ class MemberProfileViewer extends PageController {
 		$member = Member::get()->byID($id);
 		$groups = $this->parent->Groups();
 
-		if(!$member->inGroups($groups)) {
+		if($groups->Count() && !$member->inGroups($groups)) {
 			$this->httpError(403);
 		}
 
@@ -129,13 +133,13 @@ class MemberProfileViewer extends PageController {
 		$this->data()->Parent = $this->parent;
 
 		$controller = $this->customise(array(
+			'Type'     => 'View',
 			'Member'   => $member,
 			'Sections' => $sectionsList,
 			'IsSelf'   => $member->ID == Member::currentUserID()
 		));
-		return $controller->renderWith(array(
-			'MemberProfileViewer_view', MemberProfileViewer::class, 'Page'
-		));
+
+        return $controller;
 	}
 
 	/**
