@@ -240,7 +240,7 @@ class MemberProfilePage extends Page
 
         if (class_exists(GridFieldOrderableRows::class)) {
             $grid->addComponent(new GridFieldOrderableRows('Sort'));
-        } else if (class_exists(GridFieldSortableRows::class)) {
+        } elseif (class_exists(GridFieldSortableRows::class)) {
             $grid->addComponent(new GridFieldSortableRows('Sort'));
         }
 

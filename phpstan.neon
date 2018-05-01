@@ -7,6 +7,8 @@ parameters:
             - redirect
     excludes_analyse:
         - silverstripe-cache
+    exclude_files:
+        - tests/bootstrap-phpstan.php
     ignoreErrors:
         # No SilverStripe 4 support yet
         - '%undefined property SilverStripe\\Security\\Member::%'
