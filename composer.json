@@ -14,6 +14,9 @@
         "silverstripe/framework": "~4.0",
         "silverstripe/cms": "~4.0"
     },
+    "scripts": {
+        "phpcbf": "phpcbf -n src/ tests/"
+    },
     "suggest": {
         "ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
     },
