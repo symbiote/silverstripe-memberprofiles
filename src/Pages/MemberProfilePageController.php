@@ -432,6 +432,10 @@ class MemberProfilePageController extends PageController
      */
     public function confirm($request)
     {
+        if ($this->EmailType !== 'Validation') {
+            return $this->httpError(400);
+        }
+
         if (Member::currentUser()) {
             return Security::permissionFailure($this, _t(
                 'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
@@ -439,19 +443,27 @@ class MemberProfilePageController extends PageController
             ));
         }
 
-        if ($this->EmailType != 'Validation'
-            || (!$id = $request->param('ID')) || (!$key = $request->getVar('key')) || !is_numeric($id)
-            || !$member = DataObject::get_by_id(Member::class, $id)
-        ) {
-            $this->httpError(404);
+        $id = (int)$request->param('ID');
+        $key = $request->getVar('key');
+
+        if (!$id ||
+            !$key) {
+            return $this->httpError(400);
         }
 
-        if ($member->ValidationKey != $key || !$member->NeedsValidation) {
-            $this->httpError(403, 'You cannot validate this member.');
+        $member = DataObject::get_by_id(Member::class, $id);
+        if (!$member) {
+            return $this->httpError(404);
+        }
+        if (!$member->NeedsValidation) {
+            return $this->httpError(400, 'Member does not require validation.');
+        }
+        if ($member->ValidationKey !== $key) {
+            return $this->httpError(400, 'You cannot validate this member.');
         }
 
         $member->NeedsValidation = false;
-        $member->ValidationKey   = null;
+        $member->ValidationKey = null;
         $member->write();
 
         $this->extend('onConfirm', $member);
@@ -459,7 +471,7 @@ class MemberProfilePageController extends PageController
         try {
             Injector::inst()->get(IdentityStore::class)->logIn($member);
         } catch (NotFoundExceptionInterface $e) {
-            $this->httpError(403, 'You cannot validate this member.');
+            return $this->httpError(403, 'You cannot validate this member.');
         }
 
         return array (
