@@ -65,7 +65,7 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $admin  = new SecurityAdmin();
         $group  = $this->objFromFixture(Group::class, 'group');
 
-        Form::disable_all_security_tokens();
+        //Form::disable_all_security_tokens(); // NOTE(Jake): Not in SS3 / shouldn't be testing with this anyway?
         $this->logInWithPermission('ADMIN');
 
         $gLink = Controller::join_links($admin->Link(), 'show', $group->ID);

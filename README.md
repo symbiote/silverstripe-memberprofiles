@@ -1,10 +1,10 @@
 # SilverStripe Member Profile Pages Module
 
-[![Build Status](https://travis-ci.org/symbiote/silverstripe-memberprofilepages.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-memberprofilepages)
-[![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofilepages/version.svg)](https://github.com/symbiote/silverstripe-memberprofilepages/releases)
-[![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofilepages/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofilepages)
-[![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-memberprofilepages/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofilepages)
-[![License](https://poser.pugx.org/symbiote/silverstripe-memberprofilepages/license.svg)](https://github.com/symbiote/silverstripe-memberprofilepages/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/symbiote/silverstripe-memberprofiles.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-memberprofiles)
+[![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/version.svg)](https://github.com/symbiote/silverstripe-memberprofiles/releases)
+[![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofiles)
+[![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofiles)
+[![License](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/license.svg)](https://github.com/symbiote/silverstripe-memberprofiles/blob/master/LICENSE.md)
 
 A new page type is added in the CMS called a "Member Profile Page". This allows you to create a page that allows users to register and/or manage their profile. 
 
@@ -14,12 +14,12 @@ Registration can be enabled or disabled in the "Behaviour" tab.
 
 **SilverStripe 4.0+ (Alpha)**
 ```
-composer require symbiote/silverstripe-memberprofilepages:dev-master
+composer require symbiote/silverstripe-memberprofiles:dev-master
 ```
 
 **[SilverStripe 3.1+](https://github.com/symbiote/silverstripe-memberprofiles/tree/2.0)**
 ```
-composer require symbiote/silverstripe-memberprofilepages:~2.0
+composer require symbiote/silverstripe-memberprofiles:~2.0
 ```
 
 ## Requirements

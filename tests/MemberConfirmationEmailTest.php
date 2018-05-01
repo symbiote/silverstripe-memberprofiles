@@ -3,11 +3,11 @@
 namespace Symbiote\MemberProfiles\Tests;
 
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;
 use SilverStripe\Control\Director;
-use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Dev\SapphireTest;
 
 /**
