@@ -2,6 +2,7 @@
 
 namespace Symbiote\MemberProfiles\Pages;
 
+use PageController;
 use Psr\Container\NotFoundExceptionInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
@@ -20,6 +21,7 @@ use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
+use SilverStripe\View\ViewableData_Customised;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
 use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
@@ -27,7 +29,7 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 /**
  *
  */
-class MemberProfilePageController extends \PageController
+class MemberProfilePageController extends PageController
 {
 
     private static $allowed_actions = array (
@@ -42,9 +44,7 @@ class MemberProfilePageController extends \PageController
     );
 
     /**
-     * @uses   MemberProfilePageController::indexRegister
-     * @uses   MemberProfilePageController::indexProfile
-     * @return array
+     * @return array|ViewableData_Customised
      */
     public function index()
     {
@@ -58,7 +58,7 @@ class MemberProfilePageController extends \PageController
     /**
      * Allow users to register if registration is enabled.
      *
-     * @return array
+     * @return array|ViewableData_Customised
      */
     protected function indexRegister()
     {
@@ -86,7 +86,7 @@ class MemberProfilePageController extends \PageController
      * If editing is disabled, but the current user can add users, then they
      * are redirected to the add user page.
      *
-     * @return array
+     * @return array|ViewableData_Customised
      */
     protected function indexProfile()
     {

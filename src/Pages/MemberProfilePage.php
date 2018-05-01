@@ -30,7 +30,6 @@ use SilverStripe\Forms\OptionsetField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TreeDropdownField;
-use SilverStripe\Security\PermissionProvider;
 
 /**
  * A MemberProfilePage allows the administratior to set up a page with a subset of the
@@ -44,7 +43,7 @@ use SilverStripe\Security\PermissionProvider;
  *
  * @package silverstripe-memberprofiles
  */
-class MemberProfilePage extends Page implements PermissionProvider
+class MemberProfilePage extends Page
 {
 
     private static $db = array (

@@ -2,12 +2,14 @@
 
 namespace Symbiote\MemberProfiles\Pages;
 
+use PageController;
+use SilverStripe\Control\RequestHandler;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
-use PageController;
+use SilverStripe\View\ViewableData;
 
 /**
  * Handles displaying member's public profiles.
@@ -28,13 +30,21 @@ class MemberProfileViewer extends PageController
         'handleView'
     );
 
-    protected $parent, $name;
+    /**
+     * @var MemberProfilePageController
+     */
+    protected $parent;
 
     /**
-     * @param RequestHandler $parent
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @param MemberProfilePageController $parent
      * @param string $name
      */
-    public function __construct($parent, $name)
+    public function __construct(MemberProfilePageController $parent, $name)
     {
         $this->parent = $parent;
         $this->name   = $name;
@@ -46,7 +56,7 @@ class MemberProfileViewer extends PageController
      * Displays a list of all members on the site that belong to the selected
      * groups.
      *
-     * @return string
+     * @return ViewableData
      */
     public function handleList($request)
     {
@@ -61,10 +71,7 @@ class MemberProfileViewer extends PageController
         }
         $members = new PaginatedList($members, $request);
 
-        $list = new PaginatedList(new ArrayList(), $request);
-        $list->setLimitItems(false);
-        $list->setTotalItems($members->getTotalItems());
-
+        $list = new ArrayList();
         foreach ($members as $member) {
             $cols   = new ArrayList();
             $public = $member->getPublicFields();
@@ -92,6 +99,9 @@ class MemberProfileViewer extends PageController
                 'Fields' => $cols
             )));
         }
+        $list = new PaginatedList(new ArrayList(), $request);
+        $list->setLimitItems(false);
+        $list->setTotalItems($members->getTotalItems());
 
         $this->data()->Title  = _t('MemberProfiles.MEMBERLIST', 'Member List');
         $this->data()->Parent = $this->parent;
@@ -107,7 +117,7 @@ class MemberProfileViewer extends PageController
     /**
      * Handles viewing an individual user's profile.
      *
-     * @return string
+     * @return \SilverStripe\View\ViewableData_Customised
      */
     public function handleView($request)
     {
@@ -117,6 +127,9 @@ class MemberProfileViewer extends PageController
             $this->httpError(404);
         }
 
+        /**
+         * @var Member $member
+         */
         $member = Member::get()->byID($id);
         $groups = $this->parent->Groups();
 

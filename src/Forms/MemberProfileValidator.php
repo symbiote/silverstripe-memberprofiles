@@ -22,7 +22,7 @@ class MemberProfileValidator extends RequiredFields
     /**
      * @var Member
      */
-    protected $member
+    protected $member;
 
     /**
      * @var array
