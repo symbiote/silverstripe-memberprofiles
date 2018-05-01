@@ -1,4 +1,3 @@
-<!-- SilverStripe 4 Only -->
 <phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php" colors="true">
     <testsuite name="Default">
         <directory>tests/</directory>

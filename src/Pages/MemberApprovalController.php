@@ -2,6 +2,7 @@
 
 namespace Symbiote\MemberProfiles\Pages;
 
+use PageController;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
@@ -9,7 +10,6 @@ use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
-use PageController;
 
 /**
  * @package silverstripe-memberprofiles

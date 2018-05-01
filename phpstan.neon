@@ -25,4 +25,3 @@ parameters:
         - '%Call to an undefined method SilverStripe\\Forms\\Form::enableSpamProtection()%'
         # Ignore modules / classes that may or may not be installed
         - '%UndefinedOffset\\SortableGridField\\Forms\\GridFieldSortableRows not found%'
-

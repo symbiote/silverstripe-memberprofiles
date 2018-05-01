@@ -1,11 +1,5 @@
 <?php
 
-use SilverStripe\CMS\Controllers\ContentController;
-use SilverStripe\CMS\Model\SiteTree;
-
-$PROJECT_DIR = dirname(__FILE__).'/../../../..';
-require_once($PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php');
-
 // NOTE(Jake): 2018-05-01
 //
 // Hack to make Page / PageController work in a local dev project as
@@ -13,13 +7,16 @@ require_once($PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php');
 // system.
 //
 if (!class_exists(PageController::class)) {
-    class PageController extends ContentController
+    class PageController extends \SilverStripe\CMS\Controllers\ContentController
     {
     }
 }
 
 if (!class_exists(Page::class)) {
-    class Page extends SiteTree
+    class Page extends \SilverStripe\CMS\Model\SiteTree
     {
     }
 }
+
+$PROJECT_DIR = dirname(__FILE__).'/../../../..';
+require_once($PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php');
