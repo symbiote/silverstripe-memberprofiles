@@ -115,7 +115,7 @@ class MemberProfilePage extends Page
         'AfterRegistrationTitle'   => 'Registration Successful',
         'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
         'AllowRegistration'        => true,
-        'AllowProfileViewing'      => true,
+        'AllowProfileViewing'      => false,
         'AllowProfileEditing'      => true,
         'ConfirmationTitle'        => 'Account Confirmed',
         'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'

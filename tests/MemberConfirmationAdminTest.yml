@@ -7,6 +7,6 @@ SilverStripe\Security\Member:
   unconfirmed:
     FirstName: Test
     Surname: User
-    Email: test@example.com
+    Email: email@domain.com
     NeedsValidation: 1
     Groups: =>SilverStripe\Security\Group.group

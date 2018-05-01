@@ -64,7 +64,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
     public function handleAddSection($grid, $request)
     {
         $class = urldecode($request->param('ClassName'));
-        if (!is_subclass_of($class, 'Symbiote\MemberProfiles\Model\MemberProfileSection')) {
+        if (!is_subclass_of($class, MemberProfileSection::class)) {
             return new HTTPResponse('An invalid section type was specified', 404);
         }
 

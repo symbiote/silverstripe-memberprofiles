@@ -207,14 +207,9 @@ class MemberProfilePageController extends PageController
             return $this->redirectBack();
         }
 
-        if (!$this->RequireApproval &&
-            !$this->AllowAdding &&
-            $this->EmailType !== 'Validation') {
-            try {
-                Injector::inst()->get(IdentityStore::class)->logIn($member);
-            } catch (NotFoundExceptionInterface $e) {
-                throw $e;
-            }
+        // If they can login, immediately log them in
+        if ($member->canLogin()) {
+            Injector::inst()->get(IdentityStore::class)->logIn($member);
         }
 
         if ($this->RegistrationRedirect) {
@@ -431,22 +426,29 @@ class MemberProfilePageController extends PageController
      * @param HTTPRequest $request
      * @return array|HTTPResponse
      */
-    public function confirm($request)
+    public function confirm(HTTPRequest $request)
     {
         if ($this->EmailType !== 'Confirmation' &&
             $this->EmailType !== 'Validation') {
             return $this->httpError(400, 'No confirmation required.');
         }
 
-        if (Member::currentUser()) {
+        $currentMember = Member::currentUser();
+        $id = (int)$request->param('ID');
+        $key = $request->getVar('key');
+
+        if ($currentMember) {
+            if ($currentMember->ID == $id) {
+                return Security::permissionFailure($this, _t(
+                    'MemberProfiles.ALREADYCONFIRMED',
+                    'Your account is already confirmed.'
+                ));
+            }
             return Security::permissionFailure($this, _t(
                 'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
                 'You cannot confirm account while you are logged in.'
             ));
         }
-
-        $id = (int)$request->param('ID');
-        $key = $request->getVar('key');
 
         if (!$id ||
             !$key) {
@@ -458,28 +460,29 @@ class MemberProfilePageController extends PageController
             return $this->httpError(404);
         }
         if (!$member->NeedsValidation) {
-            return $this->httpError(400, 'Member does not require validation.');
+            return $this->httpError(400, 'This account doesn\'t require validation.');
         }
         if ($member->ValidationKey !== $key) {
             return $this->httpError(400, 'You cannot validate this member.');
         }
 
+        // Allow member to login
         $member->NeedsValidation = false;
         $member->ValidationKey = null;
+
+        if (!$member->canLogin()) {
+            return $this->httpError(400, 'Member does not have permission to login.');
+        }
         $member->write();
 
         $this->extend('onConfirm', $member);
 
-        try {
-            Injector::inst()->get(IdentityStore::class)->logIn($member);
-        } catch (NotFoundExceptionInterface $e) {
-            return $this->httpError(403, 'You cannot validate this member.');
-        }
+        Injector::inst()->get(IdentityStore::class)->logIn($member);
 
-        return array (
-            'Title'   => $this->obj('ConfirmationTitle'),
-            'Content' => $this->obj('ConfirmationContent')
-        );
+        return [
+            'Title'   => $this->dbObject('ConfirmationTitle'),
+            'Content' => $this->dbObject('ConfirmationContent')
+        ];
     }
 
     /**

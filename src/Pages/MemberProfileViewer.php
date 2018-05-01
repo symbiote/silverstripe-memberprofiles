@@ -3,6 +3,8 @@
 namespace Symbiote\MemberProfiles\Pages;
 
 use PageController;
+
+use Exception;
 use SilverStripe\Control\RequestHandler;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\ArrayList;
@@ -67,6 +69,12 @@ class MemberProfileViewer extends PageController
         if ($groups->count() > 0) {
             // todo: this ->relation method does not seem to work: no Members are found
             $members = $groups->relation('Members');
+            // NOTE(Jake): 2018-05-01
+            //
+            // PR Comment:
+            // https://github.com/symbiote/silverstripe-memberprofiles/pull/138#issuecomment-385571020
+            //
+            throw new Exception('Not implemented.')
         } else {
             $members = Member::get();
         }
