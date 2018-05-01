@@ -59,8 +59,7 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
  */
 class MemberProfilePageController extends PageController
 {
-
-    private static $allowed_actions = array (
+    private static $allowed_actions = [
         'index',
         'RegisterForm',
         'afterregistration',
@@ -68,8 +67,8 @@ class MemberProfilePageController extends PageController
         'add',
         'AddForm',
         'confirm',
-        'show'
-    );
+        'show',
+    ];
 
     /**
      * @return array|ViewableData_Customised
@@ -203,7 +202,6 @@ class MemberProfilePageController extends PageController
      */
     public function register($data, Form $form)
     {
-        Requirements::javascript('symbiote/silverstripe-memberprofiles: client/javascript/ConfirmedPasswordField.js');
         $member = $this->addMember($form);
         if (!$member) {
             return $this->redirectBack();
@@ -583,7 +581,7 @@ class MemberProfilePageController extends PageController
             $memberField = $memberFields->dataFieldByName($name);
 
             // handle the special case of the Groups control so that only allowed groups can be selected
-            if ($name == 'Groups') {
+            if ($name === 'Groups') {
                 $availableGroups = $this->data()->SelectableGroups()->map('ID', 'Title');
                 $memberField->setSource($availableGroups);
             }
@@ -594,11 +592,11 @@ class MemberProfilePageController extends PageController
 
             $field = clone $memberField;
 
-            if ($visibility == 'Readonly') {
+            if ($visibility === 'Readonly') {
                 $field = $field->performReadonlyTransformation();
             }
 
-            if ($name == 'Password') {
+            if ($name === 'Password') {
                 Requirements::javascript("symbiote/silverstripe-memberprofiles: client/javascript/ConfirmedPasswordField.js");
             }
 
@@ -611,7 +609,8 @@ class MemberProfilePageController extends PageController
                 $field->setDescription($profileField->Note);
             }
 
-            if ($context == 'Registration' && $profileField->DefaultValue) {
+            if ($context === 'Registration' &&
+                $profileField->DefaultValue) {
                 $field->setValue($profileField->DefaultValue);
             }
 

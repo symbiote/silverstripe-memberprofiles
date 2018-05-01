@@ -3,6 +3,7 @@
 namespace Symbiote\MemberProfiles\Pages;
 
 use PageController;
+
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
