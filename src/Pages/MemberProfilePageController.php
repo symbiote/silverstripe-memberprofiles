@@ -603,8 +603,9 @@ class MemberProfilePageController extends PageController
             }
 
             // The follow two if-conditions were added since the SS4 migration because a Password label disappeared
-            if ($profileField->Title) {
-                $field->setTitle($profileField->Title);
+            $fieldTitle = $profileField->getTitle();
+            if ($fieldTitle) {
+                $field->setTitle($fieldTitle);
             }
             if ($profileField->Note) {
                 $field->setDescription($profileField->Note);

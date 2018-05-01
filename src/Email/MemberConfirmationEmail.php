@@ -121,8 +121,13 @@ class MemberConfirmationEmail extends Email
         $member = $this->getMember();
         $page = $this->getPage();
 
+        /**
+         * @var \SilverStripe\ORM\FieldType\DBDatetime $createdDateObj
+         */
+        $createdDateObj = $member->obj('Created');
+
         $absoluteBaseURL = $this->BaseURL();
-        $variables = array (
+        $variables = array(
             '$SiteName'       => SiteConfig::current_site_config()->Title,
             '$LoginLink'      => Controller::join_links(
                 $absoluteBaseURL,
@@ -138,7 +143,7 @@ class MemberConfirmationEmail extends Email
                 $absoluteBaseURL,
                 singleton(Security::class)->Link('lostpassword')
             ),
-            '$Member.Created' => $member->obj('Created')->Nice()
+            '$Member.Created' => $createdDateObj->Nice()
         );
         foreach (array('Name', 'FirstName', 'Surname', 'Email') as $field) {
             $variables["\$Member.$field"] = $member->$field;

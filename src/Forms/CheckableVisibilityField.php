@@ -2,12 +2,14 @@
 
 namespace Symbiote\MemberProfiles\Forms;
 
-use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\FileField;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CheckboxField_Readonly;
 
 /**
  * A wrapper around a field to add a checkbox to optionally mark it as visible.
@@ -17,8 +19,20 @@ use SilverStripe\Forms\FormField;
  */
 class CheckableVisibilityField extends FormField
 {
+    /**
+     * @var FormField
+     */
+    private $child;
 
-    protected $child, $checkbox, $alwaysVisible = false;
+    /**
+     * @var CheckboxField|CheckboxField_Readonly
+     */
+    private $checkbox;
+
+    /**
+     * @var boolean
+     */
+    private $alwaysVisible = false;
 
     /**
      * @param FormField $child
@@ -28,7 +42,7 @@ class CheckableVisibilityField extends FormField
         parent::__construct($child->getName());
 
         $this->child    = $child;
-        $this->checkbox = new CheckboxField("Visible[{$this->name}]", '');
+        $this->checkbox = CheckboxField::create("Visible[{$this->name}]", '');
     }
 
     /**
@@ -40,18 +54,22 @@ class CheckableVisibilityField extends FormField
     }
 
     /**
-     * @return CheckboxField
+     * @return CheckboxField|CheckboxField_Readonly
      */
     public function getCheckbox()
     {
         return $this->checkbox;
     }
 
+    /**
+     * @return $this
+     */
     public function makeAlwaysVisible()
     {
         $this->alwaysVisible = true;
-        $this->checkbox->setValue(true);
-        $this->checkbox = $this->checkbox->performDisabledTransformation();
+        $this->getCheckbox()->setValue(true);
+        $this->checkbox = $this->getCheckbox()->performDisabledTransformation();
+        return $this;
     }
 
     public function setValue($value, $data = array())
@@ -83,15 +101,17 @@ class CheckableVisibilityField extends FormField
             $child->saveInto($record);
         }
 
-        $public = $record->getPublicFields();
+        if ($record instanceof Member) {
+            $public = $record->getPublicFields();
 
-        if ($this->checkbox->dataValue()) {
-            $public = array_merge($public, array($this->name));
-        } else {
-            $public = array_diff($public, array($this->name));
+            if ($this->checkbox->dataValue()) {
+                $public = array_merge($public, array($this->name));
+            } else {
+                $public = array_diff($public, array($this->name));
+            }
+
+            $record->setPublicFields($public);
         }
-
-        $record->setPublicFields($public);
     }
 
     public function validate($validator)
