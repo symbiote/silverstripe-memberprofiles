@@ -213,6 +213,7 @@ class MemberProfilePageController extends PageController
             try {
                 Injector::inst()->get(IdentityStore::class)->logIn($member);
             } catch (NotFoundExceptionInterface $e) {
+                throw $e;
             }
         }
 
@@ -222,8 +223,10 @@ class MemberProfilePageController extends PageController
                 return;
             }
 
-            if ($sessionTarget = Session::get('MemberProfile.REDIRECT')) {
-                Session::clear('MemberProfile.REDIRECT');
+            $session = $this->getRequest()->getSession();
+            $sessionTarget = $session->get('MemberProfile.REDIRECT');
+            if ($sessionTarget) {
+                $session->clear('MemberProfile.REDIRECT');
                 if (Director::is_site_url($sessionTarget)) {
                     $this->redirect($sessionTarget);
                     return;
