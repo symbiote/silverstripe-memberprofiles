@@ -10,8 +10,6 @@ A new page type is added in the CMS called a "Member Profile Page". This allows 
 
 Registration can be enabled or disabled in the "Behaviour" tab.
 
-![TODO_CHANGE_THIS](docs/images/main.png)
-
 ## Composer Install
 
 **SilverStripe 4.0+ (Alpha)**
