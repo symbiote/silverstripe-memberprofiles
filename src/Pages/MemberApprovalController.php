@@ -36,10 +36,10 @@ class MemberApprovalController extends PageController
 
     public function index($request)
     {
-        $id    = $request->param('ID');
+        $id    = (int)$request->param('ID');
         $token = $request->getVar('token');
 
-        if (!$id || !ctype_digit($id)) {
+        if (!$id) {
             return $this->httpError(404, 'A member ID was not specified.');
         }
 

@@ -13,7 +13,7 @@ matrix:
     - php: 7.1
       env: DB=MYSQL
     - php: 7.2
-      env: DB=MYSQL
+      env: DB=MYSQL PHPSTAN_TEST=1
 
 before_script:
   - phpenv rehash
@@ -21,8 +21,10 @@ before_script:
 
   - composer validate
   - composer require silverstripe/recipe-core 1.0.x-dev  --no-update
+  - if [[ $PHPSTAN_TEST ]]; then composer require phpstan/phpstan-shim:0.9.2; fi
   - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
-  - vendor/bin/phpunit tests/
   - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs src/ tests/ *.php; fi
+  - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
+  - vendor/bin/phpunit tests/

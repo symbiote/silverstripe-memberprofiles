@@ -1,0 +1,12 @@
+parameters:
+    earlyTerminatingMethodCalls:
+        Controller:
+            - redirect
+    excludes_analyse:
+        - silverstripe-cache
+    ignoreErrors:
+        # Temporary until "class_exists" feature is added
+        # See here: https://github.com/phpstan/phpstan/issues/323
+        #- '%Class Site not found%'
+        # No SilverStripe support yet
+        #- '%Call to an undefined method Symbiote\MemberProfiles\Model\MemberProfileFieldsSection::Parent()%'

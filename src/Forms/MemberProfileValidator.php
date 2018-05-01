@@ -14,8 +14,20 @@ use SilverStripe\Forms\RequiredFields;
  */
 class MemberProfileValidator extends RequiredFields
 {
+    /**
+     * @var MemberProfileField[] $fields
+     */
+    protected $fields = [];
 
-    protected $fields, $member, $unique = array();
+    /**
+     * @var Member
+     */
+    protected $member
+
+    /**
+     * @var array
+     */
+    protected $unique = [];
 
     /**
      * @param MemberProfileField[] $fields
@@ -58,10 +70,11 @@ class MemberProfileValidator extends RequiredFields
         $valid  = true;
 
         foreach ($this->unique as $field) {
-            $other = DataObject::get_one(
-                Member::class,
-                sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
-            );
+            $other = Member::get()->filter($field, $data[$field]);
+            //$other = DataObject::get_one(
+            //    Member::class,
+            //    sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
+            //);*/
 
             $isEmail = $field === 'Email';
             $emailOK = !$isEmail;
