@@ -2,9 +2,11 @@
 
 namespace Symbiote\MemberProfiles\Forms;
 
+use Symbiote\MemberProfiles\Model\MemberProfileField;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\RequiredFields;
 
 /**
@@ -15,9 +17,9 @@ use SilverStripe\Forms\RequiredFields;
 class MemberProfileValidator extends RequiredFields
 {
     /**
-     * @var MemberProfileField[] $fields
+     * @var FieldList|MemberProfileField[] $fields
      */
-    protected $fields = [];
+    protected $fields;
 
     /**
      * @var Member
@@ -30,8 +32,8 @@ class MemberProfileValidator extends RequiredFields
     protected $unique = [];
 
     /**
-     * @param MemberProfileField[] $fields
-     * @param Member $member
+     * @param FieldList|MemberProfileField[] $fields
+     * @param Member|null $member
      */
     public function __construct($fields, $member = null)
     {
@@ -70,11 +72,13 @@ class MemberProfileValidator extends RequiredFields
         $valid  = true;
 
         foreach ($this->unique as $field) {
-            $other = Member::get()->filter($field, $data[$field]);
-            //$other = DataObject::get_one(
-            //    Member::class,
-            //    sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
-            //);*/
+            /**
+             * @var Member|null $other
+             */
+            $other = DataObject::get_one(
+                Member::class,
+                sprintf('"%s" = \'%s\'', Convert::raw2sql($field), Convert::raw2sql($data[$field]))
+            );
 
             $isEmail = $field === 'Email';
             $emailOK = !$isEmail;
@@ -88,7 +92,7 @@ class MemberProfileValidator extends RequiredFields
                 }
                 $emailOK = !$existing->first();
             }
-            if ($other && (!$this->member || !$this->member->exists() || $other->ID != $this->member->ID) || !$emailOK) {
+            if ($other && (!$member || !$member->exists() || $other->ID != $member->ID) || !$emailOK) {
                 $fieldInstance = $this->form->Fields()->dataFieldByName($field);
 
                 if ($fieldInstance->getCustomValidationMessage()) {

@@ -14,7 +14,6 @@ use SilverStripe\View\ArrayData;
  */
 class MemberProfileFieldsSection extends MemberProfileSection
 {
-
     private static $table_name = 'MemberProfileFieldsSection';
 
     public function getDefaultTitle()
@@ -30,7 +29,7 @@ class MemberProfileFieldsSection extends MemberProfileSection
     public function Fields()
     {
         $fields = $this->Parent()->Fields()->where('"PublicVisibility" <> \'Hidden\'');
-        $public = $this->member->getPublicFields();
+        $public = $this->getMember()->getPublicFields();
         $result = new ArrayList();
 
         foreach ($fields as $field) {
@@ -42,7 +41,7 @@ class MemberProfileFieldsSection extends MemberProfileSection
 
             $result->push(new ArrayData(array(
                 'Title' => $field->Title,
-                'Value' => $this->member->{$field->MemberField}
+                'Value' => $this->getMember()->{$field->MemberField}
             )));
         }
 

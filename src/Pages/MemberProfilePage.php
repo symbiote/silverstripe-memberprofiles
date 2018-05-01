@@ -3,12 +3,12 @@
 namespace Symbiote\MemberProfiles\Pages;
 
 use Page;
-use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use Symbiote\MemberProfiles\Forms\MemberProfilesAddSectionAction;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Model\MemberProfileFieldsSection;
 use Symbiote\MemberProfiles\Model\MemberProfileField;
 use Symbiote\MemberProfiles\Model\MemberProfileSection;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\CMS\Model\SiteTree;
@@ -30,6 +30,8 @@ use SilverStripe\Forms\OptionsetField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TreeDropdownField;
+use SilverStripe\ORM\HasManyList;
+use SilverStripe\ORM\UnsavedRelationList;
 
 /**
  * A MemberProfilePage allows the administratior to set up a page with a subset of the
@@ -42,6 +44,7 @@ use SilverStripe\Forms\TreeDropdownField;
  * It also supports email validation.
  *
  * @package silverstripe-memberprofiles
+ * @property int $ID
  * @property string $ProfileTitle
  * @property string $RegistrationTitle
  * @property string $AfterRegistrationTitle
@@ -56,12 +59,12 @@ use SilverStripe\Forms\TreeDropdownField;
  * @property bool $RequireApproval
  * @property string $EmailType
  * @property string $EmailFrom
+ * @property string $EmailSubject
  * @property string $EmailTemplate
  * @property string $ConfirmationTitle
  * @property string $ConfirmationContent
  * @property int $PostRegistrationTargetID
  * @method \SilverStripe\CMS\Model\SiteTree PostRegistrationTarget()
- * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileField[] Fields()
  * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileSection[] Sections()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
@@ -235,7 +238,7 @@ class MemberProfilePage extends Page
             }
         ));
 
-        if (class_exists('GridFieldOrderableRows')) {
+        if (class_exists(GridFieldOrderableRows::class)) {
             $grid->addComponent(new GridFieldOrderableRows('Sort'));
         } else if (class_exists(GridFieldSortableRows::class)) {
             $grid->addComponent(new GridFieldSortableRows('Sort'));
@@ -396,7 +399,7 @@ class MemberProfilePage extends Page
      * Returns a list of profile field objects after synchronising them with the
      * Member form fields.
      *
-     * @return HasManyList
+     * @return HasManyList|UnsavedRelationList Fields()
      */
     public function Fields()
     {

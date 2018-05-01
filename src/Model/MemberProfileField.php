@@ -14,6 +14,19 @@ use SilverStripe\ORM\DataObject;
 
 /**
  * @package silverstripe-memberprofiles
+ * @property string $ProfileVisibility
+ * @property string $RegistrationVisibility
+ * @property bool $MemberListVisible
+ * @property string $PublicVisibility
+ * @property bool $PublicVisibilityDefault
+ * @property string $MemberField
+ * @property string $CustomTitle
+ * @property string $DefaultValue
+ * @property string $Note
+ * @property string $CustomError
+ * @property bool $Unique
+ * @property bool $Required
+ * @property int $Sort
  */
 class MemberProfileField extends DataObject
 {
@@ -58,13 +71,10 @@ class MemberProfileField extends DataObject
      * It's declared as a static so all instances have access to it after it's
      * loaded the first time.
      *
-     * @var FieldSet
+     * @var \SilverStripe\Forms\FieldList
      */
     protected static $member_fields;
 
-    /**
-     * @return
-     */
     public function getCMSFields()
     {
         Requirements::javascript('symbiote/silverstripe-memberprofiles: client/javascript/MemberProfileFieldCMS.js');
@@ -198,6 +208,9 @@ class MemberProfileField extends DataObject
         return $title;
     }
 
+    /**
+     * @return \SilverStripe\Forms\FieldList
+     */
     protected function getMemberFields()
     {
         if (!self::$member_fields) {

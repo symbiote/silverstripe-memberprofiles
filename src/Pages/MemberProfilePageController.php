@@ -9,6 +9,7 @@ use SilverStripe\Control\Session;
 use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
@@ -29,6 +30,7 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 /**
  * Class MemberProfilePageController
  *
+ * @property int $ID
  * @property string $ProfileTitle
  * @property string $RegistrationTitle
  * @property string $AfterRegistrationTitle
@@ -43,6 +45,7 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
  * @property bool $RequireApproval
  * @property string $EmailType
  * @property string $EmailFrom
+ * @property string $EmailSubject
  * @property string $EmailTemplate
  * @property string $ConfirmationTitle
  * @property string $ConfirmationContent
@@ -278,7 +281,8 @@ class MemberProfilePageController extends PageController
         try {
             $member->write();
         } catch (ValidationException $e) {
-            $form->sessionMessage($e->getResult()->message(), 'bad');
+            $validationMessages = implode("; ", $e->getResult()->getMessages());
+            $form->sessionMessage($validationMessages, 'bad');
             return $this->redirectBack();
         }
 
@@ -382,7 +386,7 @@ class MemberProfilePageController extends PageController
         $existingIds = array();
         if ($member) {
             $existing = $member->Groups();
-            if ($existing && $existing->Count() > 0) {
+            if ($existing && $existing->count() > 0) {
                 $existingIds = $existing->map('ID', 'ID')->toArray();
                 // remove any that are in the selectable groups map - we only want to
                 // worry about those that aren't managed by this form
@@ -423,7 +427,7 @@ class MemberProfilePageController extends PageController
      * the confirmation email.
      *
      * @param HTTPRequest $request
-     * @return array
+     * @return array|HTTPResponse
      */
     public function confirm($request)
     {
@@ -483,8 +487,9 @@ class MemberProfilePageController extends PageController
         try {
             $member->write();
         } catch (ValidationException $e) {
-            $form->sessionMessage($e->getResult()->message(), 'bad');
-            return;
+            $validationMessages = implode("; ", $e->getResult()->getMessages());
+            $form->sessionMessage($validationMessages, 'bad');
+            return null;
         }
 
         // set after member is created otherwise the member object does not exist
@@ -517,9 +522,9 @@ class MemberProfilePageController extends PageController
                 );
 
                 $email->setSubject("Registration Approval Requested for $config->Title");
-                $email->setBcc(implode(',', array_unique($emails)));
-                $email->setTemplate('MemberRequiresApprovalEmail');
-                $email->populateTemplate(array(
+                $email->setBCC(implode(',', array_unique($emails)));
+                $email->setHTMLTemplate('MemberRequiresApprovalEmail');
+                $email->setData(array(
                     'SiteConfig'  => $config,
                     'Member'      => $member,
                     'ApproveLink' => Director::absoluteURL($approve)
@@ -538,7 +543,7 @@ class MemberProfilePageController extends PageController
 
     /**
      * @param string $context
-     * @return FieldSet
+     * @return FieldList
      */
     protected function getProfileFields($context)
     {

@@ -6,15 +6,21 @@ use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+use Exception;
 
 /**
  * A section of a public profile page.
  *
  * @package    silverstripe-memberprofiles
  * @subpackage dataobjects
+ * @property int $ParentID
+ * @property string $CustomTitle
+ * @method \Symbiote\MemberProfiles\Pages\MemberProfilePage Parent()
  */
 class MemberProfileSection extends DataObject
 {
+    private static $table_name = 'MemberProfileSection';
 
     private static $db = array(
         'CustomTitle' => 'Varchar(100)'
@@ -25,7 +31,7 @@ class MemberProfileSection extends DataObject
     );
 
     private static $extensions = array(
-        // 'Orderable'
+        //Orderable::class
     );
 
     private static $summary_fields = array(
@@ -33,9 +39,10 @@ class MemberProfileSection extends DataObject
         'CustomTitle'  => 'Custom Title'
     );
 
-    private static $table_name = 'MemberProfileSection';
-
-    protected $member;
+    /**
+     * @var Member
+     */
+    private $member;
 
     /**
      * @return Member
@@ -74,7 +81,7 @@ class MemberProfileSection extends DataObject
      */
     public function getTitle()
     {
-        return $this->CustomTitle ? $this->CustomTitle: $this->getDefaultTitle();
+        return $this->CustomTitle ? $this->CustomTitle : $this->getDefaultTitle();
     }
 
     /**
@@ -85,7 +92,7 @@ class MemberProfileSection extends DataObject
      */
     public function getDefaultTitle()
     {
-        throw new \Exception("Please implement getDefaultTitle() on {$this->class}.");
+        throw new Exception("Please implement getDefaultTitle() on {get_class($this)}.");
     }
 
     /**
@@ -105,6 +112,6 @@ class MemberProfileSection extends DataObject
      */
     public function forTemplate()
     {
-        throw new Exception("Please implement forTemplate() on {$this->class}.");
+        throw new Exception("Please implement forTemplate() on {get_class($this)}.");
     }
 }

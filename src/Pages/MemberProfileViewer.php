@@ -33,12 +33,12 @@ class MemberProfileViewer extends PageController
     /**
      * @var MemberProfilePageController
      */
-    protected $parent;
+    private $parent;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * @param MemberProfilePageController $parent
@@ -60,9 +60,10 @@ class MemberProfileViewer extends PageController
      */
     public function handleList($request)
     {
-        $fields  = $this->parent->Fields()->filter('MemberListVisible', true);
+        $parent = $this->getParent();
+        $fields  = $parent->Fields()->filter('MemberListVisible', true);
 
-        $groups = $this->parent->Groups();
+        $groups = $parent->Groups();
         if ($groups->count() > 0) {
             // todo: this ->relation method does not seem to work: no Members are found
             $members = $groups->relation('Members');
@@ -104,7 +105,7 @@ class MemberProfileViewer extends PageController
         $list->setTotalItems($members->getTotalItems());
 
         $this->data()->Title  = _t('MemberProfiles.MEMBERLIST', 'Member List');
-        $this->data()->Parent = $this->parent;
+        $this->data()->Parent = $this->getParent();
 
         $controller = $this->customise(array(
             'Type'    => 'List',
@@ -162,6 +163,22 @@ class MemberProfileViewer extends PageController
     }
 
     /**
+     * @var MemberProfilePageController
+     */
+    protected function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @var string
+     */
+    protected function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * @return int
      */
     public function getPaginationStart()
@@ -180,6 +197,6 @@ class MemberProfileViewer extends PageController
      */
     public function Link($action = null)
     {
-        return Controller::join_links($this->parent->Link(), $this->name, $action);
+        return Controller::join_links($this->getParent()->Link(), $this->getName(), $action);
     }
 }

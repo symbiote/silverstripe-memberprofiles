@@ -19,7 +19,6 @@ use SilverStripe\ORM\DataExtension;
  */
 class MemberProfileExtension extends DataExtension
 {
-
     private static $db = array(
         'ValidationKey'   => 'Varchar(40)',
         'NeedsValidation' => 'Boolean',
