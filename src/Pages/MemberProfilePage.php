@@ -42,6 +42,30 @@ use SilverStripe\Forms\TreeDropdownField;
  * It also supports email validation.
  *
  * @package silverstripe-memberprofiles
+ * @property string $ProfileTitle
+ * @property string $RegistrationTitle
+ * @property string $AfterRegistrationTitle
+ * @property string $ProfileContent
+ * @property string $RegistrationContent
+ * @property string $AfterRegistrationContent
+ * @property bool $AllowRegistration
+ * @property bool $AllowProfileViewing
+ * @property bool $AllowProfileEditing
+ * @property bool $AllowAdding
+ * @property bool $RegistrationRedirect
+ * @property bool $RequireApproval
+ * @property string $EmailType
+ * @property string $EmailFrom
+ * @property string $EmailTemplate
+ * @property string $ConfirmationTitle
+ * @property string $ConfirmationContent
+ * @property int $PostRegistrationTargetID
+ * @method \SilverStripe\CMS\Model\SiteTree PostRegistrationTarget()
+ * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileField[] Fields()
+ * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileSection[] Sections()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] ApprovalGroups()
  */
 class MemberProfilePage extends Page
 {

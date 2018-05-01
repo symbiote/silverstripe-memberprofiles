@@ -2,6 +2,8 @@
 
 namespace Symbiote\MemberProfiles\Email;
 
+use Symbiote\MemberProfiles\Pages\MemberProfilePage;
+use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;
 use SilverStripe\Control\Controller;

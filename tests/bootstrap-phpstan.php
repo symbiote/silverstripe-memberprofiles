@@ -1,7 +1,7 @@
 <?php
 
 use SilverStripe\CMS\Controllers\ContentController;
-use SilverStripe\ORM\DataObject;
+use SilverStripe\CMS\Model\SiteTree;
 
 $PROJECT_DIR = dirname(__FILE__).'/../../../..';
 require_once($PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php');
@@ -13,11 +13,13 @@ require_once($PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php');
 // system.
 //
 if (!class_exists(PageController::class)) {
-    class PageController extends ContentController {
+    class PageController extends ContentController
+    {
     }
 }
 
 if (!class_exists(Page::class)) {
-    class Page extends DataObject {
+    class Page extends SiteTree
+    {
     }
 }

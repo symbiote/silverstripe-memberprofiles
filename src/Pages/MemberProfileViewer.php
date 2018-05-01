@@ -63,7 +63,7 @@ class MemberProfileViewer extends PageController
         $fields  = $this->parent->Fields()->filter('MemberListVisible', true);
 
         $groups = $this->parent->Groups();
-        if ($groups->Count() > 0) {
+        if ($groups->count() > 0) {
             // todo: this ->relation method does not seem to work: no Members are found
             $members = $groups->relation('Members');
         } else {
@@ -133,7 +133,7 @@ class MemberProfileViewer extends PageController
         $member = Member::get()->byID($id);
         $groups = $this->parent->Groups();
 
-        if ($groups->Count() && !$member->inGroups($groups)) {
+        if ($groups->count() > 0 && !$member->inGroups($groups)) {
             $this->httpError(403);
         }
 

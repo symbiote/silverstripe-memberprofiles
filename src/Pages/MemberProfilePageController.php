@@ -27,7 +27,32 @@ use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
 use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
 
 /**
+ * Class MemberProfilePageController
  *
+ * @property string $ProfileTitle
+ * @property string $RegistrationTitle
+ * @property string $AfterRegistrationTitle
+ * @property string $ProfileContent
+ * @property string $RegistrationContent
+ * @property string $AfterRegistrationContent
+ * @property bool $AllowRegistration
+ * @property bool $AllowProfileViewing
+ * @property bool $AllowProfileEditing
+ * @property bool $AllowAdding
+ * @property bool $RegistrationRedirect
+ * @property bool $RequireApproval
+ * @property string $EmailType
+ * @property string $EmailFrom
+ * @property string $EmailTemplate
+ * @property string $ConfirmationTitle
+ * @property string $ConfirmationContent
+ * @property int $PostRegistrationTargetID
+ * @method \SilverStripe\CMS\Model\SiteTree PostRegistrationTarget()
+ * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileField[] Fields()
+ * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileSection[] Sections()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
+ * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] ApprovalGroups()
  */
 class MemberProfilePageController extends PageController
 {
@@ -46,10 +71,11 @@ class MemberProfilePageController extends PageController
     /**
      * @return array|ViewableData_Customised
      */
-    public function index()
+    public function index(HTTPRequest $request)
     {
         if (isset($_GET['BackURL'])) {
-            Session::set('MemberProfile.REDIRECT', $_GET['BackURL']);
+            $session = $request->getSession();
+            $session->set('MemberProfile.REDIRECT', $_GET['BackURL']);
         }
 
         return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
