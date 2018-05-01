@@ -26,5 +26,5 @@ before_script:
 
 script:
   - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs --ignore=tests/bootstrap-phpstan.php src/ tests/ *.php; fi
-  - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
   - vendor/bin/phpunit tests/
+  - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
