@@ -34,6 +34,11 @@ class MemberConfirmationEmailTest extends SapphireTest
         $member->LastName  = 'User';
         $member->write();
 
+        /**
+         * @var \SilverStripe\ORM\FieldType\DBDatetime $createdObj
+         */
+        $createdObj = $member->obj('Created');
+
         $raw = '<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: $SiteName</li>
@@ -54,7 +59,7 @@ class MemberConfirmationEmailTest extends SapphireTest
 			<li>Login Link: " . singleton(Security::class)->Link('login') . "</li>
 			<li>Member:
 				<ul>
-					<li>Since: " . $member->obj('Created')->Nice() . "</li>
+					<li>Since: " . $createdObj->Nice() . "</li>
 					<li>Email: {$member->Email}</li>
 					<li>Name: {$member->Name}</li>
 					<li>Surname: {$member->Surname}</li>
@@ -62,9 +67,10 @@ class MemberConfirmationEmailTest extends SapphireTest
 			</li>
 		</ul>";
 
+        $email = new MemberConfirmationEmail($page, $member);
         $this->assertEquals(
             $expected,
-            MemberConfirmationEmail::get_parsed_string($raw, $member, $page),
+            $email->getParsedString($raw),
             'All allowed variables are parsed into the string.'
         );
     }

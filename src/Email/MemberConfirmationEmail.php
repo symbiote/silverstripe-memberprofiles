@@ -95,8 +95,29 @@ class MemberConfirmationEmail extends Email
 ';
 
     /**
+     * @param MemberProfilePage $page
+     * @param Member $member
+     */
+    public function __construct(MemberProfilePage $page, Member $member)
+    {
+        parent::__construct();
+
+        $this->page = $page;
+        $this->member = $member;
+
+        $emailFrom = $page->EmailFrom;
+        if (!$emailFrom) {
+            $emailFrom = Email::config()->get('admin_email');
+        }
+        $this->setFrom($emailFrom);
+        $this->setTo($member->Email);
+        $this->setSubject($this->getParsedString($page->EmailSubject));
+        $this->setBody($this->getParsedString($page->EmailTemplate));
+    }
+
+    /**
      * Deprecated. For backwards compatibility.
-     * NOTE(Jake): Removed in SS4.
+     * NOTE(Jake): 2018-05-01, Removed for SS4 upgrade. Also removed $isSingleton param from __construct()
      *
      * @param string $string
      * @param Member $member
@@ -158,29 +179,6 @@ class MemberConfirmationEmail extends Email
         $absoluteBaseURL = parent::BaseURL();
         $this->extend('updateBaseURL', $absoluteBaseURL);
         return $absoluteBaseURL;
-    }
-
-    /**
-     * @param MemberProfilePage $page
-     * @param Member $member
-     */
-    public function __construct(MemberProfilePage $page, Member $member, $isSingleton = false)
-    {
-        parent::__construct();
-
-        $this->page = $page;
-        $this->member = $member;
-
-        if (!$isSingleton) {
-            $emailFrom = $page->EmailFrom;
-            if (!$emailFrom) {
-                $emailFrom = Email::config()->get('admin_email');
-            }
-            $this->setFrom($emailFrom);
-            $this->setTo($member->Email);
-            $this->setSubject($this->getParsedString($page->EmailSubject));
-            $this->setBody($this->getParsedString($page->EmailTemplate));
-        }
     }
 
     /**

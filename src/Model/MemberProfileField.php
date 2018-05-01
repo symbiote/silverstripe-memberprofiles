@@ -87,19 +87,25 @@ class MemberProfileField extends DataObject
         $fields->removeByName('ProfilePageID');
         $fields->removeByName('Sort');
 
-        $fields->fieldByName('Root.Main')->getChildren()->changeFieldOrder(array(
-            'CustomTitle',
-            'DefaultValue',
-            'Note',
-            'ProfileVisibility',
-            'RegistrationVisibility',
-            'MemberListVisible',
-            'PublicVisibility',
-            'PublicVisibilityDefault',
-            'CustomError',
-            'Unique',
-            'Required'
-        ));
+        /**
+         * @var \SilverStripe\Forms\CompositeField|null $tab
+         */
+        $tab = $fields->fieldByName('Root.Main');
+        if ($tab) {
+            $tab->getChildren()->changeFieldOrder(array(
+                'CustomTitle',
+                'DefaultValue',
+                'Note',
+                'ProfileVisibility',
+                'RegistrationVisibility',
+                'MemberListVisible',
+                'PublicVisibility',
+                'PublicVisibilityDefault',
+                'CustomError',
+                'Unique',
+                'Required'
+            ));
+        }
 
         $fields->unshift(new ReadonlyField(
             'MemberField',
@@ -132,11 +138,18 @@ class MemberProfileField extends DataObject
             $fields->removeByName('DefaultValue');
         }
 
-        $fields->dataFieldByName('PublicVisibility')->setSource(array(
-            'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
-            'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
-            'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
-        ));
+        /**
+         * @var \SilverStripe\Forms\SelectField|null $publicVisibilityField
+         */
+        $publicVisibilityField = $fields->dataFieldByName('PublicVisibility');
+        if ($publicVisibilityField &&
+            $publicVisibilityField->hasMethod('setSource')) {
+            $publicVisibilityField->setSource(array(
+                'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
+                'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
+                'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
+            ));
+        }
 
         $fields->dataFieldByName('PublicVisibilityDefault')->setTitle(_t(
             'MemberProfiles.DEFAULTPUBLIC',

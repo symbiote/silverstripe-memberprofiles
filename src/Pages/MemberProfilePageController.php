@@ -534,7 +534,7 @@ class MemberProfilePageController extends PageController
                 $email->send();
             }
         } elseif ($this->EmailType != 'None') {
-            $email = MemberConfirmationEmail::create($this, $member);
+            $email = MemberConfirmationEmail::create($this->data(), $member);
             $email->send();
         }
 
