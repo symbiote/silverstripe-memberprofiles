@@ -39,5 +39,6 @@ composer require symbiote/silverstripe-memberprofilepages:~2.0
 
 ## Credits
 
+* [AJ Short](https://github.com/ajshort), for writing this module to begin with, in the SilverStripe 2.X era.
 * [Shea Dawson](https://github.com/symbiote/silverstripe-memberprofiles/pull/137), for their SS4 upgrade effort
 * [JorisDebonnet](https://github.com/symbiote/silverstripe-memberprofiles/pull/138), for their additional SS4 upgrade improvements.

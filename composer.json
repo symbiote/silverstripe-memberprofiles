@@ -6,12 +6,11 @@
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Andrew Short",
-            "email": "andrewjshort@gmail.com"
+            "name": "Symbiote",
+            "homepage": "https://www.symbiote.com.au/"
         }
     ],
     "require": {
-        "silverstripe/framework": "~4.0",
         "silverstripe/cms": "~4.0"
     },
     "scripts": {
@@ -38,5 +37,7 @@
         "silverstripe/memberprofiles": "self.version",
         "ajshort/silverstripe-memberprofiles": "self.version",
         "silverstripe-australia/memberprofiles": "self.version"
-    }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }
