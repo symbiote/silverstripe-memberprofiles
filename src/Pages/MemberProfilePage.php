@@ -297,20 +297,20 @@ class MemberProfilePage extends Page
 
 
         $fields->addFieldsToTab('Root.Email', array(
-            new OptionsetField(
+            OptionsetField::create(
                 'EmailType',
                 _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
                 array(
-                    'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Require a CMS user or admin to activate a member'),
-                    'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Require account activation via a confirmation email'),
+                    'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Send a confirmation email (confirmation required to login)'),
+                    'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email (confirmation NOT required to login)'),
                     'None'         => _t('MemberProfiles.NONE', 'None')
                 )
-            ),
-            new ToggleCompositeField('EmailContentToggle', _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
-                new TextField('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
-                new TextField('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
-                new TextareaField('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
-                new LiteralField('TemplateNote', sprintf(
+            )->setRightTitle('For additional settings, check the "Settings" tab.'),
+            ToggleCompositeField::create('EmailContentToggle', _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
+                TextField::create('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
+                TextField::create('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
+                TextareaField::create('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
+                LiteralField::create('TemplateNote', sprintf(
                     '<div class="field">%s</div>',
                     MemberConfirmationEmail::TEMPLATE_NOTE
                 ))
