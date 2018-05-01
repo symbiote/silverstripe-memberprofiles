@@ -207,7 +207,9 @@ class MemberProfilePageController extends PageController
             return $this->redirectBack();
         }
 
-        if (!$this->RequireApproval && $this->EmailType != 'Validation' && !$this->AllowAdding) {
+        if (!$this->RequireApproval &&
+            !$this->AllowAdding &&
+            $this->EmailType !== 'Validation') {
             try {
                 Injector::inst()->get(IdentityStore::class)->logIn($member);
             } catch (NotFoundExceptionInterface $e) {
@@ -226,8 +228,7 @@ class MemberProfilePageController extends PageController
             if ($sessionTarget) {
                 $session->clear('MemberProfile.REDIRECT');
                 if (Director::is_site_url($sessionTarget)) {
-                    $this->redirect($sessionTarget);
-                    return;
+                    return $this->redirect($sessionTarget);
                 }
             }
         }
@@ -432,8 +433,9 @@ class MemberProfilePageController extends PageController
      */
     public function confirm($request)
     {
-        if ($this->EmailType !== 'Validation') {
-            return $this->httpError(400);
+        if ($this->EmailType !== 'Confirmation' &&
+            $this->EmailType !== 'Validation') {
+            return $this->httpError(400, 'No confirmation required.');
         }
 
         if (Member::currentUser()) {
@@ -494,7 +496,7 @@ class MemberProfilePageController extends PageController
         $form->saveInto($member);
 
         $member->ProfilePageID   = $this->ID;
-        $member->NeedsValidation = ($this->EmailType == 'Validation');
+        $member->NeedsValidation = ($this->EmailType === 'Validation');
         $member->NeedsApproval   = $this->RequireApproval;
 
         try {
@@ -525,7 +527,7 @@ class MemberProfilePageController extends PageController
             }
 
             if ($emails) {
-                $email   = new Email();
+                $email   = Email::create();
                 $config  = SiteConfig::current_site_config();
                 $approve = Controller::join_links(
                     Director::baseURL(),
@@ -545,9 +547,23 @@ class MemberProfilePageController extends PageController
 
                 $email->send();
             }
-        } elseif ($this->EmailType != 'None') {
-            $email = MemberConfirmationEmail::create($this->data(), $member);
-            $email->send();
+        }
+
+        // Sent out email
+        switch ($this->EmailType) {
+            case 'None':
+                // Does not require anything
+            break;
+
+            case 'Validation':
+                // Requires admin / CMS user approval
+            break;
+
+            case 'Confirmation':
+                // Must activate themselves via the confirmation email
+                $email = MemberConfirmationEmail::create($this->data(), $member);
+                $email->send();
+            break;
         }
 
         $this->extend('onAddMember', $member);

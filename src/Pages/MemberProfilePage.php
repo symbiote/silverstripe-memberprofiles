@@ -301,8 +301,8 @@ class MemberProfilePage extends Page
                 'EmailType',
                 _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
                 array(
-                    'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Require email validation'),
-                    'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email'),
+                    'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Require a CMS user or admin to activate a member'),
+                    'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Require account activation via a confirmation email'),
                     'None'         => _t('MemberProfiles.NONE', 'None')
                 )
             ),

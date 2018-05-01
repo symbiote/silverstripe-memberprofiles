@@ -1,9 +1,9 @@
-Group:
+SilverStripe\Security\Group:
   group:
     Title: Group
     Code: group
 
-Member:
+SilverStripe\Security\Member:
   unconfirmed:
     FirstName: Test
     Surname: User
