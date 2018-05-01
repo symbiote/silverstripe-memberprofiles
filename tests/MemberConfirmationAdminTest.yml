@@ -9,4 +9,4 @@ SilverStripe\Security\Member:
     Surname: User
     Email: test@example.com
     NeedsValidation: 1
-    Groups: =>Group.group
+    Groups: =>SilverStripe\Security\Group.group
