@@ -19,7 +19,7 @@ use SilverStripe\Dev\FunctionalTest;
 class MemberConfirmationAdminTest extends FunctionalTest
 {
 
-    public static $fixture_file = 'memberprofiles/tests/MemberConfirmationAdminTest.yml';
+    public static $fixture_file = 'MemberConfirmationAdminTest.yml';
 
     /**
      * @covers MemberProfileExtension::saveManualEmailValidation
