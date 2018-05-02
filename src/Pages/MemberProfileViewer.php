@@ -22,7 +22,6 @@ use SilverStripe\Security\Permission;
  */
 class MemberProfileViewer extends PageController
 {
-
     private static $url_handlers = [
         ''           => 'handleList',
         '$MemberID!' => 'handleView',
@@ -68,16 +67,14 @@ class MemberProfileViewer extends PageController
 
         $groups = $parent->Groups();
         if ($groups->count() > 0) {
-            // todo: this ->relation method does not seem to work: no Members are found
             $members = $groups->relation('Members');
-            // NOTE(Jake): 2018-05-01
-            //
-            // PR Comment:
-            // https://github.com/symbiote/silverstripe-memberprofiles/pull/138#issuecomment-385571020
-            //
-            throw new Exception('Not implemented.');
         } else {
             $members = Member::get();
+            // NOTE(Jake): 2018-05-02
+            //
+            // We may want to enable a flag so that ADMIN users are automatically omitted from this list
+            // by default.
+            //
             //$members = $members->filter('ID:not', Permission::get_members_by_permission('ADMIN')->map('ID', 'ID')->toArray());
         }
         $members = PaginatedList::create($members, $request);
