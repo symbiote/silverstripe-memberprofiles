@@ -18,18 +18,17 @@ matrix:
 before_script:
   - phpenv rehash
   - phpenv config-rm xdebug.ini
-
   - composer validate
   - composer require --no-update silverstripe/recipe-cms:$RECIPE_VERSION
-  - if [[ $PHPSTAN_TEST ]]; then composer require phpstan/phpstan-shim:0.9.2; fi
+  - if [[ $PHPSTAN_TEST ]]; then composer require --no-update phpstan/phpstan-shim:0.9.2; fi
   - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
   - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs --ignore=tests/bootstrap-phpstan.php src/ tests/ *.php; fi
-  - vendor/bin/phpunit tests/
   # NOTE(Jake): 2018-05-02
   #
   # PHPStan must come after phpunit so that the config manifest is built in 'test' mode and includes test classes.
   # This also prevents the config manifest from built twice accidentally.
   #
   - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ tests/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
+  - vendor/bin/phpunit
