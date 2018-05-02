@@ -454,8 +454,10 @@ class MemberProfilePageController extends PageController
 
         if (!$id ||
             !$key) {
-            return $this->httpError(400);
+            return $this->httpError(404);
         }
+
+        $confirmationTitle = $this->data()->dbObject('ConfirmationTitle');
 
         /**
          * @var Member|null $member
@@ -465,10 +467,24 @@ class MemberProfilePageController extends PageController
             return $this->httpError(404);
         }
         if (!$member->NeedsValidation) {
-            return $this->httpError(400, 'This account doesn\'t require validation.');
+            $this->getResponse()->setStatusCode(400);
+            return [
+                'Title'   => $confirmationTitle,
+                'Content' => _t(
+                    'MemberProfiles.BADREQUESTCONFIRMATION',
+                    'Unable to perform action.'
+                ),
+            ];
         }
         if ($member->ValidationKey !== $key) {
-            return $this->httpError(400, 'You cannot validate this member.');
+            $this->getResponse()->setStatusCode(400);
+            return [
+                'Title'   => $confirmationTitle,
+                'Content' => _t(
+                    'MemberProfiles.BADREQUESTCONFIRMATION',
+                    'Unable to perform action.'
+                ),
+            ];
         }
 
         // Allow member to login
@@ -476,7 +492,14 @@ class MemberProfilePageController extends PageController
         $member->ValidationKey = null;
 
         if (!$member->canLogin()) {
-            return $this->httpError(400, 'Member does not have permission to login.');
+            $this->getResponse()->setStatusCode(500);
+            return [
+                'Title'   => $confirmationTitle,
+                'Content' => _t(
+                    'MemberProfiles.ERRORCONFIRMATION',
+                    'An unexpected error occurred.'
+                ),
+            ];
         }
         $member->write();
 
