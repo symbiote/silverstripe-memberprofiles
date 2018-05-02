@@ -6,7 +6,7 @@ $BOOTSTRAP_FILE = $PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php';
 if (!file_exists($BOOTSTRAP_FILE)) {
     // Handle Travis build
     $PROJECT_DIR = dirname(__FILE__).'/../..';
-    $BOOTSTRAP_FILE = $PROJECT_DIR.'/silverstripe/framework/src/includes/autoload.php';
+    $BOOTSTRAP_FILE = $PROJECT_DIR.'/silverstripe/cms/src/includes/autoload.php';
 }
 require_once($BOOTSTRAP_FILE);
 

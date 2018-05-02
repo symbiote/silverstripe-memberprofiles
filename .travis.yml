@@ -15,7 +15,7 @@ matrix:
     - php: 7.1
       env: DB=MYSQL RECIPE_VERSION=1.2.x-dev
     - php: 7.2
-      env: DB=MYSQL RECIPE_VERSION=1.x-dev PHPSTAN_TEST=1
+      env: DB=MYSQL RECIPE_VERSION=1.2.x-dev PHPSTAN_TEST=1
 
 before_script:
   - phpenv rehash
