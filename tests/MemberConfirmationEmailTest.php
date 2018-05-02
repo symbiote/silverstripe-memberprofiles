@@ -7,6 +7,7 @@ use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Dev\SapphireTest;
 
@@ -18,18 +19,17 @@ use SilverStripe\Dev\SapphireTest;
  */
 class MemberConfirmationEmailTest extends SapphireTest
 {
-
     protected $usesDatabase = true;
 
     /**
-     * @covers MemberConfirmationEmail::get_parsed_string
+     * @usesDatabase
      */
     public function testGetParsedString()
     {
         $page   = new MemberProfilePage();
         $member = new Member();
 
-        $member->Email     = 'Test Email';
+        $member->Email     = 'email@domain.com';
         $member->FirstName = 'Test';
         $member->LastName  = 'User';
         $member->write();
@@ -37,7 +37,7 @@ class MemberConfirmationEmailTest extends SapphireTest
         /**
          * @var \SilverStripe\ORM\FieldType\DBDatetime $createdObj
          */
-        $createdObj = $member->obj('Created');
+        $createdObj = $member->dbObject('Created');
 
         $raw = '<ul>
 			<li>Cost: $10</li>
@@ -53,10 +53,15 @@ class MemberConfirmationEmailTest extends SapphireTest
 			</li>
 		</ul>';
 
+        $email = new MemberConfirmationEmail($page, $member);
+        $loginLink = Controller::join_links(
+            $email->BaseURL(),
+            singleton(Security::class)->Link('login')
+        );
         $expected = "<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: " . SiteConfig::current_site_config()->Title . "</li>
-			<li>Login Link: " . singleton(Security::class)->Link('login') . "</li>
+			<li>Login Link: " . $loginLink . "</li>
 			<li>Member:
 				<ul>
 					<li>Since: " . $createdObj->Nice() . "</li>
@@ -66,8 +71,6 @@ class MemberConfirmationEmailTest extends SapphireTest
 				</ul>
 			</li>
 		</ul>";
-
-        $email = new MemberConfirmationEmail($page, $member);
         $this->assertEquals(
             $expected,
             $email->getParsedString($raw),

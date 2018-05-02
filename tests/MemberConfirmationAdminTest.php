@@ -18,20 +18,15 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class MemberConfirmationAdminTest extends FunctionalTest
 {
-
     public static $fixture_file = 'MemberConfirmationAdminTest.yml';
 
-    /**
-     * @covers MemberProfileExtension::saveManualEmailValidation
-     * @covers MemberProfileExtension::updateCMSFields
-     */
     public function testManualConfirmation()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('MemberTableField_Popup_DetailForm', null, array (
+        $this->submitForm('Form_ItemEditForm', null, array (
             'ManualEmailValidation' => 'confirm'
         ));
 
@@ -39,17 +34,13 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(false, (bool) $member->NeedsValidation);
     }
 
-    /**
-     * @covers MemberProfileExtension::saveManualEmailValidation
-     * @covers MemberProfileExtension::updateCMSFields
-     */
     public function testResendConfirmationEmail()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('MemberTableField_Popup_DetailForm', null, array (
+        $this->submitForm('Form_ItemEditForm', null, array (
             'ManualEmailValidation' => 'resend'
         ));
 
@@ -59,7 +50,7 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEmailSent($member->Email);
     }
 
-    protected function getSecurityAdmin()
+    private function getSecurityAdmin()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $admin  = new SecurityAdmin();

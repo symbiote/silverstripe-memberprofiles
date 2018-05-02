@@ -12,6 +12,7 @@ use SilverStripe\View\ArrayData;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
 use SilverStripe\View\ViewableData;
+use SilverStripe\Security\Permission;
 
 /**
  * Handles displaying member's public profiles.
@@ -22,15 +23,15 @@ use SilverStripe\View\ViewableData;
 class MemberProfileViewer extends PageController
 {
 
-    private static $url_handlers = array(
+    private static $url_handlers = [
         ''           => 'handleList',
-        '$MemberID!' => 'handleView'
-    );
+        '$MemberID!' => 'handleView',
+    ];
 
-    private static $allowed_actions = array(
+    private static $allowed_actions = [
         'handleList',
-        'handleView'
-    );
+        'handleView',
+    ];
 
     /**
      * @var MemberProfilePageController
@@ -74,11 +75,12 @@ class MemberProfileViewer extends PageController
             // PR Comment:
             // https://github.com/symbiote/silverstripe-memberprofiles/pull/138#issuecomment-385571020
             //
-            throw new Exception('Not implemented.')
+            throw new Exception('Not implemented.');
         } else {
             $members = Member::get();
+            //$members = $members->filter('ID:not', Permission::get_members_by_permission('ADMIN')->map('ID', 'ID')->toArray());
         }
-        $members = new PaginatedList($members, $request);
+        $members = PaginatedList::create($members, $request);
 
         $list = new ArrayList();
         foreach ($members as $member) {
@@ -108,7 +110,7 @@ class MemberProfileViewer extends PageController
                 'Fields' => $cols
             )));
         }
-        $list = new PaginatedList(new ArrayList(), $request);
+        $list = PaginatedList::create($list, $request);
         $list->setLimitItems(false);
         $list->setTotalItems($members->getTotalItems());
 
@@ -140,13 +142,13 @@ class MemberProfileViewer extends PageController
          * @var Member $member
          */
         $member = Member::get()->byID($id);
-        $groups = $this->parent->Groups();
+        $groups = $this->getParent()->Groups();
 
         if ($groups->count() > 0 && !$member->inGroups($groups)) {
             $this->httpError(403);
         }
 
-        $sections     = $this->parent->Sections();
+        $sections     = $this->getParent()->Sections();
         $sectionsList = new ArrayList();
 
         foreach ($sections as $section) {
@@ -158,7 +160,7 @@ class MemberProfileViewer extends PageController
             _t('MemberProfiles.MEMBERPROFILETITLE', "%s's Profile"),
             $member->getName()
         );
-        $this->data()->Parent = $this->parent;
+        $this->data()->Parent = $this->getParent();
 
         $controller = $this->customise(array(
             'Type'     => 'View',
@@ -189,7 +191,7 @@ class MemberProfileViewer extends PageController
     /**
      * @return int
      */
-    public function getPaginationStart()
+    /*public function getPaginationStart()
     {
         if ($start = $this->request->getVar('start')) {
             if (ctype_digit($start) && (int) $start > 0) {
@@ -198,7 +200,7 @@ class MemberProfileViewer extends PageController
         }
 
         return 0;
-    }
+    }*/
 
     /**
      * @return string
