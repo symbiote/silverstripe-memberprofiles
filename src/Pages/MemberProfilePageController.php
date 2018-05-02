@@ -22,6 +22,7 @@ use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
+use SilverStripe\Security\Permission;
 use SilverStripe\View\ViewableData_Customised;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
@@ -521,8 +522,13 @@ class MemberProfilePageController extends PageController
         // sending an email to the member.
         if ($this->RequireApproval) {
             $groups = $this->ApprovalGroups();
-            $emails = array();
+            if (!$groups ||
+                $groups->count() == 0) {
+                // If nothing is configured, fallback to ADMIN
+                $groups = Permission::get_groups_by_permission('ADMIN');
+            }
 
+            $emails = [];
             if ($groups) {
                 foreach ($groups as $group) {
                     foreach ($group->Members() as $_member) {
@@ -534,7 +540,9 @@ class MemberProfilePageController extends PageController
             }
 
             if ($emails) {
-                $email   = Email::create();
+                $emails = array_unique($emails);
+
+                $mail   = Email::create();
                 $config  = SiteConfig::current_site_config();
                 $approve = Controller::join_links(
                     Director::baseURL(),
@@ -543,16 +551,23 @@ class MemberProfilePageController extends PageController
                     '?token=' . $member->ValidationKey
                 );
 
-                $email->setSubject("Registration Approval Requested for $config->Title");
-                $email->setBCC(implode(',', array_unique($emails)));
-                $email->setHTMLTemplate('MemberRequiresApprovalEmail');
-                $email->setData(array(
+                $mail->setSubject("Registration Approval Requested for $config->Title");
+                foreach ($emails as $email) {
+                    if (!Email::is_valid_address($email)) {
+                        // Ignore invalid email addresses or else we'll get validation errors.
+                        // ie. default 'admin' account
+                        continue;
+                    }
+                    $mail->addBCC($email);
+                }
+                $mail->setHTMLTemplate('Symbiote\\MemberProfiles\\Email\\MemberRequiresApprovalEmail');
+                $mail->setData(array(
                     'SiteConfig'  => $config,
                     'Member'      => $member,
                     'ApproveLink' => Director::absoluteURL($approve)
                 ));
 
-                $email->send();
+                $mail->send();
             }
         }
 
@@ -562,11 +577,8 @@ class MemberProfilePageController extends PageController
                 // Does not require anything
             break;
 
-            case 'Validation':
-                // Requires admin / CMS user approval
-            break;
-
             case 'Confirmation':
+            case 'Validation':
                 // Must activate themselves via the confirmation email
                 $email = MemberConfirmationEmail::create($this->data(), $member);
                 $email->send();

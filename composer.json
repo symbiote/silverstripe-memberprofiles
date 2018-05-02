@@ -2,7 +2,12 @@
     "name": "symbiote/silverstripe-memberprofiles",
     "description": "Member registration and profile management",
     "type": "silverstripe-vendormodule",
-    "keywords": ["silverstripe", "member", "profile", "registration"],
+    "keywords": [
+        "silverstripe",
+        "member",
+        "profile",
+        "registration"
+    ],
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -21,7 +26,7 @@
         "phpcbf": "phpcbf -n src/Email/ src/Extensions/ src/Forms/ src/Model/ src/Pages/ tests/"
     },
     "suggest": {
-        "ajshort/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
+        "symbiote/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
     },
     "extra": {
         "expose": [
@@ -32,14 +37,14 @@
         }
     },
     "autoload": {
-      "psr-4": {
-          "Symbiote\\MemberProfiles\\": "src/"
-      }
+        "psr-4": {
+            "Symbiote\\MemberProfiles\\": "src/"
+        }
     },
-    "autoload": {
-      "psr-4": {
-          "Symbiote\\MemberProfiles\\Tests\\": "tests/"
-      }
+    "autoload-dev": {
+        "psr-4": {
+            "Symbiote\\MemberProfiles\\Tests\\": "tests/"
+        }
     },
     "replace": {
         "silverstripe/memberprofiles": "self.version",

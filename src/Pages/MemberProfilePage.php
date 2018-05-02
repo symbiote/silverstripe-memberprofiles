@@ -32,6 +32,7 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\ORM\HasManyList;
 use SilverStripe\ORM\UnsavedRelationList;
+use SilverStripe\ORM\ValidationResult;
 
 /**
  * A MemberProfilePage allows the administratior to set up a page with a subset of the
@@ -106,7 +107,7 @@ class MemberProfilePage extends Page
     private static $many_many = array (
         'Groups'           => Group::class,
         'SelectableGroups' => Group::class,
-        'ApprovalGroups'   => Group::class
+        'ApprovalGroups'   => Group::class,
     );
 
     private static $defaults = array (
@@ -331,36 +332,35 @@ class MemberProfilePage extends Page
 
         $fields->addFieldToTab('Root', new Tab('Profile'), 'Settings');
         $fields->addFieldsToTab('Root.Profile', array(
-            new CheckboxField(
+            CheckboxField::create(
                 'AllowRegistration',
                 _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
             ),
-            new CheckboxField(
+            CheckboxField::create(
                 'AllowProfileEditing',
                 _t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
             ),
-            new CheckboxField(
+            CheckboxField::create(
                 'AllowAdding',
                 _t('MemberProfiles.ALLOWADD', 'Allow adding members via this page')
             ),
-            new CheckboxField(
+            CheckboxField::create(
                 'AllowProfileViewing',
                 _t('MemberProfiles.ALLOWPROFILEVIEWING', 'Enable public profiles?')
             ),
-            new CheckboxField(
+            CheckboxField::create(
                 'RequireApproval',
                 _t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
             ),
-            $approval = new TreeMultiselectField(
+            $approval = TreeMultiselectField::create(
                 'ApprovalGroups',
-                _t('MemberProfiles.APPROVALGROUPS', 'Approval Groups'),
-                Group::class
+                _t('MemberProfiles.APPROVALGROUPS', 'Approval Groups')
             ),
-            new CheckboxField(
+            CheckboxField::create(
                 'RegistrationRedirect',
                 _t('MemberProfiles.REDIRECTAFTERREG', 'Redirect after registration?')
             ),
-            new TreeDropdownField(
+            TreeDropdownField::create(
                 'PostRegistrationTargetID',
                 _t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
                 SiteTree::class
@@ -369,10 +369,27 @@ class MemberProfilePage extends Page
 
         $approval->setDescription(_t(
             'MemberProfiles.NOTIFYTHESEGROUPS',
-            'These groups will be notified to approve new registrations'
+            'These groups will be notified to approve new registrations.'
         ));
 
         return $fields;
+    }
+
+    public function validate()
+    {
+        $result = parent::validate();
+        //if ($this->RequireApproval) {
+            //if ($this->ApprovalGroups()->count() == 0) {
+            //    $result->addError(
+            //        _t(
+            //            'MemberProfiles.APPROVALGROUPSMISSING',
+            //            'You must have "Approval Groups" configured or else nobody will be notified by email when somebody needs approval.'
+            //        ),
+            //        ValidationResult::TYPE_ERROR
+            //    );
+            //}
+        //}
+        return $result;
     }
 
     /**
