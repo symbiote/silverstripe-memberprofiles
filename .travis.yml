@@ -8,8 +8,13 @@ env:
 
 matrix:
   include:
-    - php: 5.6
-      env: DB=MYSQL RECIPE_VERSION=1.0.x-dev
+    # NOTE(Jake): 2018-05-02
+    #
+    # PHP 5.6 is not supported due to undebuggable errors in Travis
+    # occuring in the config layer.
+    #
+    #- php: 5.6
+    #  env: DB=MYSQL RECIPE_VERSION=1.0.x-dev
     - php: 7.0
       env: DB=MYSQL RECIPE_VERSION=1.1.x-dev PHPCS_TEST=1
     - php: 7.1

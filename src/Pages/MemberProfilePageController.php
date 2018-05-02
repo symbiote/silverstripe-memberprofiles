@@ -464,27 +464,13 @@ class MemberProfilePageController extends PageController
          */
         $member = DataObject::get_by_id(Member::class, $id);
         if (!$member) {
-            return $this->httpError(404);
+            return $this->invalidRequest('Member #'.$id.' does not exist.');
         }
         if (!$member->NeedsValidation) {
-            $this->getResponse()->setStatusCode(400);
-            return [
-                'Title'   => $confirmationTitle,
-                'Content' => _t(
-                    'MemberProfiles.BADREQUESTCONFIRMATION',
-                    'Unable to perform action.'
-                ),
-            ];
+            return $this->invalidRequest('Member #'.$id.' does not need validation.');
         }
         if ($member->ValidationKey !== $key) {
-            $this->getResponse()->setStatusCode(400);
-            return [
-                'Title'   => $confirmationTitle,
-                'Content' => _t(
-                    'MemberProfiles.BADREQUESTCONFIRMATION',
-                    'Unable to perform action.'
-                ),
-            ];
+            return $this->invalidRequest('Validation key does not match.');
         }
 
         // Allow member to login
@@ -512,6 +498,31 @@ class MemberProfilePageController extends PageController
             'Content' => $this->data()->dbObject('ConfirmationContent')
         ];
     }
+
+    /**
+     * @return array
+     */
+    protected function invalidRequest($debugText)
+    {
+        $additionalText = '';
+        if (Director::isDev()) {
+            // NOTE(Jake): 2018-05-02
+            //
+            // Only expose additional information in 'dev' mode.
+            //
+            $additionalText .= ' '.$debugText;
+        }
+
+        $this->getResponse()->setStatusCode(500);
+        return [
+            'Title'   => $this->data()->dbObject('ConfirmationTitle'),
+            'Content' => _t(
+                'MemberProfiles.ERRORCONFIRMATION',
+                'An unexpected error occurred.'
+            ).$additionalText,
+        ];
+    }
+
 
     /**
      * Attempts to save either a registration or add member form submission

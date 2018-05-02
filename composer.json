@@ -16,6 +16,7 @@
         }
     ],
     "require": {
+        "php": ">=7.0.0",
         "silverstripe/cms": "^4.0"
     },
     "require-dev": {
