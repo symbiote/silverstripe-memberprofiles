@@ -33,7 +33,11 @@
     },
     "autoload": {
       "psr-4": {
-          "Symbiote\\MemberProfiles\\": "src/",
+          "Symbiote\\MemberProfiles\\": "src/"
+      }
+    },
+    "autoload": {
+      "psr-4": {
           "Symbiote\\MemberProfiles\\Tests\\": "tests/"
       }
     },

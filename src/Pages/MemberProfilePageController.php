@@ -456,6 +456,9 @@ class MemberProfilePageController extends PageController
             return $this->httpError(400);
         }
 
+        /**
+         * @var Member|null $member
+         */
         $member = DataObject::get_by_id(Member::class, $id);
         if (!$member) {
             return $this->httpError(404);
@@ -481,8 +484,8 @@ class MemberProfilePageController extends PageController
         Injector::inst()->get(IdentityStore::class)->logIn($member);
 
         return [
-            'Title'   => $this->dbObject('ConfirmationTitle'),
-            'Content' => $this->dbObject('ConfirmationContent')
+            'Title'   => $this->data()->dbObject('ConfirmationTitle'),
+            'Content' => $this->data()->dbObject('ConfirmationContent')
         ];
     }
 

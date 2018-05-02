@@ -10,6 +10,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\ValidationResult;
 
 /**
  * Adds validation fields to the Member object, as well as exposing the user's
@@ -40,17 +41,17 @@ class MemberProfileExtension extends DataExtension
         $this->owner->setField('PublicFieldsRaw', serialize($fields));
     }
 
-    public function canLogIn($result)
+    public function canLogIn(ValidationResult $result)
     {
         if ($this->owner->NeedsApproval) {
-            $result->error(_t(
+            $result->addError(_t(
                 'MemberProfiles.NEEDSAPPROVALTOLOGIN',
                 'An administrator must confirm your account before you can log in.'
             ));
         }
 
         if ($this->owner->NeedsValidation) {
-            $result->error(_t(
+            $result->addError(_t(
                 'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
                 'You must validate your account before you can log in.'
             ));
