@@ -75,9 +75,10 @@ class MemberProfilePageController extends PageController
      */
     public function index(HTTPRequest $request)
     {
-        if (isset($_GET['BackURL'])) {
+        $backURL = $request->getVar('BackURL');
+        if ($backURL) {
             $session = $request->getSession();
-            $session->set('MemberProfile.REDIRECT', $_GET['BackURL']);
+            $session->set('MemberProfile.REDIRECT', $backURL);
         }
 
         return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
