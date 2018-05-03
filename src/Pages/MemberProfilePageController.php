@@ -3,6 +3,7 @@
 namespace Symbiote\MemberProfiles\Pages;
 
 use PageController;
+use Exception;
 use Psr\Container\NotFoundExceptionInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
@@ -467,7 +468,16 @@ class MemberProfilePageController extends PageController
             return $this->invalidRequest('Member #'.$id.' does not exist.');
         }
         if (!$member->NeedsValidation) {
+            // NOTE(Jake): 2018-05-03
+            //
+            // You might be hitting this if you set your MemberProfilePage to use
+            // Email Setting 'Confirmation' rather than 'Validation' and you didn't
+            // edit the original Email template to not include the copy about confirmation.
+            //
             return $this->invalidRequest('Member #'.$id.' does not need validation.');
+        }
+        if (!$member->ValidationKey) {
+            return $this->invalidRequest('Member #'.$id.' does not have a validation key.');
         }
         if ($member->ValidationKey !== $key) {
             return $this->invalidRequest('Validation key does not match.');
@@ -477,21 +487,24 @@ class MemberProfilePageController extends PageController
         $member->NeedsValidation = false;
         $member->ValidationKey = null;
 
-        if (!$member->canLogin()) {
+        $validationResult = $member->validateCanLogin();
+        if (!$validationResult->isValid()) {
             $this->getResponse()->setStatusCode(500);
+            $validationMessages = $validationResult->getMessages();
             return [
                 'Title'   => $confirmationTitle,
-                'Content' => _t(
-                    'MemberProfiles.ERRORCONFIRMATION',
-                    'An unexpected error occurred.'
-                ),
+                'Content' => $validationMessages ? $validationMessages[0]['message'] : _t('MemberProfiles.ERRORCONFIRMATION', 'An unexpected error occurred.'),
             ];
         }
         $member->write();
 
         $this->extend('onConfirm', $member);
 
-        Injector::inst()->get(IdentityStore::class)->logIn($member);
+        if ($member->canLogin()) {
+            Injector::inst()->get(IdentityStore::class)->logIn($member);
+        } else {
+            throw new Exception('Permission issue occurred. Was the "$member->validateCanLogin" check above this code block removed?');
+        }
 
         return [
             'Title'   => $this->data()->dbObject('ConfirmationTitle'),
@@ -603,20 +616,24 @@ class MemberProfilePageController extends PageController
 
                 $mail->send();
             }
-        }
+        } else {
+            // NOTE(Jake): 2018-05-03
+            //
+            // Only send the confirmation email immediately after registering if they
+            // don't require admin approval.
+            //
+            switch ($this->EmailType) {
+                case 'None':
+                    // Does not require anything
+                break;
 
-        // Sent out email
-        switch ($this->EmailType) {
-            case 'None':
-                // Does not require anything
-            break;
-
-            case 'Confirmation':
-            case 'Validation':
-                // Must activate themselves via the confirmation email
-                $email = MemberConfirmationEmail::create($this->data(), $member);
-                $email->send();
-            break;
+                case 'Confirmation':
+                case 'Validation':
+                    // Must activate themselves via the confirmation email
+                    $email = MemberConfirmationEmail::create($this->data(), $member);
+                    $email->send();
+                break;
+            }
         }
 
         $this->extend('onAddMember', $member);

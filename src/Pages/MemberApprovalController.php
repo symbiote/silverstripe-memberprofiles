@@ -11,6 +11,7 @@ use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
+use SilverStripe\ORM\FieldType\DBField;
 
 /**
  * @package silverstripe-memberprofiles
@@ -68,7 +69,7 @@ class MemberApprovalController extends PageController
 
             return $this->render(array(
                 'Title'   => $title,
-                'Content' => "<p>$content</p>"
+                'Content' => DBField::create_field('HTMLFragment', "<p>$content</p>"),
             ));
         }
 
@@ -86,7 +87,7 @@ class MemberApprovalController extends PageController
 
         $title   = _t('MemberProfiles.MEMBERAPPROVED', 'Member Approved');
         $content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
-        $content = '<p>'.sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")).'</p>';
+        $content = DBField::create_field('HTMLFragment', '<p>'.sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")).'</p>');
 
         return $this->render(array(
             'Title'   => $title,

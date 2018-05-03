@@ -104,6 +104,16 @@ class MemberProfilePage extends Page
         'Sections' => MemberProfileSection::class
     );
 
+    private static $owns = array(
+        'Fields',
+        'Sections',
+    );
+
+    private static $cascade_deletes = [
+        'Fields',
+        'Sections',
+    ];
+
     private static $many_many = array (
         'Groups'           => Group::class,
         'SelectableGroups' => Group::class,
@@ -240,14 +250,14 @@ class MemberProfilePage extends Page
         ));
 
         if (class_exists(GridFieldOrderableRows::class)) {
-            $grid->addComponent(new GridFieldOrderableRows('Sort'));
+            $grid->addComponent(GridFieldOrderableRows::create('Sort'));
         } elseif (class_exists(GridFieldSortableRows::class)) {
             $grid->addComponent(new GridFieldSortableRows('Sort'));
         }
 
 
         if (!$this->AllowProfileViewing) {
-            $disabledNote = new LiteralField('PublisProfileDisabledNote', sprintf(
+            $disabledNote = LiteralField::create('PublisProfileDisabledNote', sprintf(
                 '<p class="message notice">%s</p>',
                 _t(
                     'MemberProfiles.PUBLICPROFILEDISABLED',
@@ -285,12 +295,12 @@ class MemberProfilePage extends Page
         }
 
         foreach ($contentFields as $type) {
-            $fields->addFieldToTab("Root.ContentBlocks", new ToggleCompositeField(
+            $fields->addFieldToTab("Root.ContentBlocks", ToggleCompositeField::create(
                 "{$type}Toggle",
                 _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
                 array(
-                    new TextField("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
-                    $content = new HtmlEditorField("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
+                    TextField::create("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
+                    $content = HtmlEditorField::create("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
                 )
             ));
             $content->setRows(15);
@@ -316,9 +326,9 @@ class MemberProfilePage extends Page
                     MemberConfirmationEmail::TEMPLATE_NOTE
                 ))
             )),
-            new ToggleCompositeField('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), array(
-                new TextField('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
-                $confContent  = new HtmlEditorField('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
+            ToggleCompositeField::create('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), array(
+                TextField::create('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
+                $confContent  = HtmlEditorField::create('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
             ))
         ));
         $confContent->setRows(15);
@@ -351,7 +361,7 @@ class MemberProfilePage extends Page
             CheckboxField::create(
                 'RequireApproval',
                 _t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
-            )->setDescription(__t('MemberProfiles.REQUIREREGAPPROVALDESC', 'NOTE: If no Approval Groups are configured, all users with administrative permissions will be notified.')),
+            )->setDescription(_t('MemberProfiles.REQUIREREGAPPROVALDESC', 'NOTE: If no Approval Groups are configured, all users with administrative permissions will be notified.')),
             $approval = TreeMultiselectField::create(
                 'ApprovalGroups',
                 _t('MemberProfiles.APPROVALGROUPS', 'Approval Groups')
@@ -373,23 +383,6 @@ class MemberProfilePage extends Page
         ));
 
         return $fields;
-    }
-
-    public function validate()
-    {
-        $result = parent::validate();
-        //if ($this->RequireApproval) {
-            //if ($this->ApprovalGroups()->count() == 0) {
-            //    $result->addError(
-            //        _t(
-            //            'MemberProfiles.APPROVALGROUPSMISSING',
-            //            'You must have "Approval Groups" configured or else nobody will be notified by email when somebody needs approval.'
-            //        ),
-            //        ValidationResult::TYPE_ERROR
-            //    );
-            //}
-        //}
-        return $result;
     }
 
     /**

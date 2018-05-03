@@ -32,10 +32,5 @@ before_script:
 
 script:
   - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs --ignore=tests/bootstrap-phpstan.php src/ tests/ *.php; fi
-  # NOTE(Jake): 2018-05-02
-  #
-  # PHPStan must come after phpunit so that the config manifest is built in 'test' mode and includes test classes.
-  # This also prevents the config manifest from built twice accidentally.
-  #
   - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ tests/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
   - vendor/bin/phpunit

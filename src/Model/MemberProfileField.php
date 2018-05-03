@@ -3,6 +3,7 @@
 namespace Symbiote\MemberProfiles\Model;
 
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
+use SilverStripe\Versioned\Versioned;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\HeaderField;
@@ -11,6 +12,8 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Security;
+use SilverStripe\Security\Permission;
 
 /**
  * @package silverstripe-memberprofiles
@@ -27,9 +30,11 @@ use SilverStripe\ORM\DataObject;
  * @property bool $Unique
  * @property bool $Required
  * @property int $Sort
+ * @method \Symbiote\MemberProfiles\Pages\MemberProfilePage ProfilePage()
  */
 class MemberProfileField extends DataObject
 {
+    private static $table_name = 'MemberProfileField';
 
     private static $db = [
         'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
@@ -51,6 +56,14 @@ class MemberProfileField extends DataObject
         'ProfilePage' => MemberProfilePage::class
     ];
 
+    private static $owned_by = [
+        'ProfilePage',
+    ];
+
+    private static $extensions = [
+        Versioned::class . "('Stage', 'Live')"
+    ];
+
     private static $summary_fields = [
         'DefaultTitle'           => 'Field',
         'ProfileVisibility'      => 'Profile Visibility',
@@ -61,8 +74,6 @@ class MemberProfileField extends DataObject
     ];
 
     private static $default_sort = 'Sort';
-
-    private static $table_name = 'MemberProfileField';
 
     /**
      * Temporary local cache of form fields - otherwise we can potentially be calling
@@ -287,5 +298,56 @@ class MemberProfileField extends DataObject
     public function getMemberListVisible()
     {
         return $this->getField('MemberListVisible') && !$this->isNeverPublic();
+    }
+
+    public function canEdit($member = null)
+    {
+        return $this->customExtendedCan(__FUNCTION__, $member);
+    }
+
+    public function canView($member = null)
+    {
+        return $this->customExtendedCan(__FUNCTION__, $member);
+    }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return $this->customExtendedCan(__FUNCTION__, $member, $context);
+    }
+
+    public function canDelete($member = null)
+    {
+        return $this->customExtendedCan(__FUNCTION__, $member);
+    }
+
+    /**
+     * @return bool|null
+     */
+    private function customExtendedCan($methodName, $member, $context = array())
+    {
+        if (!$member) {
+            $member = Security::getCurrentUser();
+        }
+
+        // Standard mechanism for accepting permission changes from extensions
+        $extended = $this->extendedCan($methodName, $member, $context);
+        if ($extended !== null) {
+            return $extended;
+        }
+
+        // If has permission to edit profile page, you have permission to edit this field.
+        $page = $this->ProfilePage();
+        if ($page &&
+            $page->exists()) {
+            return $page->$methodName($member);
+        }
+
+        // Default permissions
+        if (Permission::checkMember($member, "SITETREE_EDIT_ALL")) {
+            return true;
+        }
+
+        // Fallback to default DataObject permissions
+        return parent::$methodName($member);
     }
 }
