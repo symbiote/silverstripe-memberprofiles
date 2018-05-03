@@ -15,23 +15,25 @@ use SilverStripe\Dev\SapphireTest;
  * @package    silverstripe-memberprofiles
  * @subpackage tests
  */
-class MemberConfirmationEmailTest extends SapphireTest {
+class MemberConfirmationEmailTest extends SapphireTest
+{
 
-	protected $usesDatabase = true;
+    protected $usesDatabase = true;
 
-	/**
-	 * @covers MemberConfirmationEmail::get_parsed_string
-	 */
-	public function testGetParsedString() {
-		$page   = new MemberProfilePage();
-		$member = new Member();
+    /**
+     * @covers MemberConfirmationEmail::get_parsed_string
+     */
+    public function testGetParsedString() 
+    {
+        $page   = new MemberProfilePage();
+        $member = new Member();
 
-		$member->Email     = 'Test Email';
-		$member->FirstName = 'Test';
-		$member->LastName  = 'User';
-		$member->write();
+        $member->Email     = 'Test Email';
+        $member->FirstName = 'Test';
+        $member->LastName  = 'User';
+        $member->write();
 
-		$raw = '<ul>
+        $raw = '<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: $SiteName</li>
 			<li>Login Link: $LoginLink</li>
@@ -45,7 +47,7 @@ class MemberConfirmationEmailTest extends SapphireTest {
 			</li>
 		</ul>';
 
-		$expected = "<ul>
+        $expected = "<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: " . SiteConfig::current_site_config()->Title . "</li>
 			<li>Login Link: " . singleton(Security::class)->Link('login') . "</li>
@@ -59,11 +61,11 @@ class MemberConfirmationEmailTest extends SapphireTest {
 			</li>
 		</ul>";
 
-		$this->assertEquals (
-			$expected,
-			MemberConfirmationEmail::get_parsed_string($raw, $member, $page),
-			'All allowed variables are parsed into the string.'
-		);
-	}
+        $this->assertEquals(
+            $expected,
+            MemberConfirmationEmail::get_parsed_string($raw, $member, $page),
+            'All allowed variables are parsed into the string.'
+        );
+    }
 
 }
