@@ -1,6 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Model;
+
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 
@@ -13,46 +14,42 @@ use SilverStripe\View\ArrayData;
  */
 class MemberProfileFieldsSection extends MemberProfileSection
 {
-
     private static $table_name = 'MemberProfileFieldsSection';
 
-    public function getDefaultTitle() 
+    public function getDefaultTitle()
     {
         return _t('MemberProfiles.PROFILEFIELDSLIST', 'Profile Fields List');
     }
 
-    public function forTemplate() 
+    public function forTemplate()
     {
         return $this->renderWith('MemberProfileFieldsSection');
     }
 
-    public function Fields() 
+    public function Fields()
     {
         $fields = $this->Parent()->Fields()->where('"PublicVisibility" <> \'Hidden\'');
-        $public = $this->member->getPublicFields();
+        $public = $this->getMember()->getPublicFields();
         $result = new ArrayList();
 
-        foreach($fields as $field) {
-            if($field->PublicVisibility == 'MemberChoice') {
-                if(!in_array($field->MemberField, $public)) continue;
+        foreach ($fields as $field) {
+            if ($field->PublicVisibility == 'MemberChoice') {
+                if (!in_array($field->MemberField, $public)) {
+                    continue;
+                }
             }
 
-            $result->push(
-                new ArrayData(
-                    array(
-                    'Title' => $field->Title,
-                    'Value' => $this->member->{$field->MemberField}
-                    )
-                )
-            );
+            $result->push(new ArrayData(array(
+                'Title' => $field->Title,
+                'Value' => $this->getMember()->{$field->MemberField}
+            )));
         }
 
         return $result;
     }
 
-    public function ShowTitle() 
+    public function ShowTitle()
     {
         return false;
     }
-
 }

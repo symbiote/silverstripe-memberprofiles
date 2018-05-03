@@ -1,6 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Tests;
+
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Admin\SecurityAdmin;
@@ -17,44 +18,31 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class MemberConfirmationAdminTest extends FunctionalTest
 {
+    public static $fixture_file = 'MemberConfirmationAdminTest.yml';
 
-    public static $fixture_file = 'memberprofiles/tests/MemberConfirmationAdminTest.yml';
-
-    /**
-     * @covers MemberProfileExtension::saveManualEmailValidation
-     * @covers MemberProfileExtension::updateCMSFields
-     */
-    public function testManualConfirmation() 
+    public function testManualConfirmation()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm(
-            'MemberTableField_Popup_DetailForm', null, array (
+        $this->submitForm('Form_ItemEditForm', null, array (
             'ManualEmailValidation' => 'confirm'
-            )
-        );
+        ));
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(false, (bool) $member->NeedsValidation);
     }
 
-    /**
-     * @covers MemberProfileExtension::saveManualEmailValidation
-     * @covers MemberProfileExtension::updateCMSFields
-     */
-    public function testResendConfirmationEmail() 
+    public function testResendConfirmationEmail()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm(
-            'MemberTableField_Popup_DetailForm', null, array (
+        $this->submitForm('Form_ItemEditForm', null, array (
             'ManualEmailValidation' => 'resend'
-            )
-        );
+        ));
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(true, (bool) $member->NeedsValidation);
@@ -62,13 +50,13 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEmailSent($member->Email);
     }
 
-    protected function getSecurityAdmin() 
+    private function getSecurityAdmin()
     {
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $admin  = new SecurityAdmin();
         $group  = $this->objFromFixture(Group::class, 'group');
 
-        Form::disable_all_security_tokens();
+        //Form::disable_all_security_tokens(); // NOTE(Jake): Not in SS3 / shouldn't be testing with this anyway?
         $this->logInWithPermission('ADMIN');
 
         $gLink = Controller::join_links($admin->Link(), 'show', $group->ID);
@@ -77,5 +65,4 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->get($gLink);
         $this->get($mLink);
     }
-
 }

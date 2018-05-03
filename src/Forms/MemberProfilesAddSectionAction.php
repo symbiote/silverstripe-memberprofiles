@@ -1,6 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Forms;
+
 use SilverStripe\Control\Controller;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\DropdownField;
@@ -21,24 +22,24 @@ use SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest;
 class MemberProfilesAddSectionAction extends GridFieldDetailForm implements GridField_HTMLProvider
 {
 
-    public function getURLHandlers($gridField) 
+    public function getURLHandlers($gridField)
     {
         return array(
-        'addsection/$ClassName!' => 'handleAddSection'
+            'addsection/$ClassName!' => 'handleAddSection'
         );
     }
 
-    public function getHTMLFragments($grid) 
+    public function getHTMLFragments($grid)
     {
         $addable = $this->getAddableSections($grid);
         $base    = $grid->Link('addsection');
         $links   = array();
 
-        if(!$addable) {
+        if (!$addable) {
             return array();
         }
 
-        foreach($addable as $class => $title) {
+        foreach ($addable as $class => $title) {
             $class = urlencode($class);
             $links[Controller::join_links($base, $class)] = $title;
         }
@@ -50,26 +51,24 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
         $select->setEmptyString(_t('MemberProfiles.SECTIONTYPE', '(Section type)'));
         $select->addExtraClass('no-change-track');
 
-        $data = new ArrayData(
-            array(
+        $data = new ArrayData(array(
             'Title'  => _t('MemberProfiles.ADDSECTION', 'Add Section'),
             'Select' => $select
-            )
-        );
+        ));
 
         return array(
-        'buttons-before-left' => $data->renderWith('MemberProfilesAddSectionButton'),
+            'buttons-before-left' => $data->renderWith('Symbiote\\MemberProfiles\\Model\\MemberProfilesAddSectionButton'),
         );
     }
 
-    public function handleAddSection($grid, $request) 
+    public function handleAddSection($grid, $request)
     {
         $class = urldecode($request->param('ClassName'));
-        if(!is_subclass_of($class, 'Symbiote\MemberProfiles\Model\MemberProfileSection')) {
+        if (!is_subclass_of($class, MemberProfileSection::class)) {
             return new HTTPResponse('An invalid section type was specified', 404);
         }
 
-        if(!array_key_exists($class, $this->getAddableSections($grid))) {
+        if (!array_key_exists($class, $this->getAddableSections($grid))) {
             return new HTTPResponse('The section already exists', 400);
         }
 
@@ -88,7 +87,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
         return $handler->handleRequest($request);
     }
 
-    protected function getAddableSections($grid) 
+    protected function getAddableSections($grid)
     {
         $list    = $grid->getList();
         $classes = ClassInfo::subclassesFor(MemberProfileSection::class);
@@ -98,27 +97,10 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
         array_shift($classes);
         $classes = array_diff($classes, $list->column('ClassName'));
 
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             $result[$class] = singleton($class)->getTitle();
         }
 
         return $result;
     }
-
-}
-
-class MemberProfilesAddSectionAction_ItemRequest extends GridFieldDetailForm_ItemRequest
-{
-
-    public function Link($action = null) 
-    {
-        if($this->record->ID) {
-            return parent::Link($action);
-        } else {
-            return Controller::join_links(
-                $this->gridField->Link(), 'addsection', urlencode(get_class($this->record))
-            );
-        }
-    }
-
 }

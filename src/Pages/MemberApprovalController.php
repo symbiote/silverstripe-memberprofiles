@@ -1,6 +1,9 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Pages;
+
+use PageController;
+
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
@@ -8,7 +11,6 @@ use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Controller;
-use PageController;
 
 /**
  * @package silverstripe-memberprofiles
@@ -17,11 +19,11 @@ class MemberApprovalController extends PageController
 {
 
     private static $url_handlers = array(
-    '$ID' => 'index'
+        '$ID' => 'index'
     );
 
     private static $allowed_actions = array(
-    'index'
+        'index'
     );
 
     /**
@@ -29,16 +31,16 @@ class MemberApprovalController extends PageController
      * of immediately approving after visiting the approve link.
      *
      * @config
-     * @var    boolean
+     * @var boolean
      */
     private static $redirect_to_admin = false;
 
-    public function index($request) 
+    public function index($request)
     {
-        $id    = $request->param('ID');
+        $id    = (int)$request->param('ID');
         $token = $request->getVar('token');
 
-        if (!$id || !ctype_digit($id)) {
+        if (!$id) {
             return $this->httpError(404, 'A member ID was not specified.');
         }
 
@@ -64,12 +66,10 @@ class MemberApprovalController extends PageController
             $title   = _t('MemberProfiles.ALREADYAPPROVED', 'Already Approved');
             $content = _t('MemberProfiles.ALREADYAPPROVEDNOTE', 'This member has already been approved.');
 
-            return $this->render(
-                array(
+            return $this->render(array(
                 'Title'   => $title,
                 'Content' => "<p>$content</p>"
-                )
-            );
+            ));
         }
 
         if ($this->config()->redirect_to_admin) {
@@ -88,17 +88,14 @@ class MemberApprovalController extends PageController
         $content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
         $content = '<p>'.sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")).'</p>';
 
-        return $this->render(
-            array(
+        return $this->render(array(
             'Title'   => $title,
             'Content' => $content
-            )
-        );
+        ));
     }
 
-    public function Link($action = null) 
+    public function Link($action = null)
     {
         return Controller::join_links(Director::baseURL(), 'member-approval', $action);
     }
-
 }

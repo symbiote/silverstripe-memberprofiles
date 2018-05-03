@@ -1,6 +1,7 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Model;
+
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\ReadonlyField;
@@ -13,38 +14,51 @@ use SilverStripe\ORM\DataObject;
 
 /**
  * @package silverstripe-memberprofiles
+ * @property string $ProfileVisibility
+ * @property string $RegistrationVisibility
+ * @property bool $MemberListVisible
+ * @property string $PublicVisibility
+ * @property bool $PublicVisibilityDefault
+ * @property string $MemberField
+ * @property string $CustomTitle
+ * @property string $DefaultValue
+ * @property string $Note
+ * @property string $CustomError
+ * @property bool $Unique
+ * @property bool $Required
+ * @property int $Sort
  */
 class MemberProfileField extends DataObject
 {
 
-    private static $db = array (
-    'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
-    'RegistrationVisibility'  => 'Enum("Edit, Readonly, Hidden", "Hidden")',
-    'MemberListVisible'       => 'Boolean',
-    'PublicVisibility'        => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
-    'PublicVisibilityDefault' => 'Boolean',
-    'MemberField'             => 'Varchar(100)',
-    'CustomTitle'             => 'Varchar(100)',
-    'DefaultValue'            => 'Text',
-    'Note'                    => 'Varchar(255)',
-    'CustomError'             => 'Varchar(255)',
-    'Unique'                  => 'Boolean',
-    'Required'                => 'Boolean',
-    'Sort'                    => 'Int'
-    );
+    private static $db = [
+        'ProfileVisibility'       => 'Enum("Edit, Readonly, Hidden", "Hidden")',
+        'RegistrationVisibility'  => 'Enum("Edit, Readonly, Hidden", "Hidden")',
+        'MemberListVisible'       => 'Boolean',
+        'PublicVisibility'        => 'Enum("Display, MemberChoice, Hidden", "Hidden")',
+        'PublicVisibilityDefault' => 'Boolean',
+        'MemberField'             => 'Varchar(100)',
+        'CustomTitle'             => 'Varchar(100)',
+        'DefaultValue'            => 'Text',
+        'Note'                    => 'Varchar(255)',
+        'CustomError'             => 'Varchar(255)',
+        'Unique'                  => 'Boolean',
+        'Required'                => 'Boolean',
+        'Sort'                    => 'Int'
+    ];
 
-    private static $has_one = array (
-    'ProfilePage' => MemberProfilePage::class
-    );
+    private static $has_one = [
+        'ProfilePage' => MemberProfilePage::class
+    ];
 
-    private static $summary_fields = array (
-    'DefaultTitle'           => 'Field',
-    'ProfileVisibility'      => 'Profile Visibility',
-    'RegistrationVisibility' => 'Registration Visibility',
-    'CustomTitle'            => 'Custom Title',
-    'Unique'                 => 'Unique',
-    'Required'               => 'Required'
-    );
+    private static $summary_fields = [
+        'DefaultTitle'           => 'Field',
+        'ProfileVisibility'      => 'Profile Visibility',
+        'RegistrationVisibility' => 'Registration Visibility',
+        'CustomTitle'            => 'Custom Title',
+        'Unique'                 => 'Unique',
+        'Required'               => 'Required'
+    ];
 
     private static $default_sort = 'Sort';
 
@@ -57,14 +71,11 @@ class MemberProfileField extends DataObject
      * It's declared as a static so all instances have access to it after it's
      * loaded the first time.
      *
-     * @var FieldSet
+     * @var \SilverStripe\Forms\FieldList
      */
     protected static $member_fields;
 
-    /**
-     * @return
-     */
-    public function getCMSFields() 
+    public function getCMSFields()
     {
         Requirements::javascript('symbiote/silverstripe-memberprofiles: client/javascript/MemberProfileFieldCMS.js');
 
@@ -76,27 +87,30 @@ class MemberProfileField extends DataObject
         $fields->removeByName('ProfilePageID');
         $fields->removeByName('Sort');
 
-        $fields->fieldByName('Root.Main')->getChildren()->changeFieldOrder(
-            array(
-            'CustomTitle',
-            'DefaultValue',
-            'Note',
-            'ProfileVisibility',
-            'RegistrationVisibility',
-            'MemberListVisible',
-            'PublicVisibility',
-            'PublicVisibilityDefault',
-            'CustomError',
-            'Unique',
-            'Required'
-            )
-        );
+        /**
+         * @var \SilverStripe\Forms\CompositeField|null $tab
+         */
+        $tab = $fields->fieldByName('Root.Main');
+        if ($tab) {
+            $tab->getChildren()->changeFieldOrder(array(
+                'CustomTitle',
+                'DefaultValue',
+                'Note',
+                'ProfileVisibility',
+                'RegistrationVisibility',
+                'MemberListVisible',
+                'PublicVisibility',
+                'PublicVisibilityDefault',
+                'CustomError',
+                'Unique',
+                'Required'
+            ));
+        }
 
-        $fields->unshift(
-            new ReadonlyField(
-                'MemberField', _t('MemberProfiles.MEMBERFIELD', 'Member Field')
-            )
-        );
+        $fields->unshift(new ReadonlyField(
+            'MemberField',
+            _t('MemberProfiles.MEMBERFIELD', 'Member Field')
+        ));
 
         $fields->insertBefore(
             new HeaderField('VisibilityHeader', _t('MemberProfiles.VISIBILITY', 'Visibility')),
@@ -108,55 +122,55 @@ class MemberProfileField extends DataObject
             'CustomError'
         );
 
-        if($memberField instanceof DropdownField) {
-            $fields->replaceField(
-                'DefaultValue', $default = new DropdownField(
-                    'DefaultValue',
-                    _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
-                    $memberField->getSource()
-                )
-            );
+        if ($memberField instanceof DropdownField) {
+            $fields->replaceField('DefaultValue', $default = new DropdownField(
+                'DefaultValue',
+                _t('MemberProfiles.DEFAULTVALUE', 'Default Value'),
+                $memberField->getSource()
+            ));
             $default->setEmptyString(' ');
-        } elseif($memberField instanceof TextField) {
-            $fields->replaceField(
-                'DefaultValue', new TextField(
-                    'DefaultValue', _t('MemberProfiles.DEFAULTVALUE', 'Default Value')
-                )
-            );
+        } elseif ($memberField instanceof TextField) {
+            $fields->replaceField('DefaultValue', new TextField(
+                'DefaultValue',
+                _t('MemberProfiles.DEFAULTVALUE', 'Default Value')
+            ));
         } else {
             $fields->removeByName('DefaultValue');
         }
 
-        $fields->dataFieldByName('PublicVisibility')->setSource(
-            array(
-            'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
-            'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
-            'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
-            )
-        );
+        /**
+         * @var \SilverStripe\Forms\SelectField|null $publicVisibilityField
+         */
+        $publicVisibilityField = $fields->dataFieldByName('PublicVisibility');
+        if ($publicVisibilityField &&
+            $publicVisibilityField->hasMethod('setSource')) {
+            $publicVisibilityField->setSource(array(
+                'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
+                'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
+                'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
+            ));
+        }
 
-        $fields->dataFieldByName('PublicVisibilityDefault')->setTitle(
-            _t(
-                'MemberProfiles.DEFAULTPUBLIC', 'Mark as public by default?'
-            )
-        );
+        $fields->dataFieldByName('PublicVisibilityDefault')->setTitle(_t(
+            'MemberProfiles.DEFAULTPUBLIC',
+            'Mark as public by default?'
+        ));
 
-        $fields->dataFieldByName('MemberListVisible')->setTitle(
-            _t(
-                'MemberProfiles.VISIBLEMEMLISTINGPAGE', 'Visible on the member listing page?'
-            )
-        );
+        $fields->dataFieldByName('MemberListVisible')->setTitle(_t(
+            'MemberProfiles.VISIBLEMEMLISTINGPAGE',
+            'Visible on the member listing page?'
+        ));
 
-        if($this->isNeverPublic()) {
+        if ($this->isNeverPublic()) {
             $fields->makeFieldReadonly('MemberListVisible');
             $fields->makeFieldReadonly('PublicVisibility');
         }
 
-        if($this->isAlwaysUnique()) {
+        if ($this->isAlwaysUnique()) {
             $fields->makeFieldReadonly('Unique');
         }
 
-        if($this->isAlwaysRequired()) {
+        if ($this->isAlwaysRequired()) {
             $fields->makeFieldReadonly('Required');
         }
 
@@ -165,11 +179,11 @@ class MemberProfileField extends DataObject
         return $fields;
     }
 
-    protected function onBeforeWrite() 
+    protected function onBeforeWrite()
     {
         parent::onBeforeWrite();
 
-        if(!$this->Sort) {
+        if (!$this->Sort) {
             $this->Sort = MemberProfileField::get()->max('Sort') + 1;
         }
     }
@@ -179,7 +193,7 @@ class MemberProfileField extends DataObject
      * @uses   MemberProfileField::getDefaultTitle
      * @return string
      */
-    public function getTitle() 
+    public function getTitle()
     {
         if ($this->CustomTitle) {
             return $this->CustomTitle;
@@ -191,10 +205,10 @@ class MemberProfileField extends DataObject
     /**
      * Get the default title for this field from the form field.
      *
-     * @param  bool $force Force a non-empty title to be returned.
+     * @param bool $force Force a non-empty title to be returned.
      * @return string
      */
-    public function getDefaultTitle($force = true) 
+    public function getDefaultTitle($force = true)
     {
         $fields = $this->getMemberFields();
         $field  = $fields->dataFieldByName($this->MemberField);
@@ -207,7 +221,10 @@ class MemberProfileField extends DataObject
         return $title;
     }
 
-    protected function getMemberFields() 
+    /**
+     * @return \SilverStripe\Forms\FieldList
+     */
+    protected function getMemberFields()
     {
         if (!self::$member_fields) {
             self::$member_fields = singleton(Member::class)->getMemberFormFields();
@@ -218,7 +235,7 @@ class MemberProfileField extends DataObject
     /**
      * @return bool
      */
-    public function isAlwaysRequired() 
+    public function isAlwaysRequired()
     {
         return in_array(
             $this->MemberField,
@@ -229,7 +246,7 @@ class MemberProfileField extends DataObject
     /**
      * @return bool
      */
-    public function isAlwaysUnique() 
+    public function isAlwaysUnique()
     {
         return $this->MemberField == Config::inst()->get(Member::class, 'unique_identifier_field');
     }
@@ -237,17 +254,17 @@ class MemberProfileField extends DataObject
     /**
      * @return bool
      */
-    public function isNeverPublic() 
+    public function isNeverPublic()
     {
         return $this->MemberField == 'Password';
     }
 
-    public function getUnique() 
+    public function getUnique()
     {
         return $this->getField('Unique') || $this->isAlwaysUnique();
     }
 
-    public function getRequired() 
+    public function getRequired()
     {
         return $this->getField('Required') || $this->isAlwaysRequired();
     }
@@ -255,7 +272,7 @@ class MemberProfileField extends DataObject
     /**
      * @return string
      */
-    public function getPublicVisibility() 
+    public function getPublicVisibility()
     {
         if ($this->isNeverPublic()) {
             return 'Hidden';
@@ -267,9 +284,8 @@ class MemberProfileField extends DataObject
     /**
      * @return bool
      */
-    public function getMemberListVisible() 
+    public function getMemberListVisible()
     {
         return $this->getField('MemberListVisible') && !$this->isNeverPublic();
     }
-
 }

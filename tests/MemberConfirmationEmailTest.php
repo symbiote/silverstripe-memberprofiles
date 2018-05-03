@@ -1,12 +1,14 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Tests;
+
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
+use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
-use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use SilverStripe\Dev\SapphireTest;
 
 /**
@@ -17,21 +19,25 @@ use SilverStripe\Dev\SapphireTest;
  */
 class MemberConfirmationEmailTest extends SapphireTest
 {
-
     protected $usesDatabase = true;
 
     /**
-     * @covers MemberConfirmationEmail::get_parsed_string
+     * @usesDatabase
      */
-    public function testGetParsedString() 
+    public function testGetParsedString()
     {
         $page   = new MemberProfilePage();
         $member = new Member();
 
-        $member->Email     = 'Test Email';
+        $member->Email     = 'email@domain.com';
         $member->FirstName = 'Test';
         $member->LastName  = 'User';
         $member->write();
+
+        /**
+         * @var \SilverStripe\ORM\FieldType\DBDatetime $createdObj
+         */
+        $createdObj = $member->dbObject('Created');
 
         $raw = '<ul>
 			<li>Cost: $10</li>
@@ -47,25 +53,28 @@ class MemberConfirmationEmailTest extends SapphireTest
 			</li>
 		</ul>';
 
+        $email = new MemberConfirmationEmail($page, $member);
+        $loginLink = Controller::join_links(
+            $email->BaseURL(),
+            singleton(Security::class)->Link('login')
+        );
         $expected = "<ul>
 			<li>Cost: $10</li>
 			<li>Site Name: " . SiteConfig::current_site_config()->Title . "</li>
-			<li>Login Link: " . singleton(Security::class)->Link('login') . "</li>
+			<li>Login Link: " . $loginLink . "</li>
 			<li>Member:
 				<ul>
-					<li>Since: " . $member->obj('Created')->Nice() . "</li>
+					<li>Since: " . $createdObj->Nice() . "</li>
 					<li>Email: {$member->Email}</li>
 					<li>Name: {$member->Name}</li>
 					<li>Surname: {$member->Surname}</li>
 				</ul>
 			</li>
 		</ul>";
-
         $this->assertEquals(
             $expected,
-            MemberConfirmationEmail::get_parsed_string($raw, $member, $page),
+            $email->getParsedString($raw),
             'All allowed variables are parsed into the string.'
         );
     }
-
 }

@@ -1,0 +1,41 @@
+language: php
+
+env:
+  global:
+    - COMPOSER_ROOT_VERSION=5.0.x-dev
+    - PHPSTAN_VERSION=0.9.2
+    - SS_BASE_URL="http://localhost/"
+
+matrix:
+  include:
+    # NOTE(Jake): 2018-05-02
+    #
+    # PHP 5.6 is not supported due to undebuggable errors in Travis
+    # occuring in the config layer.
+    #
+    #- php: 5.6
+    #  env: DB=MYSQL RECIPE_VERSION=1.0.x-dev
+    - php: 7.0
+      env: DB=MYSQL RECIPE_VERSION=1.1.x-dev PHPCS_TEST=1
+    - php: 7.1
+      env: DB=MYSQL RECIPE_VERSION=1.2.x-dev
+    - php: 7.2
+      env: DB=MYSQL RECIPE_VERSION=1.2.x-dev # NOTE(Jake): 2018-05-03, Needs fixes PHP include fixes, - PHPSTAN_TEST=1
+
+before_script:
+  - phpenv rehash
+  - phpenv config-rm xdebug.ini
+  - composer validate
+  - composer require --no-update silverstripe/recipe-cms:$RECIPE_VERSION
+  - if [[ $PHPSTAN_TEST ]]; then composer require --no-update phpstan/phpstan-shim:$PHPSTAN_VERSION; fi
+  - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
+
+script:
+  - if [[ $PHPCS_TEST ]]; then vendor/bin/phpcs --ignore=tests/bootstrap-phpstan.php src/ tests/ *.php; fi
+  # NOTE(Jake): 2018-05-02
+  #
+  # PHPStan must come after phpunit so that the config manifest is built in 'test' mode and includes test classes.
+  # This also prevents the config manifest from built twice accidentally.
+  #
+  - if [[ $PHPSTAN_TEST ]]; then vendor/bin/phpstan analyse src/ tests/ -c "phpstan.neon" -a "tests/bootstrap-phpstan.php" --level 3; fi
+  - vendor/bin/phpunit

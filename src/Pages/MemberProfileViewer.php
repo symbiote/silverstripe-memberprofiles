@@ -1,12 +1,18 @@
 <?php
 
 namespace Symbiote\MemberProfiles\Pages;
+
+use PageController;
+
+use Exception;
+use SilverStripe\Control\RequestHandler;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
-use PageController;
+use SilverStripe\View\ViewableData;
+use SilverStripe\Security\Permission;
 
 /**
  * Handles displaying member's public profiles.
@@ -16,24 +22,31 @@ use PageController;
  */
 class MemberProfileViewer extends PageController
 {
+    private static $url_handlers = [
+        ''           => 'handleList',
+        '$MemberID!' => 'handleView',
+    ];
 
-    private static $url_handlers = array(
-    ''           => 'handleList',
-    '$MemberID!' => 'handleView'
-    );
-
-    private static $allowed_actions = array(
-    'handleList',
-    'handleView'
-    );
-
-    protected $parent, $name;
+    private static $allowed_actions = [
+        'handleList',
+        'handleView',
+    ];
 
     /**
-     * @param RequestHandler $parent
-     * @param string         $name
+     * @var MemberProfilePageController
      */
-    public function __construct($parent, $name) 
+    private $parent;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @param MemberProfilePageController $parent
+     * @param string $name
+     */
+    public function __construct(MemberProfilePageController $parent, $name)
     {
         $this->parent = $parent;
         $this->name   = $name;
@@ -45,30 +58,35 @@ class MemberProfileViewer extends PageController
      * Displays a list of all members on the site that belong to the selected
      * groups.
      *
-     * @return string
+     * @return ViewableData
      */
-    public function handleList($request) 
+    public function handleList($request)
     {
-        $fields  = $this->parent->Fields()->filter('MemberListVisible', true);
+        $parent = $this->getParent();
+        $fields  = $parent->Fields()->filter('MemberListVisible', true);
 
-        $groups = $this->parent->Groups();
-        if($groups->Count()) {
-            // todo: this ->relation method does not seem to work: no Members are found
+        $groups = $parent->Groups();
+        if ($groups->count() > 0) {
             $members = $groups->relation('Members');
-        } else $members = Member::get();
-        $members = new PaginatedList($members, $request);
+        } else {
+            $members = Member::get();
+            // NOTE(Jake): 2018-05-02
+            //
+            // We may want to enable a flag so that ADMIN users are automatically omitted from this list
+            // by default.
+            //
+            //$members = $members->filter('ID:not', Permission::get_members_by_permission('ADMIN')->map('ID', 'ID')->toArray());
+        }
+        $members = PaginatedList::create($members, $request);
 
-        $list = new PaginatedList(new ArrayList(), $request);
-        $list->setLimitItems(false);
-        $list->setTotalItems($members->getTotalItems());
-
-        foreach($members as $member) {
+        $list = new ArrayList();
+        foreach ($members as $member) {
             $cols   = new ArrayList();
             $public = $member->getPublicFields();
             $link   = $this->Link($member->ID);
 
-            foreach($fields as $field) {
-                if($field->PublicVisibility == 'MemberChoice'
+            foreach ($fields as $field) {
+                if ($field->PublicVisibility == 'MemberChoice'
                     && !in_array($field->MemberField, $public)
                 ) {
                     $value =  null;
@@ -76,37 +94,30 @@ class MemberProfileViewer extends PageController
                     $value = $member->{$field->MemberField};
                 }
 
-                $cols->push(
-                    new ArrayData(
-                        array(
-                        'Name'     => $field->MemberField,
-                        'Title'    => $field->Title,
-                        'Value'    => $value,
-                        'Sortable' => $member->hasDatabaseField($field->MemberField),
-                        'Link'     => $link
-                        )
-                    )
-                );
+                $cols->push(new ArrayData(array(
+                    'Name'     => $field->MemberField,
+                    'Title'    => $field->Title,
+                    'Value'    => $value,
+                    'Sortable' => $member->hasDatabaseField($field->MemberField),
+                    'Link'     => $link
+                )));
             }
 
-            $list->push(
-                $member->customise(
-                    array(
-                    'Fields' => $cols
-                    )
-                )
-            );
+            $list->push($member->customise(array(
+                'Fields' => $cols
+            )));
         }
+        $list = PaginatedList::create($list, $request);
+        $list->setLimitItems(false);
+        $list->setTotalItems($members->getTotalItems());
 
         $this->data()->Title  = _t('MemberProfiles.MEMBERLIST', 'Member List');
-        $this->data()->Parent = $this->parent;
+        $this->data()->Parent = $this->getParent();
 
-        $controller = $this->customise(
-            array(
+        $controller = $this->customise(array(
             'Type'    => 'List',
             'Members' => $list
-            )
-        );
+        ));
 
         return $controller;
     }
@@ -114,27 +125,30 @@ class MemberProfileViewer extends PageController
     /**
      * Handles viewing an individual user's profile.
      *
-     * @return string
+     * @return \SilverStripe\View\ViewableData_Customised
      */
-    public function handleView($request) 
+    public function handleView($request)
     {
         $id = $request->param('MemberID');
 
-        if(!ctype_digit($id)) {
+        if (!ctype_digit($id)) {
             $this->httpError(404);
         }
 
+        /**
+         * @var Member $member
+         */
         $member = Member::get()->byID($id);
-        $groups = $this->parent->Groups();
+        $groups = $this->getParent()->Groups();
 
-        if($groups->Count() && !$member->inGroups($groups)) {
+        if ($groups->count() > 0 && !$member->inGroups($groups)) {
             $this->httpError(403);
         }
 
-        $sections     = $this->parent->Sections();
+        $sections     = $this->getParent()->Sections();
         $sectionsList = new ArrayList();
 
-        foreach($sections as $section) {
+        foreach ($sections as $section) {
             $sectionsList->push($section);
             $section->setMember($member);
         }
@@ -143,38 +157,53 @@ class MemberProfileViewer extends PageController
             _t('MemberProfiles.MEMBERPROFILETITLE', "%s's Profile"),
             $member->getName()
         );
-        $this->data()->Parent = $this->parent;
+        $this->data()->Parent = $this->getParent();
 
-        $controller = $this->customise(
-            array(
+        $controller = $this->customise(array(
             'Type'     => 'View',
             'Member'   => $member,
             'Sections' => $sectionsList,
             'IsSelf'   => $member->ID == Member::currentUserID()
-            )
-        );
+        ));
 
         return $controller;
     }
 
     /**
+     * @var MemberProfilePageController
+     */
+    protected function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @var string
+     */
+    protected function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * @return int
      */
-    public function getPaginationStart() 
+    /*public function getPaginationStart()
     {
         if ($start = $this->request->getVar('start')) {
-            if (ctype_digit($start) && (int) $start > 0) return (int) $start;
+            if (ctype_digit($start) && (int) $start > 0) {
+                return (int) $start;
+            }
         }
 
         return 0;
-    }
+    }*/
 
     /**
      * @return string
      */
-    public function Link($action = null) 
+    public function Link($action = null)
     {
-        return Controller::join_links($this->parent->Link(), $this->name, $action);
+        return Controller::join_links($this->getParent()->Link(), $this->getName(), $action);
     }
-
 }
