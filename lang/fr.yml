@@ -1,0 +1,6 @@
+fr:
+  MemberProfiles:
+    CHECKVISNOTE: 'Vérifiez les champs ci-dessous pour les rendre visibles sur votre profil public'
+    LOGIN: 'Si vous avez déjà un compte, vous pouvez vous  <a href="%s">connecter ici</a>'
+    REGISTER: 'S''inscrire'
+    LOGINHEADER: 'Connexion'
