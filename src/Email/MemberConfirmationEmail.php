@@ -155,8 +155,7 @@ class MemberConfirmationEmail extends Email
                 singleton(Security::class)->Link('login')
             ),
             '$ConfirmLink'    => Controller::join_links(
-                $absoluteBaseURL,
-                $page->Link('confirm'),
+                $this->page->AbsoluteLink('confirm'),
                 $member->ID,
                 "?key={$member->ValidationKey}"
             ),
