@@ -107,12 +107,11 @@ class MemberConfirmationEmail extends Email {
 		$variables = array (
 			'$SiteName'       => SiteConfig::current_site_config()->Title,
 			'$LoginLink'      => Controller::join_links(
-				$absoluteBaseURL, 
+				$absoluteBaseURL,
 				singleton('Security')->Link('login')
 			),
 			'$ConfirmLink'    => Controller::join_links(
-				$absoluteBaseURL,
-				$this->page->Link('confirm'),
+				$this->page->AbsoluteLink('confirm'),
 				$this->member->ID,
 				"?key={$this->member->ValidationKey}"
 			),
