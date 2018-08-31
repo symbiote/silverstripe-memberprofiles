@@ -1,5 +1,5 @@
 ---
-Name: routes
+Name: memberprofilesroutes
 After: framework/routes#coreroutes
 ---
 SilverStripe\Control\Director:
