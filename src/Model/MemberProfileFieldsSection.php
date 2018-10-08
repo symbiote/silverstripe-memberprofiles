@@ -23,7 +23,7 @@ class MemberProfileFieldsSection extends MemberProfileSection
 
     public function forTemplate()
     {
-        return $this->renderWith('MemberProfileFieldsSection');
+        return $this->renderWith(MemberProfileFieldsSection::class);
     }
 
     public function Fields()
