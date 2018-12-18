@@ -599,22 +599,23 @@ class MemberProfilePageController extends PageController
                 );
 
                 $mail->setSubject("Registration Approval Requested for $config->Title");
-                foreach ($emails as $email) {
-                    if (!Email::is_valid_address($email)) {
-                        // Ignore invalid email addresses or else we'll get validation errors.
-                        // ie. default 'admin' account
-                        continue;
-                    }
-                    $mail->addBCC($email);
-                }
                 $mail->setHTMLTemplate('Symbiote\\MemberProfiles\\Email\\MemberRequiresApprovalEmail');
                 $mail->setData(array(
                     'SiteConfig'  => $config,
                     'Member'      => $member,
                     'ApproveLink' => Director::absoluteURL($approve)
                 ));
-
-                $mail->send();
+                
+                foreach ($emails as $email) {
+                    if (!Email::is_valid_address($email)) {
+                        // Ignore invalid email addresses or else we'll get validation errors.
+                        // ie. default 'admin' account
+                        continue;
+                    }
+                    
+                    $mail->setTo($email);
+                    $mail->send();                    
+                }
             }
         } else {
             // NOTE(Jake): 2018-05-03
