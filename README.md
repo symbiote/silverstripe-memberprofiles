@@ -14,7 +14,7 @@ Registration can be enabled or disabled in the "Behaviour" tab.
 
 **SilverStripe 4.0+**
 ```
-composer require symbiote/silverstripe-memberprofiles:~3.0
+composer require symbiote/silverstripe-memberprofiles:~4.0
 ```
 
 **[SilverStripe 3.1+](https://github.com/symbiote/silverstripe-memberprofiles/tree/2.0)**
