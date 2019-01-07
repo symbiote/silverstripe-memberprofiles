@@ -22,6 +22,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\SpamProtection\Extension\FormSpamProtectionExtension;
 use SilverStripe\View\Requirements;
 use SilverStripe\Security\Permission;
 use SilverStripe\View\ViewableData_Customised;
@@ -193,7 +194,7 @@ class MemberProfilePageController extends PageController
         );
 
 
-        if ($form->hasExtension('FormSpamProtectionExtension')) {
+        if ($form->hasExtension(FormSpamProtectionExtension::class)) {
             $form->enableSpamProtection();
         }
         $this->extend('updateRegisterForm', $form);
