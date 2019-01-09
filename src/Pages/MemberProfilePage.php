@@ -7,7 +7,6 @@ use Symbiote\MemberProfiles\Forms\MemberProfilesAddSectionAction;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Model\MemberProfileFieldsSection;
 use Symbiote\MemberProfiles\Model\MemberProfileField;
-use Symbiote\MemberProfiles\Model\MemberProfileSection;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
@@ -66,7 +65,6 @@ use SilverStripe\ORM\ValidationResult;
  * @property string $ConfirmationContent
  * @property int $PostRegistrationTargetID
  * @method \SilverStripe\CMS\Model\SiteTree PostRegistrationTarget()
- * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileSection[] Sections()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] ApprovalGroups()
@@ -101,7 +99,7 @@ class MemberProfilePage extends Page
 
     private static $has_many = array (
         'Fields'   => MemberProfileField::class,
-        'Sections' => MemberProfileSection::class
+        'Sections' => MemberProfileFieldsSection::class
     );
 
     private static $owns = array(
