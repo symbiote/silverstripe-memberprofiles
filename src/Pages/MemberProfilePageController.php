@@ -55,7 +55,6 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
  * @property int $PostRegistrationTargetID
  * @method \SilverStripe\CMS\Model\SiteTree PostRegistrationTarget()
  * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileField[] Fields()
- * @method \SilverStripe\ORM\DataList|\Symbiote\MemberProfiles\Model\MemberProfileSection[] Sections()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] ApprovalGroups()
