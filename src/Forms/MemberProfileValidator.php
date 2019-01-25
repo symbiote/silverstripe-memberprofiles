@@ -120,8 +120,10 @@ class MemberProfileValidator extends RequiredFields
 
                 if (!$results->isValid()) {
                     $valid = false;
-                    foreach ($results->messageList() as $key => $value) {
-                        $this->validationError('Password', $value, 'required');
+                    foreach ($results->getMessages() as $value) {
+                        if (isset($value['message'])) {
+                            $this->validationError('Password', $value['message'], 'required');
+                        }
                     }
                 }
             }
