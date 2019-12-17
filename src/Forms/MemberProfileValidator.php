@@ -113,6 +113,12 @@ class MemberProfileValidator extends RequiredFields
         if (isset($data['Password']) && $data['Password'] !== "") {
             if (is_null($member)) {
                 $member = Member::create();
+
+                //pass in the Unique Identifier Field (usually Email)
+                $idField = Member::config()->get('unique_identifier_field');
+                if(isset($data[$idField])) {
+                    $member->$idField = $data[$idField];
+                }
             }
 
             if ($validator = $member::password_validator()) {
