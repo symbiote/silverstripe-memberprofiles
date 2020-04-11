@@ -589,7 +589,7 @@ class MemberProfilePageController extends PageController
             if ($emails) {
                 $emails = array_unique($emails);
 
-                $mail    = Email::create($this->EmailFrom)
+                $mail    = Email::create($this->EmailFrom);
                 $config  = SiteConfig::current_site_config();
                 $approve = Controller::join_links(
                     Director::baseURL(),
