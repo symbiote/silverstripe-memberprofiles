@@ -116,7 +116,7 @@ class MemberProfileValidator extends RequiredFields
 
                 //pass in the Unique Identifier Field (usually Email)
                 $idField = Member::config()->get('unique_identifier_field');
-                if(isset($data[$idField])) {
+                if (isset($data[$idField])) {
                     $member->$idField = $data[$idField];
                 }
             }

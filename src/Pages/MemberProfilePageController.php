@@ -605,16 +605,16 @@ class MemberProfilePageController extends PageController
                     'Member'      => $member,
                     'ApproveLink' => Director::absoluteURL($approve)
                 ));
-                
+
                 foreach ($emails as $email) {
                     if (!Email::is_valid_address($email)) {
                         // Ignore invalid email addresses or else we'll get validation errors.
                         // ie. default 'admin' account
                         continue;
                     }
-                    
+
                     $mail->setTo($email);
-                    $mail->send();                    
+                    $mail->send();
                 }
             }
         } else {
