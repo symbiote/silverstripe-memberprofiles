@@ -26,7 +26,7 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', null, array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
             'ManualEmailValidation' => 'confirm'
         ));
 
@@ -40,7 +40,7 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', null, array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
             'ManualEmailValidation' => 'resend'
         ));
 

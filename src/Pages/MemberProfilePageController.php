@@ -9,6 +9,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Session;
 use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Member_GroupSet;
 use SilverStripe\Security\Security;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Controller;
@@ -271,7 +272,7 @@ class MemberProfilePageController extends PageController
      */
     public function save(array $data, Form $form)
     {
-        $member = Member::currentUser();
+        $member = Security::getCurrentUser();
 
         $groupIds = $this->getSettableGroupIdsFrom($form, $member);
         $member->Groups()->setByIDList($groupIds);
@@ -290,6 +291,7 @@ class MemberProfilePageController extends PageController
             _t('MemberProfiles.PROFILEUPDATED', 'Your profile has been updated.'),
             'good'
         );
+
         return $this->redirectBack();
     }
 
