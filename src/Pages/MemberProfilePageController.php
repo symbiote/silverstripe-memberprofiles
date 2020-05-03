@@ -73,7 +73,7 @@ class MemberProfilePageController extends PageController
     ];
 
     /**
-     * @return array|ViewableData_Customised
+     * @return HTTPResponse
      */
     public function index(HTTPRequest $request)
     {
@@ -89,7 +89,7 @@ class MemberProfilePageController extends PageController
     /**
      * Allow users to register if registration is enabled.
      *
-     * @return array|ViewableData_Customised
+     * @return HTTPResponse|ViewableData_Customised
      */
     protected function indexRegister()
     {
@@ -117,7 +117,7 @@ class MemberProfilePageController extends PageController
      * If editing is disabled, but the current user can add users, then they
      * are redirected to the add user page.
      *
-     * @return array|ViewableData_Customised
+     * @return HTTPResponse|ViewableData_Customised
      */
     protected function indexProfile()
     {
@@ -192,8 +192,8 @@ class MemberProfilePageController extends PageController
             new MemberProfileValidator($this->Fields())
         );
 
-
-        if ($form->hasExtension(FormSpamProtectionExtension::class)) {
+        if (class_exists(FormSpamProtectionExtension::class)
+            && $form->hasExtension(FormSpamProtectionExtension::class)) {
             $form->enableSpamProtection();
         }
         $this->extend('updateRegisterForm', $form);

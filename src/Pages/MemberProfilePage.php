@@ -68,6 +68,7 @@ use SilverStripe\ORM\ValidationResult;
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] Groups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] SelectableGroups()
  * @method \SilverStripe\ORM\DataList|\SilverStripe\Security\Group[] ApprovalGroups()
+ * @method \SilverStripe\ORM\HasManyList|MemberProfileFieldsSection[] Sections()
  */
 class MemberProfilePage extends Page
 {
@@ -238,14 +239,18 @@ class MemberProfilePage extends Page
             )
         ));
 
-        $grid->getComponentByType(GridFieldDataColumns::class)->setFieldFormatting(array(
-            'Unique'   => function ($val, $obj) {
-                return $obj->dbObject('Unique')->Nice();
-            },
-            'Required' => function ($val, $obj) {
-                return $obj->dbObject('Required')->Nice();
-            }
-        ));
+        /* @var GridFieldDataColumns $dataColumns */
+        $dataColumns = $grid->getComponentByType(GridFieldDataColumns::class);
+        if (method_exists($dataColumns, 'setFieldFormatting')) {
+            $dataColumns->setFieldFormatting(array(
+                'Unique'   => function ($val, $obj) {
+                    return $obj->dbObject('Unique')->Nice();
+                },
+                'Required' => function ($val, $obj) {
+                    return $obj->dbObject('Required')->Nice();
+                }
+            ));
+        }
 
         if (class_exists(GridFieldOrderableRows::class)) {
             $grid->addComponent(GridFieldOrderableRows::create('Sort'));

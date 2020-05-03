@@ -7,13 +7,11 @@ parameters:
             - redirect
     excludes_analyse:
         - silverstripe-cache
-    exclude_files:
         - tests/bootstrap-phpstan.php
     ignoreErrors:
         # No SilverStripe 4 support yet
         - '%undefined property SilverStripe\\Security\\Member::%'
         - '%undefined property SilverStripe\\ORM\\DataObject::%'
-        - '%undefined property SilverStripe\\SiteConfig\\SiteConfig::%'
         # Ignore because added by MemberProfileExtension
         - '%undefined method SilverStripe\\Security\\Member::getPublicFields()%'
         - '%undefined method SilverStripe\\Security\\Member::setPublicFields()%'
@@ -23,5 +21,3 @@ parameters:
         # Unsupported introspection level
         - '%Call to an undefined method SilverStripe\\Forms\\FormField::setCanBeEmpty()%'
         - '%Call to an undefined method SilverStripe\\Forms\\Form::enableSpamProtection()%'
-        # Ignore modules / classes that may or may not be installed
-        - '%UndefinedOffset\\SortableGridField\\Forms\\GridFieldSortableRows not found%'
