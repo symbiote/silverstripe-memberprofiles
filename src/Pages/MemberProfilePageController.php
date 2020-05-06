@@ -281,7 +281,15 @@ class MemberProfilePageController extends PageController
         try {
             $member->write();
         } catch (ValidationException $e) {
-            $validationMessages = implode("; ", $e->getResult()->getMessages());
+            $messages = [];
+            foreach ($e->getResult()->getMessages() as $message) {
+                if (is_array($message) && isset($message['message'])) {
+                    $messages[] = $message['message'];
+                } elseif (is_string($message)) {
+                    $messages[] = $message;
+                }
+            }
+            $validationMessages = implode("; ", $messages);
             $form->sessionMessage($validationMessages, 'bad');
             return $this->redirectBack();
         }
@@ -557,7 +565,15 @@ class MemberProfilePageController extends PageController
         try {
             $member->write();
         } catch (ValidationException $e) {
-            $validationMessages = implode("; ", $e->getResult()->getMessages());
+            $messages = [];
+            foreach ($e->getResult()->getMessages() as $message) {
+                if (is_array($message) && isset($message['message'])) {
+                    $messages[] = $message['message'];
+                } elseif (is_string($message)) {
+                    $messages[] = $message;
+                }
+            }
+            $validationMessages = implode("; ", $messages);
             $form->sessionMessage($validationMessages, 'bad');
             return null;
         }
@@ -605,16 +621,16 @@ class MemberProfilePageController extends PageController
                     'Member'      => $member,
                     'ApproveLink' => Director::absoluteURL($approve)
                 ));
-                
+
                 foreach ($emails as $email) {
                     if (!Email::is_valid_address($email)) {
                         // Ignore invalid email addresses or else we'll get validation errors.
                         // ie. default 'admin' account
                         continue;
                     }
-                    
+
                     $mail->setTo($email);
-                    $mail->send();                    
+                    $mail->send();
                 }
             }
         } else {
