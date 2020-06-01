@@ -2,6 +2,7 @@
 
 namespace Symbiote\MemberProfiles\Forms;
 
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\Forms\ReadonlyField;
@@ -10,6 +11,8 @@ use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CheckboxField_Readonly;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use Symbiote\MemberProfiles\Extensions\MemberProfileExtension;
 
 /**
  * A wrapper around a field to add a checkbox to optionally mark it as visible.
@@ -25,7 +28,7 @@ class CheckableVisibilityField extends FormField
     private $child;
 
     /**
-     * @var CheckboxField|CheckboxField_Readonly
+     * @var FormField|CheckboxField|CheckboxField_Readonly
      */
     private $checkbox;
 
@@ -54,7 +57,7 @@ class CheckableVisibilityField extends FormField
     }
 
     /**
-     * @return CheckboxField|CheckboxField_Readonly
+     * @return FormField|CheckboxField|CheckboxField_Readonly
      */
     public function getCheckbox()
     {
@@ -72,6 +75,11 @@ class CheckableVisibilityField extends FormField
         return $this;
     }
 
+    /**
+     * @param mixed $value Either the parent object, or array of source data being loaded
+     * @param array|MemberProfileExtension $data {@see Form::loadDataFrom}
+     * @return $this
+     */
     public function setValue($value, $data = array())
     {
         $this->child->setValue($value);
@@ -143,7 +151,10 @@ class CheckableVisibilityField extends FormField
 
     public function Field($properties = array())
     {
-        return $this->child->Field() . ' ' . $this->checkbox->Field();
+        return DBHTMLText::create_field(
+            'HTMLFragment',
+            $this->child->Field() . ' ' . $this->checkbox->Field()
+        );
     }
 
     public function Title()

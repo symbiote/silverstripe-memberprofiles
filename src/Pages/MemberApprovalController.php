@@ -4,6 +4,7 @@ namespace Symbiote\MemberProfiles\Pages;
 
 use PageController;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Security\Member;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
@@ -73,7 +74,7 @@ class MemberApprovalController extends PageController
             ));
         }
 
-        if ($this->config()->redirect_to_admin) {
+        if (Config::inst()->get(self::class, 'redirect_to_admin')) {
             $controller = singleton(SecurityAdmin::class);
             if (!$controller->canView()) {
                 return Security::permissionFailure();
