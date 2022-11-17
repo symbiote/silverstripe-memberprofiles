@@ -5,10 +5,9 @@
     var $container = $('.showOnClickContainer', $(this).parent());
 
     $container.toggle('fast', function() {
-      $container.find('input[type="hidden"]').val($container.is(":visible") ? 1 : 0);
+      $container.toggleClass("d-none").find('input[type="hidden"]').val($container.hasClass("d-none")?0:1);
     });
 
     return false;
-  })
-  .find(".confirmedpassword .showOnClickContainer").hide();
+  });
 })(jQuery);
