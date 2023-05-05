@@ -13,6 +13,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
 use SilverStripe\View\ViewableData;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
 
 /**
  * Handles displaying member's public profiles.
@@ -163,7 +164,7 @@ class MemberProfileViewer extends PageController
             'Type'     => 'View',
             'Member'   => $member,
             'Sections' => $sectionsList,
-            'IsSelf'   => $member->ID == Member::currentUserID()
+            'IsSelf'   => Security::getCurrentUser() && $member->ID == Security::getCurrentUser()->ID,
         ));
 
         return $controller;
