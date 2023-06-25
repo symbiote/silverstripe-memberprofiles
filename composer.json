@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "silverstripe/cms": "^4.0"
+        "silverstripe/cms": "^4.0|^5.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5.7|^9"
     },
     "scripts": {
         "phpcbf": "phpcbf -n src/Email/ src/Extensions/ src/Forms/ src/Model/ src/Pages/ tests/"
