@@ -9,6 +9,7 @@ use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\Security;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\SapphireTest;
 
 /**
@@ -21,9 +22,12 @@ class MemberConfirmationEmailTest extends SapphireTest
 {
     protected $usesDatabase = true;
 
-    /**
-     * @usesDatabase
-     */
+    public function setup(): void
+    {
+        Email::config()->admin_email = 'james@stark.net';
+        parent::setUp();
+    }
+
     public function testGetParsedString()
     {
         $page   = new MemberProfilePage();
