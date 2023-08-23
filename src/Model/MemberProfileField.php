@@ -103,7 +103,7 @@ class MemberProfileField extends DataObject
          */
         $tab = $fields->fieldByName('Root.Main');
         if ($tab) {
-            $tab->getChildren()->changeFieldOrder(array(
+            $tab->getChildren()->changeFieldOrder([
                 'CustomTitle',
                 'DefaultValue',
                 'Note',
@@ -115,7 +115,7 @@ class MemberProfileField extends DataObject
                 'CustomError',
                 'Unique',
                 'Required'
-            ));
+            ]);
         }
 
         $fields->unshift(new ReadonlyField(
@@ -155,11 +155,11 @@ class MemberProfileField extends DataObject
         $publicVisibilityField = $fields->dataFieldByName('PublicVisibility');
         if ($publicVisibilityField &&
             $publicVisibilityField->hasMethod('setSource')) {
-            $publicVisibilityField->setSource(array(
+            $publicVisibilityField->setSource([
                 'Display'      => _t('MemberProfiles.ALWAYSDISPLAY', 'Always display'),
                 'MemberChoice' => _t('MemberProfiles.MEMBERCHOICE', 'Allow the member to choose'),
                 'Hidden'       => _t('MemberProfiles.DONTDISPLAY', 'Do not display')
-            ));
+            ]);
         }
 
         $fields->dataFieldByName('PublicVisibilityDefault')->setTitle(_t(
@@ -250,7 +250,7 @@ class MemberProfileField extends DataObject
     {
         return in_array(
             $this->MemberField,
-            array(Config::inst()->get(Member::class, 'unique_identifier_field'), 'Password')
+            [Config::inst()->get(Member::class, 'unique_identifier_field'), 'Password']
         );
     }
 
@@ -310,7 +310,7 @@ class MemberProfileField extends DataObject
         return $this->customExtendedCan(__FUNCTION__, $member);
     }
 
-    public function canCreate($member = null, $context = array())
+    public function canCreate($member = null, $context = [])
     {
         return $this->customExtendedCan(__FUNCTION__, $member, $context);
     }
@@ -323,7 +323,7 @@ class MemberProfileField extends DataObject
     /**
      * @return bool|null
      */
-    private function customExtendedCan($methodName, $member, $context = array())
+    private function customExtendedCan($methodName, $member, $context = [])
     {
         if (!$member) {
             $member = Security::getCurrentUser();

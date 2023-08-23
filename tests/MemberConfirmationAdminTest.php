@@ -11,7 +11,6 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\FunctionalTest;
 
-
 /**
  * Tests manually confirming users in the admin panel.
  *
@@ -35,9 +34,9 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', [
             'ManualEmailValidation' => 'confirm'
-        ));
+        ]);
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(false, (bool) $member->NeedsValidation);
     }
@@ -49,9 +48,9 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', [
             'ManualEmailValidation' => 'resend'
-        ));
+        ]);
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(true, (bool) $member->NeedsValidation);
