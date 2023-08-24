@@ -3,7 +3,9 @@
 	<description>CodeSniffer ruleset for SilverStripe coding conventions.</description>
 
 	<file>src</file>
-	<file>tests</file>
+	<file>tests/MemberConfirmationAdminTest.php</file>
+    <file>tests/MemberConfirmationAdminTest.yml</file>
+    <file>tests/MemberConfirmationEmailTest.php</file>
 
 	<!-- base rules are PSR-2 -->
 	<rule ref="PSR2" >
