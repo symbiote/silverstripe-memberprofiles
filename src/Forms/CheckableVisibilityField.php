@@ -80,7 +80,7 @@ class CheckableVisibilityField extends FormField
      * @param array|MemberProfileExtension $data {@see Form::loadDataFrom}
      * @return $this
      */
-    public function setValue($value, $data = array())
+    public function setValue($value, $data = [])
     {
         $this->child->setValue($value);
 
@@ -113,9 +113,9 @@ class CheckableVisibilityField extends FormField
             $public = $record->getPublicFields();
 
             if ($this->checkbox->dataValue()) {
-                $public = array_merge($public, array($this->name));
+                $public = array_merge($public, [$this->name]);
             } else {
-                $public = array_diff($public, array($this->name));
+                $public = array_diff($public, [$this->name]);
             }
 
             $record->setPublicFields($public);
@@ -149,7 +149,7 @@ class CheckableVisibilityField extends FormField
         return parent::setForm($form);
     }
 
-    public function Field($properties = array())
+    public function Field($properties = [])
     {
         return DBHTMLText::create_field(
             'HTMLFragment',

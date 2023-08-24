@@ -8,5 +8,6 @@ SilverStripe\Security\Member:
     FirstName: Test
     Surname: User
     Email: email@domain.com
+    Password: 1nitialPassword
     NeedsValidation: 1
     Groups: =>SilverStripe\Security\Group.group

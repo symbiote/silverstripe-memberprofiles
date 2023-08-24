@@ -8,6 +8,7 @@ use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Security\Group;
 use SilverStripe\Forms\Form;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Dev\FunctionalTest;
 
 /**
@@ -18,7 +19,14 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class MemberConfirmationAdminTest extends FunctionalTest
 {
-    public static $fixture_file = 'MemberConfirmationAdminTest.yml';
+    protected static $fixture_file = 'MemberConfirmationAdminTest.yml';
+    protected $usesDatabase = true;
+
+    public function setup(): void
+    {
+        Email::config()->admin_email = 'james@stark.net';
+        parent::setUp();
+    }
 
     public function testManualConfirmation()
     {
@@ -26,27 +34,26 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', [
             'ManualEmailValidation' => 'confirm'
-        ));
-
+        ]);
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(false, (bool) $member->NeedsValidation);
     }
 
     public function testResendConfirmationEmail()
     {
+        $this->clearEmails();
         $member = $this->objFromFixture(Member::class, 'unconfirmed');
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
+        $this->submitForm('Form_ItemEditForm', 'action_doSave', [
             'ManualEmailValidation' => 'resend'
-        ));
+        ]);
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(true, (bool) $member->NeedsValidation);
-
         $this->assertEmailSent($member->Email);
     }
 
@@ -56,7 +63,6 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $admin  = new SecurityAdmin();
         $group  = $this->objFromFixture(Group::class, 'group');
 
-        //Form::disable_all_security_tokens(); // NOTE(Jake): Not in SS3 / shouldn't be testing with this anyway?
         $this->logInWithPermission('ADMIN');
 
         $gLink = Controller::join_links($admin->Link(), 'show', $group->ID);

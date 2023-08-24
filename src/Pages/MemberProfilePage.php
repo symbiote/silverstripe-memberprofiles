@@ -74,7 +74,7 @@ use SilverStripe\ORM\ValidationResult;
 class MemberProfilePage extends Page
 {
 
-    private static $db = array (
+    private static $db =  [
         'ProfileTitle'             => 'Varchar(255)',
         'RegistrationTitle'        => 'Varchar(255)',
         'AfterRegistrationTitle'   => 'Varchar(255)',
@@ -93,34 +93,34 @@ class MemberProfilePage extends Page
         'EmailTemplate'            => 'Text',
         'ConfirmationTitle'        => 'Varchar(255)',
         'ConfirmationContent'      => 'HTMLText'
-    );
+    ];
 
-    private static $has_one = array(
+    private static $has_one = [
         'PostRegistrationTarget' => SiteTree::class,
-    );
+    ];
 
-    private static $has_many = array (
+    private static $has_many =  [
         'Fields'   => MemberProfileField::class,
         'Sections' => MemberProfileFieldsSection::class
-    );
+    ];
 
-    private static $owns = array(
+    private static $owns = [
         'Fields',
         'Sections',
-    );
+    ];
 
     private static $cascade_deletes = [
         'Fields',
         'Sections',
     ];
 
-    private static $many_many = array (
+    private static $many_many =  [
         'Groups'           => Group::class,
         'SelectableGroups' => Group::class,
         'ApprovalGroups'   => Group::class,
-    );
+    ];
 
-    private static $defaults = array (
+    private static $defaults =  [
         'ProfileTitle'             => 'Edit Profile',
         'RegistrationTitle'        => 'Register / Log In',
         'AfterRegistrationTitle'   => 'Registration Successful',
@@ -130,7 +130,7 @@ class MemberProfilePage extends Page
         'AllowProfileEditing'      => true,
         'ConfirmationTitle'        => 'Account Confirmed',
         'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'
-    );
+    ];
 
     private static $table_name = 'MemberProfilePage';
 
@@ -139,33 +139,33 @@ class MemberProfilePage extends Page
      *
      * @var array
      */
-    public static $profile_field_defaults = array(
-        'Email' => array(
+    public static $profile_field_defaults = [
+        'Email' => [
             'RegistrationVisibility' => 'Edit',
             'ProfileVisibility'      => 'Edit',
             'PublicVisibility'       => 'MemberChoice',
             'Unique'                 => true,
             'Required'               => true
-        ),
-        'FirstName' => array(
+        ],
+        'FirstName' => [
             'RegistrationVisibility' => 'Edit',
             'ProfileVisibility'      => 'Edit',
             'MemberListVisible'      => true,
             'PublicVisibility'       => 'Display'
-        ),
-        'Surname' => array(
+        ],
+        'Surname' => [
             'RegistrationVisibility'  => 'Edit',
             'ProfileVisibility'       => 'Edit',
             'MemberListVisible'       => true,
             'PublicVisibility'        => 'MemberChoice',
             'PublicVisibilityDefault' => true
-        ),
-        'Password' => array(
+        ],
+        'Password' => [
             'RegistrationVisibility' => 'Edit',
             'ProfileVisibility'      => 'Edit',
             'Required'               => true
-        )
-    );
+        ]
+    ];
 
     private static $description = '';
 
@@ -198,7 +198,7 @@ class MemberProfilePage extends Page
             $fields->addFieldToTab('Root', new Tab('Email', _t('MemberProfiles.Email', 'Email')));
             $fields->fieldByName('Root.Main')->setTitle(_t('MemberProfiles.MAIN', 'Main'));
 
-            $fields->addFieldsToTab('Root.Profile', array(
+            $fields->addFieldsToTab('Root.Profile', [
                 new Tab(
                     'Fields',
                     _t('MemberProfiles.FIELDS', 'Fields'),
@@ -237,19 +237,19 @@ class MemberProfilePage extends Page
                             ->addComponent(new MemberProfilesAddSectionAction())
                     )
                 )
-            ));
+            ]);
 
             /* @var GridFieldDataColumns $dataColumns */
             $dataColumns = $grid->getComponentByType(GridFieldDataColumns::class);
             if (method_exists($dataColumns, 'setFieldFormatting')) {
-                $dataColumns->setFieldFormatting(array(
+                $dataColumns->setFieldFormatting([
                     'Unique'   => function ($val, $obj) {
                         return $obj->dbObject('Unique')->Nice();
                     },
                     'Required' => function ($val, $obj) {
                         return $obj->dbObject('Required')->Nice();
                     }
-                ));
+                ]);
             }
 
             if (class_exists(GridFieldOrderableRows::class)) {
@@ -287,7 +287,7 @@ class MemberProfilePage extends Page
 
             $fields->removeByName('Content', true);
 
-            $contentFields = array();
+            $contentFields = [];
             if ($this->AllowRegistration) {
                 $contentFields[] = 'Registration';
                 $contentFields[] = 'AfterRegistration';
@@ -300,27 +300,27 @@ class MemberProfilePage extends Page
             foreach ($contentFields as $type) {
                 $fields->addFieldToTab("Root.ContentBlocks", ToggleCompositeField::create(
                     "{$type}Toggle",
-                    _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
-                    array(
+                    _t('MemberProfiles.' . strtoupper($type), FormField::name_to_label($type)),
+                    [
                         TextField::create("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
                         $content = HtmlEditorField::create("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
-                    )
+                    ]
                 ));
                 $content->setRows(15);
             }
 
 
-            $fields->addFieldsToTab('Root.Email', array(
+            $fields->addFieldsToTab('Root.Email', [
                 OptionsetField::create(
                     'EmailType',
                     _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
-                    array(
+                    [
                         'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Send a confirmation email (confirmation required to login)'),
                         'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email (confirmation NOT required to login)'),
                         'None'         => _t('MemberProfiles.NONE', 'None')
-                    )
+                    ]
                 )->setRightTitle('For additional settings, check the "Settings" tab.'),
-                ToggleCompositeField::create('EmailContentToggle', _t('MemberProfiles.EMAILCONTENT', 'Email Content'), array(
+                ToggleCompositeField::create('EmailContentToggle', _t('MemberProfiles.EMAILCONTENT', 'Email Content'), [
                     TextField::create('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
                     TextField::create('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
                     TextareaField::create('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
@@ -328,12 +328,12 @@ class MemberProfilePage extends Page
                         '<div class="field">%s</div>',
                         MemberConfirmationEmail::TEMPLATE_NOTE
                     ))
-                )),
-                ToggleCompositeField::create('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), array(
+                ]),
+                ToggleCompositeField::create('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), [
                     TextField::create('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
                     $confContent  = HtmlEditorField::create('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
-                ))
-            ));
+                ])
+            ]);
             $confContent->setRows(15);
         });
 
@@ -345,7 +345,7 @@ class MemberProfilePage extends Page
         $fields = parent::getSettingsFields();
 
         $fields->addFieldToTab('Root', new Tab('Profile'), 'Settings');
-        $fields->addFieldsToTab('Root.Profile', array(
+        $fields->addFieldsToTab('Root.Profile', [
             CheckboxField::create(
                 'AllowRegistration',
                 _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
@@ -379,7 +379,7 @@ class MemberProfilePage extends Page
                 _t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
                 SiteTree::class
             )
-        ));
+        ]);
 
         $approval->setDescription(_t(
             'MemberProfiles.NOTIFYTHESEGROUPS',
@@ -419,7 +419,7 @@ class MemberProfilePage extends Page
     {
         $list     = $this->getComponents('Fields');
         $fields   = singleton(Member::class)->getMemberFormFields()->dataFields();
-        $included = array();
+        $included = [];
 
         foreach ($list as $profileField) {
             if (!array_key_exists($profileField->MemberField, $fields)) {

@@ -24,19 +24,19 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 
     public function getURLHandlers($gridField)
     {
-        return array(
+        return [
             'addsection/$ClassName!' => 'handleAddSection'
-        );
+        ];
     }
 
     public function getHTMLFragments($grid)
     {
         $addable = $this->getAddableSections($grid);
         $base    = $grid->Link('addsection');
-        $links   = array();
+        $links   = [];
 
         if (!$addable) {
-            return array();
+            return [];
         }
 
         foreach ($addable as $class => $title) {
@@ -51,14 +51,14 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
         $select->setEmptyString(_t('MemberProfiles.SECTIONTYPE', '(Section type)'));
         $select->addExtraClass('no-change-track');
 
-        $data = new ArrayData(array(
+        $data = new ArrayData([
             'Title'  => _t('MemberProfiles.ADDSECTION', 'Add Section'),
             'Select' => $select
-        ));
+        ]);
 
-        return array(
+        return [
             'buttons-before-left' => $data->renderWith('Symbiote\\MemberProfiles\\Model\\MemberProfilesAddSectionButton'),
-        );
+        ];
     }
 
     public function handleAddSection($grid, $request)
@@ -91,7 +91,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
     {
         $list    = $grid->getList();
         $classes = ClassInfo::subclassesFor(MemberProfileSection::class);
-        $result  = array();
+        $result  = [];
         $base    = $grid->Link();
 
         array_shift($classes);

@@ -1,6 +1,6 @@
 # SilverStripe Member Profile Pages Module
 
-[![Build Status](https://travis-ci.org/symbiote/silverstripe-memberprofiles.svg?branch=master)](https://travis-ci.org/symbiote/silverstripe-memberprofiles)
+[![CI](https://github.com/symbiote/silverstripe-memberprofiles/actions/workflows/ci.yml/badge.svg)](https://github.com/symbiote/silverstripe-memberprofiles/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/version.svg)](https://github.com/symbiote/silverstripe-memberprofiles/releases)
 [![Latest Unstable Version](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/v/unstable.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofiles)
 [![Total Downloads](https://poser.pugx.org/symbiote/silverstripe-memberprofiles/downloads.svg)](https://packagist.org/packages/symbiote/silverstripe-memberprofiles)
