@@ -16,15 +16,14 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
-        "silverstripe/cms": "^4.0"
+        "silverstripe/cms": "^4.12 || ^5"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.0",
-        "phpunit/phpunit": "^5.7"
+        "squizlabs/php_codesniffer": "^3.5",
+        "phpunit/phpunit": "^9.6"
     },
     "scripts": {
-        "phpcbf": "phpcbf -n src/Email/ src/Extensions/ src/Forms/ src/Model/ src/Pages/ tests/"
+        "phpcbf": "phpcbf -n src/ tests/"
     },
     "suggest": {
         "symbiote/silverstripe-gridfieldextensions": "Allows drag-and-drop reordering of fields"
