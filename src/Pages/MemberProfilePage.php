@@ -75,22 +75,63 @@ use SilverStripe\ORM\ValidationResult;
 class MemberProfilePage extends Page
 {
 
-    private static $db = ['ProfileTitle'             => 'Varchar(255)', 'RegistrationTitle'        => 'Varchar(255)', 'AfterRegistrationTitle'   => 'Varchar(255)', 'ProfileContent'           => 'HTMLText', 'RegistrationContent'      => 'HTMLText', 'AfterRegistrationContent' => 'HTMLText', 'AllowRegistration'        => 'Boolean', 'AllowProfileViewing'      => 'Boolean', 'AllowProfileEditing'      => 'Boolean', 'AllowAdding'              => 'Boolean', 'RegistrationRedirect'     => 'Boolean', 'RequireApproval'          => 'Boolean', 'EmailType'                => 'Enum("Validation, Confirmation, None", "None")', 'EmailFrom'                => 'Varchar(255)', 'EmailSubject'             => 'Varchar(255)', 'EmailTemplate'            => 'Text', 'ConfirmationTitle'        => 'Varchar(255)', 'ConfirmationContent'      => 'HTMLText'];
+    private static $db = [
+        'ProfileTitle'             => 'Varchar(255)',
+        'RegistrationTitle'        => 'Varchar(255)',
+        'AfterRegistrationTitle'   => 'Varchar(255)',
+        'ProfileContent'           => 'HTMLText',
+        'RegistrationContent'      => 'HTMLText',
+        'AfterRegistrationContent' => 'HTMLText',
+        'AllowRegistration'        => 'Boolean',
+        'AllowProfileViewing'      => 'Boolean',
+        'AllowProfileEditing'      => 'Boolean',
+        'AllowAdding'              => 'Boolean',
+        'RegistrationRedirect'     => 'Boolean',
+        'RequireApproval'          => 'Boolean',
+        'EmailType'                => 'Enum("Validation, Confirmation, None", "None")',
+        'EmailFrom'                => 'Varchar(255)',
+        'EmailSubject'             => 'Varchar(255)',
+        'EmailTemplate'            => 'Text',
+        'ConfirmationTitle'        => 'Varchar(255)',
+        'ConfirmationContent'      => 'HTMLText'
+    ];
 
-    private static $has_one = ['PostRegistrationTarget' => SiteTree::class];
+    private static $has_one = [
+        'PostRegistrationTarget' => SiteTree::class
+    ];
 
-    private static $has_many = ['Fields'   => MemberProfileField::class, 'Sections' => MemberProfileFieldsSection::class];
+    private static $has_many = [
+        'Fields'   => MemberProfileField::class,
+        'Sections' => MemberProfileFieldsSection::class
+    ];
 
-    private static $owns = ['Fields', 'Sections'];
+    private static $owns = [
+        'Fields',
+        'Sections'
+    ];
 
     private static $cascade_deletes = [
         'Fields',
         'Sections',
     ];
 
-    private static $many_many = ['Groups'           => Group::class, 'SelectableGroups' => Group::class, 'ApprovalGroups'   => Group::class];
+    private static $many_many = [
+        'Groups'           => Group::class,
+        'SelectableGroups' => Group::class,
+        'ApprovalGroups'   => Group::class
+    ];
 
-    private static $defaults = ['ProfileTitle'             => 'Edit Profile', 'RegistrationTitle'        => 'Register / Log In', 'AfterRegistrationTitle'   => 'Registration Successful', 'AfterRegistrationContent' => '<p>Thank you for registering!</p>', 'AllowRegistration'        => true, 'AllowProfileViewing'      => false, 'AllowProfileEditing'      => true, 'ConfirmationTitle'        => 'Account Confirmed', 'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'];
+    private static $defaults = [
+        'ProfileTitle'             => 'Edit Profile',
+        'RegistrationTitle'        => 'Register / Log In',
+        'AfterRegistrationTitle'   => 'Registration Successful',
+        'AfterRegistrationContent' => '<p>Thank you for registering!</p>',
+        'AllowRegistration'        => true,
+        'AllowProfileViewing'      => false,
+        'AllowProfileEditing'      => true,
+        'ConfirmationTitle'        => 'Account Confirmed',
+        'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'
+    ];
 
     private static $table_name = 'MemberProfilePage';
 
@@ -99,7 +140,33 @@ class MemberProfilePage extends Page
      *
      * @var array
      */
-    public static $profile_field_defaults = ['Email' => ['RegistrationVisibility' => 'Edit', 'ProfileVisibility'      => 'Edit', 'PublicVisibility'       => 'MemberChoice', 'Unique'                 => true, 'Required'               => true], 'FirstName' => ['RegistrationVisibility' => 'Edit', 'ProfileVisibility'      => 'Edit', 'MemberListVisible'      => true, 'PublicVisibility'       => 'Display'], 'Surname' => ['RegistrationVisibility'  => 'Edit', 'ProfileVisibility'       => 'Edit', 'MemberListVisible'       => true, 'PublicVisibility'        => 'MemberChoice', 'PublicVisibilityDefault' => true], 'Password' => ['RegistrationVisibility' => 'Edit', 'ProfileVisibility'      => 'Edit', 'Required'               => true]];
+    public static $profile_field_defaults = [
+        'Email' => [
+            'RegistrationVisibility' => 'Edit',
+            'ProfileVisibility'      => 'Edit',
+            'PublicVisibility'       => 'MemberChoice',
+            'Unique'                 => true,
+            'Required'               => true
+        ],
+        'FirstName' => [
+            'RegistrationVisibility' => 'Edit',
+            'ProfileVisibility'      => 'Edit',
+            'MemberListVisible'      => true,
+            'PublicVisibility'       => 'Display'
+        ],
+        'Surname' => [
+            'RegistrationVisibility'  => 'Edit',
+            'ProfileVisibility'       => 'Edit',
+            'MemberListVisible'       => true,
+            'PublicVisibility'        => 'MemberChoice',
+            'PublicVisibilityDefault' => true
+        ],
+        'Password' => [
+            'RegistrationVisibility' => 'Edit',
+            'ProfileVisibility'      => 'Edit',
+            'Required'               => true
+        ]
+    ];
 
     private static $description = '';
 
