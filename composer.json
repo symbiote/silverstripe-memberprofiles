@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "silverstripe/cms": "^4.12 || ^5"
+        "silverstripe/cms": "^5"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.5",
