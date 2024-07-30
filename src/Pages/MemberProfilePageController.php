@@ -101,7 +101,12 @@ class MemberProfilePageController extends PageController
             ));
         }
 
-        $data = ['Type'    => 'Register', 'Title'   => $this->obj('RegistrationTitle'), 'Content' => $this->obj('RegistrationContent'), 'Form'    => $this->RegisterForm()];
+        $data = [
+            'Type'    => 'Register',
+            'Title'   => $this->obj('RegistrationTitle'),
+            'Content' => $this->obj('RegistrationContent'),
+            'Form'    => $this->RegisterForm()
+        ];
 
         return $this->customise($data);
     }
@@ -150,7 +155,12 @@ class MemberProfilePageController extends PageController
             }
         }
 
-        $data = ['Type'    => 'Profile', 'Title'   => $this->obj('ProfileTitle'), 'Content' => $this->obj('ProfileContent'), 'Form'    => $form];
+        $data = [
+            'Type'    => 'Profile',
+            'Title'   => $this->obj('ProfileTitle'),
+            'Content' => $this->obj('ProfileContent'),
+            'Form'    => $form
+        ];
 
         return $this->customise($data);
     }
@@ -232,7 +242,10 @@ class MemberProfilePageController extends PageController
      */
     public function afterregistration()
     {
-        return ['Title'   => $this->obj('AfterRegistrationTitle'), 'Content' => $this->obj('AfterRegistrationContent')];
+        return [
+            'Title'   => $this->obj('AfterRegistrationTitle'),
+            'Content' => $this->obj('AfterRegistrationContent')
+        ];
     }
 
     /**
@@ -303,7 +316,12 @@ class MemberProfilePageController extends PageController
             ));
         }
 
-        $data = ['Type'    => 'Add', 'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'), 'Content' => '', 'Form'    => $this->AddForm()];
+        $data = [
+            'Type'    => 'Add',
+            'Title'   => _t('MemberProfiles.ADDMEMBER', 'Add Member'),
+            'Content' => '',
+            'Form'    => $this->AddForm()
+        ];
 
         return $this->customise($data);
     }
@@ -600,7 +618,11 @@ class MemberProfilePageController extends PageController
 
                 $mail->setSubject("Registration Approval Requested for $config->Title");
                 $mail->setHTMLTemplate('Symbiote\\MemberProfiles\\Email\\MemberRequiresApprovalEmail');
-                $mail->setData(['SiteConfig'  => $config, 'Member'      => $member, 'ApproveLink' => Director::absoluteURL($approve)]);
+                $mail->setData([
+                    'SiteConfig'  => $config,
+                    'Member'      => $member,
+                    'ApproveLink' => Director::absoluteURL($approve)
+                ]);
 
                 foreach ($emails as $email) {
                     if (!Email::is_valid_address($email)) {

@@ -73,7 +73,16 @@ class MemberProfileSection extends DataObject
 
         $fields->addFieldsToTab(
             'Root.Main',
-            [new ReadonlyField('DefaultTitle', _t('MemberProfiles.SECTIONTYPE', 'Section type')), new HiddenField('ClassName', '')],
+            [
+                new ReadonlyField(
+                    'DefaultTitle',
+                    _t('MemberProfiles.SECTIONTYPE', 'Section type')
+                ),
+                new HiddenField(
+                    'ClassName',
+                    ''
+                )
+            ],
             'CustomTitle'
         );
 

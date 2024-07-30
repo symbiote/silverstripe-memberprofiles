@@ -20,9 +20,13 @@ use SilverStripe\ORM\FieldType\DBField;
 class MemberApprovalController extends PageController
 {
 
-    private static $url_handlers = ['$ID' => 'index'];
+    private static $url_handlers = [
+        '$ID' => 'index'
+    ];
 
-    private static $allowed_actions = ['index'];
+    private static $allowed_actions = [
+        'index'
+    ];
 
     /**
      * Redirect the user to the 'admin/Security' member edit page instead
@@ -64,7 +68,10 @@ class MemberApprovalController extends PageController
             $title   = _t('MemberProfiles.ALREADYAPPROVED', 'Already Approved');
             $content = _t('MemberProfiles.ALREADYAPPROVEDNOTE', 'This member has already been approved.');
 
-            return $this->render(['Title'   => $title, 'Content' => DBField::create_field('HTMLFragment', "<p>$content</p>")]);
+            return $this->render([
+                'Title'   => $title,
+                'Content' => DBField::create_field('HTMLFragment', "<p>$content</p>")
+            ]);
         }
 
         if (Config::inst()->get(self::class, 'redirect_to_admin')) {
@@ -83,7 +90,10 @@ class MemberApprovalController extends PageController
         $content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
         $content = DBField::create_field('HTMLFragment', '<p>'.sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")).'</p>');
 
-        return $this->render(['Title'   => $title, 'Content' => $content]);
+        return $this->render([
+            'Title'   => $title,
+            'Content' => $content
+        ]);
     }
 
     public function Link($action = null)

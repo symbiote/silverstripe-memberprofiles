@@ -239,7 +239,10 @@ class MemberProfilePage extends Page
             /* @var GridFieldDataColumns $dataColumns */
             $dataColumns = $grid->getComponentByType(GridFieldDataColumns::class);
             if (method_exists($dataColumns, 'setFieldFormatting')) {
-                $dataColumns->setFieldFormatting(['Unique'   => fn($val, $obj) => $obj->dbObject('Unique')->Nice(), 'Required' => fn($val, $obj) => $obj->dbObject('Required')->Nice()]);
+                $dataColumns->setFieldFormatting([
+                    'Unique'   => fn($val, $obj) => $obj->dbObject('Unique')->Nice(),
+                    'Required' => fn($val, $obj) => $obj->dbObject('Required')->Nice()
+                ]);
             }
 
             if (class_exists(GridFieldOrderableRows::class)) {
@@ -288,23 +291,58 @@ class MemberProfilePage extends Page
             }
 
             foreach ($contentFields as $type) {
-                $fields->addFieldToTab("Root.ContentBlocks", ToggleCompositeField::create(
-                    "{$type}Toggle",
-                    _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
-                    [TextField::create("{$type}Title", _t('MemberProfiles.TITLE', 'Title')), $content = HtmlEditorField::create("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))]
+                $fields->addFieldToTab(
+                    "Root.ContentBlocks",
+                    ToggleCompositeField::create(
+                        "{$type}Toggle",
+                        _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
+                        [
+                            TextField::create("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
+                            $content = HtmlEditorField::create("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
+                        ]
                 ));
                 $content->setRows(15);
             }
 
 
-            $fields->addFieldsToTab('Root.Email', [OptionsetField::create(
-                'EmailType',
-                _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
-                ['Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Send a confirmation email (confirmation required to login)'), 'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email (confirmation NOT required to login)'), 'None'         => _t('MemberProfiles.NONE', 'None')]
-            )->setRightTitle('For additional settings, check the "Settings" tab.'), ToggleCompositeField::create('EmailContentToggle', _t('MemberProfiles.EMAILCONTENT', 'Email Content'), [TextField::create('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')), TextField::create('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')), TextareaField::create('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')), LiteralField::create('TemplateNote', sprintf(
-                '<div class="field">%s</div>',
-                MemberConfirmationEmail::TEMPLATE_NOTE
-            ))]), ToggleCompositeField::create('ConfirmationContentToggle', _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'), [TextField::create('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')), $confContent  = HtmlEditorField::create('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))])]);
+            $fields->addFieldsToTab(
+                'Root.Email',
+                [
+                    OptionsetField::create(
+                    'EmailType',
+                        _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
+                        [
+                            'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Send a confirmation email (confirmation required to login)'),
+                            'Confirmation' => _t('MemberProfiles.EMAILCONFIRMATION', 'Send a confirmation email (confirmation NOT required to login)'),
+                            'None'         => _t('MemberProfiles.NONE', 'None')
+                        ]
+                    )->setRightTitle('For additional settings, check the "Settings" tab.'),
+                    ToggleCompositeField::create(
+                        'EmailContentToggle',
+                        _t('MemberProfiles.EMAILCONTENT', 'Email Content'),
+                        [
+                            TextField::create('EmailSubject', _t('MemberProfiles.EMAILSUBJECT', 'Email subject')),
+                            TextField::create('EmailFrom', _t('MemberProfiles.EMAILFROM', 'Email from')),
+                            TextareaField::create('EmailTemplate', _t('MemberProfiles.EMAILTEMPLATE', 'Email template')),
+                            LiteralField::create(
+                                'TemplateNote',
+                                sprintf(
+                                    '<div class="field">%s</div>',
+                                    MemberConfirmationEmail::TEMPLATE_NOTE
+                                )
+                            )
+                        ]
+                    ),
+                    ToggleCompositeField::create(
+                        'ConfirmationContentToggle',
+                        _t('MemberProfiles.CONFIRMCONTENT', 'Confirmation Content'),
+                        [
+                            TextField::create('ConfirmationTitle', _t('MemberProfiles.TITLE', 'Title')),
+                            $confContent  = HtmlEditorField::create('ConfirmationContent', _t('MemberProfiles.CONTENT', 'Content'))
+                        ]
+                    )
+                ]
+            );
             $confContent->setRows(15);
         });
 
@@ -316,32 +354,46 @@ class MemberProfilePage extends Page
         $fields = parent::getSettingsFields();
 
         $fields->addFieldToTab('Root', new Tab('Profile'), 'Settings');
-        $fields->addFieldsToTab('Root.Profile', [CheckboxField::create(
-            'AllowRegistration',
-            _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
-        ), CheckboxField::create(
-            'AllowProfileEditing',
-            _t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
-        ), CheckboxField::create(
-            'AllowAdding',
-            _t('MemberProfiles.ALLOWADD', 'Allow adding members via this page')
-        ), CheckboxField::create(
-            'AllowProfileViewing',
-            _t('MemberProfiles.ALLOWPROFILEVIEWING', 'Enable public profiles?')
-        ), CheckboxField::create(
-            'RequireApproval',
-            _t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
-        )->setDescription(_t('MemberProfiles.REQUIREREGAPPROVALDESC', 'NOTE: If no Approval Groups are configured, all users with administrative permissions will be notified.')), $approval = TreeMultiselectField::create(
-            'ApprovalGroups',
-            _t('MemberProfiles.APPROVALGROUPS', 'Approval Groups')
-        ), CheckboxField::create(
-            'RegistrationRedirect',
-            _t('MemberProfiles.REDIRECTAFTERREG', 'Redirect after registration?')
-        ), TreeDropdownField::create(
-            'PostRegistrationTargetID',
-            _t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
-            SiteTree::class
-        )]);
+        $fields->addFieldsToTab(
+            'Root.Profile',
+            [
+                CheckboxField::create(
+                    'AllowRegistration',
+                    _t('MemberProfiles.ALLOWREG', 'Allow registration via this page')
+                ),
+                CheckboxField::create(
+                    'AllowProfileEditing',
+                    _t('MemberProfiles.ALLOWEDITING', 'Allow users to edit their own profile on this page')
+                ),
+                CheckboxField::create(
+                    'AllowAdding',
+                    _t('MemberProfiles.ALLOWADD', 'Allow adding members via this page')
+                ),
+                CheckboxField::create(
+                    'AllowProfileViewing',
+                    _t('MemberProfiles.ALLOWPROFILEVIEWING', 'Enable public profiles?')
+                ),
+                CheckboxField::create(
+                    'RequireApproval',
+                    _t('MemberProfiles.REQUIREREGAPPROVAL', 'Require registration approval by an administrator?')
+                )->setDescription(_t(
+                    'MemberProfiles.REQUIREREGAPPROVALDESC',
+                    'NOTE: If no Approval Groups are configured, all users with administrative permissions will be notified.'
+                )),
+                $approval = TreeMultiselectField::create(
+                    'ApprovalGroups',
+                    _t('MemberProfiles.APPROVALGROUPS', 'Approval Groups')
+                ),
+                CheckboxField::create(
+                    'RegistrationRedirect',
+                    _t('MemberProfiles.REDIRECTAFTERREG', 'Redirect after registration?')
+                ), TreeDropdownField::create(
+                    'PostRegistrationTargetID',
+                    _t('MemberProfiles.REDIRECTTOPAGE', 'Redirect To Page'),
+                    SiteTree::class
+                )
+            ]
+        );
 
         $approval->setDescription(_t(
             'MemberProfiles.NOTIFYTHESEGROUPS',

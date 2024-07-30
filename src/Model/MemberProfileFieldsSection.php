@@ -39,7 +39,10 @@ class MemberProfileFieldsSection extends MemberProfileSection
                 }
             }
 
-            $result->push(new ArrayData(['Title' => $field->Title, 'Value' => $this->getMember()->{$field->MemberField}]));
+            $result->push(new ArrayData([
+                'Title' => $field->Title,
+                'Value' => $this->getMember()->{$field->MemberField}
+            ]));
         }
 
         return $result;
