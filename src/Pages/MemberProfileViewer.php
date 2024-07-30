@@ -95,10 +95,18 @@ class MemberProfileViewer extends PageController
                     $value = $member->{$field->MemberField};
                 }
 
-                $cols->push(new ArrayData(['Name'     => $field->MemberField, 'Title'    => $field->Title, 'Value'    => $value, 'Sortable' => $member->hasDatabaseField($field->MemberField), 'Link'     => $link]));
+                $cols->push(new ArrayData([
+                    'Name'     => $field->MemberField,
+                    'Title'    => $field->Title,
+                    'Value'    => $value,
+                    'Sortable' => $member->hasDatabaseField($field->MemberField),
+                    'Link'     => $link
+                ]));
             }
 
-            $list->push($member->customise(['Fields' => $cols]));
+            $list->push($member->customise([
+                'Fields' => $cols
+            ]));
         }
         $list = PaginatedList::create($list, $request);
         $list->setLimitItems(false);
@@ -107,7 +115,10 @@ class MemberProfileViewer extends PageController
         $this->data()->Title  = _t('MemberProfiles.MEMBERLIST', 'Member List');
         $this->data()->Parent = $this->getParent();
 
-        $controller = $this->customise(['Type'    => 'List', 'Members' => $list]);
+        $controller = $this->customise([
+            'Type'    => 'List',
+            'Members' => $list
+        ]);
 
         return $controller;
     }
