@@ -84,7 +84,7 @@ class MemberProfilePageController extends PageController
             $session->set('MemberProfile.REDIRECT', $backURL);
         }
 
-        return Member::currentUser() ? $this->indexProfile() : $this->indexRegister();
+        return Security::getCurrentUser() ? $this->indexProfile() : $this->indexRegister();
     }
 
     /**
@@ -128,7 +128,7 @@ class MemberProfilePageController extends PageController
             ));
         }
 
-        $member = Member::currentUser();
+        $member = Security::getCurrentUser();
 
         foreach ($this->Groups() as $group) {
             if (!$member->inGroup($group)) {
@@ -248,7 +248,7 @@ class MemberProfilePageController extends PageController
             new FieldList(
                 new FormAction('save', _t('MemberProfiles.SAVE', 'Save'))
             ),
-            new MemberProfileValidator($this->Fields(), Member::currentUser())
+            new MemberProfileValidator($this->Fields(), Security::getCurrentUser())
         );
         $this->extend('updateProfileForm', $form);
         return $form;
@@ -428,7 +428,7 @@ class MemberProfilePageController extends PageController
             return $this->httpError(400, 'No confirmation required.');
         }
 
-        $currentMember = Member::currentUser();
+        $currentMember = Security::getCurrentUser();
         $id = (int)$request->param('ID');
         $key = $request->getVar('key');
 
@@ -647,8 +647,8 @@ class MemberProfilePageController extends PageController
         $fields        = new FieldList();
 
         // depending on the context, load fields from the current member
-        if (Member::currentUser() && $context != 'Add') {
-            $memberFields = Member::currentUser()->getMemberFormFields();
+        if (($member = Security::getCurrentUser()) && $context != 'Add') {
+            $memberFields = $member->getMemberFormFields();
         } else {
             $memberFields = singleton(Member::class)->getMemberFormFields();
         }

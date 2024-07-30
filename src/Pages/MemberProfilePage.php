@@ -4,6 +4,7 @@ namespace Symbiote\MemberProfiles\Pages;
 
 use Page;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Security\Security;
 use Symbiote\MemberProfiles\Forms\MemberProfilesAddSectionAction;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Model\MemberProfileFieldsSection;
@@ -113,7 +114,7 @@ class MemberProfilePage extends Page
     public function Link($action = null)
     {
         if (!$action
-            && Member::currentUserID()
+            && Security::getCurrentUser()
             && !$this->AllowProfileEditing
             && $this->CanAddMembers()
         ) {
@@ -190,7 +191,7 @@ class MemberProfilePage extends Page
                         'in the "Settings" tab.'
                     )
                 ));
-                $fields->insertBefore($disabledNote, 'Sections');
+                $fields->insertBefore('Sections', $disabledNote);
             }
 
             $groups->setDescription(_t(
