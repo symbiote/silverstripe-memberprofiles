@@ -2,6 +2,7 @@
 
 namespace Symbiote\MemberProfiles\Email;
 
+use SilverStripe\Control\Director;
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use SilverStripe\Security\Member;
 use SilverStripe\CMS\Model\SiteTree;
@@ -32,14 +33,14 @@ class MemberConfirmationEmail extends Email
      *
      * @var string
      */
-    const DEFAULT_SUBJECT = '$SiteName Member Activation';
+    public const DEFAULT_SUBJECT = '$SiteName Member Activation';
 
     /**
      * The default email template to use if none is provided.
      *
      * @var string
      */
-    const DEFAULT_TEMPLATE = '
+    public const DEFAULT_TEMPLATE = '
 <p>
 	Dear $Member.Email,
 </p>
@@ -77,7 +78,7 @@ class MemberConfirmationEmail extends Email
      *
      * @var string
      */
-    const TEMPLATE_NOTE = '
+    public const TEMPLATE_NOTE = '
 <p>
 	The following special variables will be replaced in the email template and subject line:
 </p>
@@ -116,22 +117,6 @@ class MemberConfirmationEmail extends Email
     }
 
     /**
-     * Deprecated. For backwards compatibility.
-     * NOTE(Jake): 2018-05-01, Removed for SS4 upgrade. Also removed $isSingleton param from __construct()
-     *
-     * @param string $string
-     * @param Member $member
-     * @param SiteTree $page
-     * @return string
-     */
-    /*public static function get_parsed_string($string, Member $member, $page)
-    {
-        $class = get_called_class();
-        $inst = new $class($page, $member, true);
-        return $inst->getParsedString($string);
-    }*/
-
-    /**
      * Replaces variables inside an email template according to {@link TEMPLATE_NOTE}.
      *
      * @param string $string
@@ -148,13 +133,13 @@ class MemberConfirmationEmail extends Email
         $createdDateObj = $member->obj('Created');
 
         $absoluteBaseURL = $this->BaseURL();
-        $variables = array(
-            '$SiteName'       => SiteConfig::current_site_config()->Title,
-            '$LoginLink'      => Controller::join_links(
+        $variables = [
+            '$SiteName' => SiteConfig::current_site_config()->Title,
+            '$LoginLink' => Controller::join_links(
                 $absoluteBaseURL,
                 singleton(Security::class)->Link('login')
             ),
-            '$ConfirmLink'    => Controller::join_links(
+            '$ConfirmLink' => Controller::join_links(
                 $this->page->AbsoluteLink('confirm'),
                 $member->ID,
                 "?key={$member->ValidationKey}"
@@ -164,8 +149,8 @@ class MemberConfirmationEmail extends Email
                 singleton(Security::class)->Link('lostpassword')
             ),
             '$Member.Created' => $createdDateObj->Nice()
-        );
-        foreach (array('Name', 'FirstName', 'Surname', 'Email') as $field) {
+        ];
+        foreach (['Name', 'FirstName', 'Surname', 'Email'] as $field) {
             $variables["\$Member.$field"] = $member->$field;
         }
         $this->extend('updateEmailVariables', $variables);
@@ -175,7 +160,7 @@ class MemberConfirmationEmail extends Email
 
     public function BaseURL()
     {
-        $absoluteBaseURL = parent::BaseURL();
+        $absoluteBaseURL = Director::absoluteBaseURL();
         $this->extend('updateBaseURL', $absoluteBaseURL);
         return $absoluteBaseURL;
     }

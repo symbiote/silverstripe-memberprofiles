@@ -1,11 +1,11 @@
 <?php
 
 // Handle local testing
-$PROJECT_DIR = dirname(__FILE__).'/../../../..';
+$PROJECT_DIR = __DIR__.'/../../../..';
 $BOOTSTRAP_FILE = $PROJECT_DIR . '/vendor/silverstripe/cms/tests/bootstrap.php';
 if (!file_exists($BOOTSTRAP_FILE)) {
     // Handle Travis build
-    $PROJECT_DIR = dirname(__FILE__).'/..';
+    $PROJECT_DIR = __DIR__.'/..';
     $BOOTSTRAP_FILE = $PROJECT_DIR.'/vendor/silverstripe/cms/tests/bootstrap.php';
 }
 
