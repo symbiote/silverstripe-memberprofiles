@@ -475,7 +475,7 @@ class MemberProfilePageController extends PageController
          */
         $member = DataObject::get_by_id(Member::class, $id);
         if (!$member) {
-            return $this->invalidRequest('Member #'.$id.' does not exist.');
+            return $this->invalidRequest('Member #' . $id . ' does not exist.');
         }
         if (!$member->NeedsValidation) {
             // NOTE(Jake): 2018-05-03
@@ -484,10 +484,10 @@ class MemberProfilePageController extends PageController
             // Email Setting 'Confirmation' rather than 'Validation' and you didn't
             // edit the original Email template to not include the copy about confirmation.
             //
-            return $this->invalidRequest('Member #'.$id.' does not need validation.');
+            return $this->invalidRequest('Member #' . $id . ' does not need validation.');
         }
         if (!$member->ValidationKey) {
-            return $this->invalidRequest('Member #'.$id.' does not have a validation key.');
+            return $this->invalidRequest('Member #' . $id . ' does not have a validation key.');
         }
         if ($member->ValidationKey !== $key) {
             return $this->invalidRequest('Validation key does not match.');
@@ -533,7 +533,7 @@ class MemberProfilePageController extends PageController
             //
             // Only expose additional information in 'dev' mode.
             //
-            $additionalText .= ' '.$debugText;
+            $additionalText .= ' ' . $debugText;
         }
 
         $this->getResponse()->setStatusCode(500);
@@ -542,7 +542,7 @@ class MemberProfilePageController extends PageController
             'Content' => _t(
                 'MemberProfiles.ERRORCONFIRMATION',
                 'An unexpected error occurred.'
-            ).$additionalText,
+            ) . $additionalText,
         ];
     }
 

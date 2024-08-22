@@ -295,12 +295,13 @@ class MemberProfilePage extends Page
                     "Root.ContentBlocks",
                     ToggleCompositeField::create(
                         "{$type}Toggle",
-                        _t('MemberProfiles.'.  strtoupper($type), FormField::name_to_label($type)),
+                        _t('MemberProfiles.' . strtoupper($type), FormField::name_to_label($type)),
                         [
                             TextField::create("{$type}Title", _t('MemberProfiles.TITLE', 'Title')),
                             $content = HtmlEditorField::create("{$type}Content", _t('MemberProfiles.CONTENT', 'Content'))
                         ]
-                ));
+                    )
+                );
                 $content->setRows(15);
             }
 
@@ -309,7 +310,7 @@ class MemberProfilePage extends Page
                 'Root.Email',
                 [
                     OptionsetField::create(
-                    'EmailType',
+                        'EmailType',
                         _t('MemberProfiles.EMAILSETTINGS', 'Email Settings'),
                         [
                             'Validation'   => _t('MemberProfiles.EMAILVALIDATION', 'Send a confirmation email (confirmation required to login)'),

@@ -79,7 +79,7 @@ class MemberApprovalController extends PageController
             if (!$controller->canView()) {
                 return Security::permissionFailure();
             }
-            $link = $controller->Link('EditForm/field/Members/item/'.$member->ID.'/edit#MemberProfileRegistrationApproval');
+            $link = $controller->Link('EditForm/field/Members/item/' . $member->ID . '/edit#MemberProfileRegistrationApproval');
             return $this->redirect($link);
         }
 
@@ -88,7 +88,7 @@ class MemberApprovalController extends PageController
 
         $title   = _t('MemberProfiles.MEMBERAPPROVED', 'Member Approved');
         $content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
-        $content = DBField::create_field('HTMLFragment', '<p>'.sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")).'</p>');
+        $content = DBField::create_field('HTMLFragment', '<p>' . sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")) . '</p>');
 
         return $this->render([
             'Title'   => $title,
