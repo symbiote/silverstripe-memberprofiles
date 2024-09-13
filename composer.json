@@ -33,7 +33,7 @@
             "client"
         ],
         "branch-alias": {
-            "dev-master": "4.0.x-dev"
+            "dev-master": "5.0.x-dev"
         }
     },
     "autoload": {
