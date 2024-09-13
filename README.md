@@ -12,20 +12,24 @@ Registration can be enabled or disabled in the "Behaviour" tab.
 
 ## Composer Install
 
-**SilverStripe 4.0+**
+**SilverStripe 5**
 ```
-composer require symbiote/silverstripe-memberprofiles:~4.0
+composer require symbiote/silverstripe-memberprofiles:^5
+```
+
+**SilverStripe 4**
+```
+composer require symbiote/silverstripe-memberprofiles:^4
 ```
 
 **[SilverStripe 3.1+](https://github.com/symbiote/silverstripe-memberprofiles/tree/2.0)**
 ```
-composer require symbiote/silverstripe-memberprofiles:~2.0
+composer require symbiote/silverstripe-memberprofiles:^2
 ```
 
 ## Requirements
 
-* PHP 7.0+ (PHP 5.6 not supported due to: [Issue #141](https://github.com/symbiote/silverstripe-memberprofiles/issues/141))
-* SilverStripe 4.0+
+* SilverStripe 3.1+ || 4.0+ || 5.0+
 
 ## Documentation
 

@@ -24,23 +24,21 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
 
     public function getURLHandlers($gridField)
     {
-        return array(
-            'addsection/$ClassName!' => 'handleAddSection'
-        );
+        return ['addsection/$ClassName!' => 'handleAddSection'];
     }
 
     public function getHTMLFragments($grid)
     {
         $addable = $this->getAddableSections($grid);
         $base    = $grid->Link('addsection');
-        $links   = array();
+        $links   = [];
 
         if (!$addable) {
-            return array();
+            return [];
         }
 
         foreach ($addable as $class => $title) {
-            $class = urlencode($class);
+            $class = urlencode((string) $class);
             $links[Controller::join_links($base, $class)] = $title;
         }
 
@@ -51,19 +49,14 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
         $select->setEmptyString(_t('MemberProfiles.SECTIONTYPE', '(Section type)'));
         $select->addExtraClass('no-change-track');
 
-        $data = new ArrayData(array(
-            'Title'  => _t('MemberProfiles.ADDSECTION', 'Add Section'),
-            'Select' => $select
-        ));
+        $data = new ArrayData(['Title'  => _t('MemberProfiles.ADDSECTION', 'Add Section'), 'Select' => $select]);
 
-        return array(
-            'buttons-before-left' => $data->renderWith('Symbiote\\MemberProfiles\\Model\\MemberProfilesAddSectionButton'),
-        );
+        return ['buttons-before-left' => $data->renderWith('Symbiote\\MemberProfiles\\Model\\MemberProfilesAddSectionButton')];
     }
 
     public function handleAddSection($grid, $request)
     {
-        $class = urldecode($request->param('ClassName'));
+        $class = urldecode((string) $request->param('ClassName'));
         if (!is_subclass_of($class, MemberProfileSection::class)) {
             return new HTTPResponse('An invalid section type was specified', 404);
         }
@@ -91,7 +84,7 @@ class MemberProfilesAddSectionAction extends GridFieldDetailForm implements Grid
     {
         $list    = $grid->getList();
         $classes = ClassInfo::subclassesFor(MemberProfileSection::class);
-        $result  = array();
+        $result  = [];
         $base    = $grid->Link();
 
         array_shift($classes);

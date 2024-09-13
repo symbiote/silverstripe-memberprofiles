@@ -73,10 +73,16 @@ class MemberProfileSection extends DataObject
 
         $fields->addFieldsToTab(
             'Root.Main',
-            array(
-                new ReadonlyField('DefaultTitle', _t('MemberProfiles.SECTIONTYPE', 'Section type')),
-                new HiddenField('ClassName', '')
-            ),
+            [
+                new ReadonlyField(
+                    'DefaultTitle',
+                    _t('MemberProfiles.SECTIONTYPE', 'Section type')
+                ),
+                new HiddenField(
+                    'ClassName',
+                    ''
+                )
+            ],
             'CustomTitle'
         );
 
@@ -88,7 +94,7 @@ class MemberProfileSection extends DataObject
      */
     public function getTitle()
     {
-        return $this->CustomTitle ? $this->CustomTitle : $this->getDefaultTitle();
+        return $this->CustomTitle ?: $this->getDefaultTitle();
     }
 
     /**
@@ -132,7 +138,7 @@ class MemberProfileSection extends DataObject
         return $this->customExtendedCan(__FUNCTION__, $member);
     }
 
-    public function canCreate($member = null, $context = array())
+    public function canCreate($member = null, $context = [])
     {
         return $this->customExtendedCan(__FUNCTION__, $member, $context);
     }
@@ -145,7 +151,7 @@ class MemberProfileSection extends DataObject
     /**
      * @return bool|null
      */
-    private function customExtendedCan($methodName, $member, $context = array())
+    private function customExtendedCan($methodName, $member, $context = [])
     {
         if (!$member) {
             $member = Security::getCurrentUser();

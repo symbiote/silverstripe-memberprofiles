@@ -2,6 +2,7 @@
 
 namespace Symbiote\MemberProfiles\Forms;
 
+use SilverStripe\Security\Security;
 use Symbiote\MemberProfiles\Model\MemberProfileField;
 use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
@@ -87,8 +88,8 @@ class MemberProfileValidator extends RequiredFields
 
                 // This ensures the existing member isn't the same as the current member, in case they're updating information.
 
-                if ($current = Member::currentUserID()) {
-                    $existing = $existing->filter('ID:not', $current);
+                if ($current = Security::getCurrentUser()) {
+                    $existing = $existing->filter('ID:not', $current->ID);
                 }
                 $emailOK = !$existing->first();
             }

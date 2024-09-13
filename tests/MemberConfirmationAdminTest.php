@@ -26,9 +26,13 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
-            'ManualEmailValidation' => 'confirm'
-        ));
+        $this->submitForm(
+            'Form_ItemEditForm',
+            'action_doSave',
+            [
+                'ManualEmailValidation' => 'confirm'
+            ]
+        );
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(false, (bool) $member->NeedsValidation);
@@ -40,9 +44,13 @@ class MemberConfirmationAdminTest extends FunctionalTest
         $this->assertEquals(true, (bool) $member->NeedsValidation);
 
         $this->getSecurityAdmin();
-        $this->submitForm('Form_ItemEditForm', 'action_doSave', array (
-            'ManualEmailValidation' => 'resend'
-        ));
+        $this->submitForm(
+            'Form_ItemEditForm',
+            'action_doSave',
+            [
+                'ManualEmailValidation' => 'resend'
+            ]
+        );
 
         $member = DataObject::get_by_id(Member::class, $member->ID);
         $this->assertEquals(true, (bool) $member->NeedsValidation);
@@ -59,8 +67,8 @@ class MemberConfirmationAdminTest extends FunctionalTest
         //Form::disable_all_security_tokens(); // NOTE(Jake): Not in SS3 / shouldn't be testing with this anyway?
         $this->logInWithPermission('ADMIN');
 
-        $gLink = Controller::join_links($admin->Link(), 'show', $group->ID);
-        $mLink = Controller::join_links($admin->Link(), 'EditForm/field/Members/item', $member->ID, 'edit');
+        $gLink = Controller::join_links($admin->Link(), 'groups', 'EditForm', 'field', 'groups', 'item', $group->ID, 'edit');
+        $mLink = Controller::join_links($admin->Link(), 'users', 'EditForm', 'field', 'users', 'item', $member->ID, 'edit');
 
         $this->get($gLink);
         $this->get($mLink);
