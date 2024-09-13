@@ -713,11 +713,6 @@ class MemberProfilePageController extends PageController
                 $field = $field->performReadonlyTransformation();
             }
 
-            if ($name === 'Password') {
-                Requirements::javascript("silverstripe/admin: thirdparty/jquery/jquery.js");
-                Requirements::javascript("symbiote/silverstripe-memberprofiles: client/javascript/ConfirmedPasswordField.js");
-            }
-
             // The follow two if-conditions were added since the SS4 migration because a Password label disappeared
             $fieldTitle = $profileField->getTitle();
             if ($fieldTitle) {
