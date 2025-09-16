@@ -23,51 +23,51 @@ use Exception;
  */
 class MemberProfileSection extends DataObject
 {
-    private static $table_name = 'MemberProfileSection';
+    private static string $table_name = 'MemberProfileSection';
 
-    private static $db = [
-        'CustomTitle' => 'Varchar(100)'
+    private static array $db = [
+        'CustomTitle' => 'Varchar(100)',
     ];
 
-    private static $has_one = [
-        'Parent' => MemberProfilePage::class
+    private static array $has_one = [
+        'Parent' => MemberProfilePage::class,
     ];
 
-    private static $owned_by = [
+    private static array $owned_by = [
         'Parent',
     ];
 
-    private static $extensions = [
-        Versioned::class . "('Stage', 'Live')"
+    private static array $extensions = [
+        Versioned::class . "('Stage', 'Live')",
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'DefaultTitle' => 'Title',
-        'CustomTitle'  => 'Custom Title'
+        'CustomTitle'  => 'Custom Title',
     ];
 
     /**
      * @var Member
      */
-    private $member;
+    private ?Member $member;
 
     /**
      * @return Member
      */
-    public function getMember()
+    public function getMember(): ?Member
     {
         return $this->member;
     }
 
     /**
-     * @param Member $member
+     * @param ?Member $member
      */
-    public function setMember($member)
+    public function setMember(?Member $member): void
     {
         $this->member = $member;
     }
 
-    public function getCMSFields()
+    public function getCMSFields(): FieldList
     {
         $fields = parent::getCMSFields();
 
@@ -92,7 +92,7 @@ class MemberProfileSection extends DataObject
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->CustomTitle ?: $this->getDefaultTitle();
     }
@@ -103,7 +103,7 @@ class MemberProfileSection extends DataObject
      *
      * @return string
      */
-    public function getDefaultTitle()
+    public function getDefaultTitle(): string
     {
         throw new Exception("Please implement getDefaultTitle() on {get_class($this)}.");
     }
@@ -113,7 +113,7 @@ class MemberProfileSection extends DataObject
      *
      * @return bool
      */
-    public function ShowTitle()
+    public function ShowTitle(): bool
     {
         return true;
     }
@@ -123,27 +123,27 @@ class MemberProfileSection extends DataObject
      *
      * @return string
      */
-    public function forTemplate()
+    public function forTemplate(): mixed
     {
         throw new Exception("Please implement forTemplate() on {get_class($this)}.");
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
         return $this->customExtendedCan(__FUNCTION__, $member);
     }
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return $this->customExtendedCan(__FUNCTION__, $member);
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return $this->customExtendedCan(__FUNCTION__, $member, $context);
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
         return $this->customExtendedCan(__FUNCTION__, $member);
     }
@@ -151,7 +151,7 @@ class MemberProfileSection extends DataObject
     /**
      * @return bool|null
      */
-    private function customExtendedCan($methodName, $member, $context = [])
+    private function customExtendedCan($methodName, $member, $context = []): ?bool
     {
         if (!$member) {
             $member = Security::getCurrentUser();
@@ -159,14 +159,15 @@ class MemberProfileSection extends DataObject
 
         // Standard mechanism for accepting permission changes from extensions
         $extended = $this->extendedCan($methodName, $member, $context);
+
         if ($extended !== null) {
             return $extended;
         }
 
         // If has permission to edit profile page, you have permission to edit this field.
         $page = $this->Parent();
-        if ($page &&
-            $page->exists()) {
+
+        if ($page && $page->exists()) {
             return $page->$methodName($member);
         }
 

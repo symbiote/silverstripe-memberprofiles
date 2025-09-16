@@ -20,12 +20,12 @@ use SilverStripe\ORM\FieldType\DBField;
 class MemberApprovalController extends PageController
 {
 
-    private static $url_handlers = [
-        '$ID' => 'index'
+    private static array $url_handlers = [
+        '$ID' => 'index',
     ];
 
-    private static $allowed_actions = [
-        'index'
+    private static array $allowed_actions = [
+        'index',
     ];
 
     /**
@@ -35,9 +35,9 @@ class MemberApprovalController extends PageController
      * @config
      * @var boolean
      */
-    private static $redirect_to_admin = false;
+    private static bool $redirect_to_admin = false;
 
-    public function index($request)
+    public function index($request): mixed
     {
         $id    = (int)$request->param('ID');
         $token = $request->getVar('token');
@@ -76,10 +76,14 @@ class MemberApprovalController extends PageController
 
         if (Config::inst()->get(self::class, 'redirect_to_admin')) {
             $controller = singleton(SecurityAdmin::class);
+
             if (!$controller->canView()) {
                 return Security::permissionFailure();
             }
-            $link = $controller->Link('EditForm/field/Members/item/' . $member->ID . '/edit#MemberProfileRegistrationApproval');
+
+            $link = $controller
+                ->Link('EditForm/field/Members/item/' . $member->ID . '/edit#MemberProfileRegistrationApproval');
+
             return $this->redirect($link);
         }
 
@@ -88,7 +92,9 @@ class MemberApprovalController extends PageController
 
         $title   = _t('MemberProfiles.MEMBERAPPROVED', 'Member Approved');
         $content = _t('MemberProfiles.MEMBERAPPROVEDCONTENT', 'The member "%s" has been approved and can now log in.');
-        $content = DBField::create_field('HTMLFragment', '<p>' . sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")) . '</p>');
+        $content = DBField::create_field(
+            'HTMLFragment', '<p>' . sprintf($content, Convert::raw2xml("$member->Name <$member->Email>")) . '</p>'
+        );
 
         return $this->render([
             'Title'   => $title,
@@ -96,7 +102,7 @@ class MemberApprovalController extends PageController
         ]);
     }
 
-    public function Link($action = null)
+    public function Link($action = null): string
     {
         return Controller::join_links(Director::baseURL(), 'member-approval', $action);
     }

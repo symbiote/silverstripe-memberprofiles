@@ -7,17 +7,16 @@ use SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest;
 
 class MemberProfilesAddSectionAction_ItemRequest extends GridFieldDetailForm_ItemRequest
 {
-
-    public function Link($action = null)
+    public function Link($action = null): string
     {
         if ($this->record->ID) {
             return parent::Link($action);
-        } else {
-            return Controller::join_links(
-                $this->gridField->Link(),
-                'addsection',
-                urlencode($this->record::class)
-            );
         }
+
+        return Controller::join_links(
+            $this->gridField->Link(),
+            'addsection',
+            urlencode($this->record::class)
+        );
     }
 }

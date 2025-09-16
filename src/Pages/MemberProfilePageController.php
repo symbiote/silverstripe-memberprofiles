@@ -2,35 +2,34 @@
 
 namespace Symbiote\MemberProfiles\Pages;
 
-use PageController;
 use Exception;
+use PageController;
 use Psr\Container\NotFoundExceptionInterface;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\Session;
-use SilverStripe\Security\IdentityStore;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Member_GroupSet;
-use SilverStripe\Security\Security;
-use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Security\IdentityStore;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Member_GroupSet;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\SpamProtection\Extension\FormSpamProtectionExtension;
 use SilverStripe\View\Requirements;
-use SilverStripe\Security\Permission;
-use SilverStripe\View\ViewableData_Customised;
+use SilverStripe\Model\ModelDataCustomised;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
 use Symbiote\MemberProfiles\Forms\CheckableVisibilityField;
 use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
-
 /**
  * Class MemberProfilePageController
  *
@@ -62,7 +61,7 @@ use Symbiote\MemberProfiles\Forms\MemberProfileValidator;
  */
 class MemberProfilePageController extends PageController
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'index',
         'RegisterForm',
         'afterregistration',
@@ -76,7 +75,7 @@ class MemberProfilePageController extends PageController
     /**
      * @return HTTPResponse
      */
-    public function index(HTTPRequest $request)
+    public function index(HTTPRequest $request): HTTPResponse|ModelDataCustomised
     {
         $backURL = $request->getVar('BackURL');
         if ($backURL) {
@@ -90,9 +89,9 @@ class MemberProfilePageController extends PageController
     /**
      * Allow users to register if registration is enabled.
      *
-     * @return HTTPResponse|ViewableData_Customised
+     * @return HTTPResponse|ModelDataCustomised
      */
-    protected function indexRegister()
+    protected function indexRegister(): HTTPResponse|ModelDataCustomised
     {
         if (!$this->AllowRegistration) {
             return Security::permissionFailure($this, _t(
@@ -118,9 +117,9 @@ class MemberProfilePageController extends PageController
      * If editing is disabled, but the current user can add users, then they
      * are redirected to the add user page.
      *
-     * @return HTTPResponse|ViewableData_Customised
+     * @return HTTPResponse|ModelDataCustomised
      */
-    protected function indexProfile()
+    protected function indexProfile(): HTTPResponse|ModelDataCustomised
     {
         if (!$this->AllowProfileEditing) {
             if ($this->AllowAdding && Injector::inst()->get(Member::class)->canCreate()) {
@@ -136,9 +135,11 @@ class MemberProfilePageController extends PageController
         $member = Security::getCurrentUser();
 
         foreach ($this->Groups() as $group) {
-            if (!$member->inGroup($group)) {
-                return Security::permissionFailure($this);
+            if ($member->inGroup($group)) {
+                continue;
             }
+
+            return Security::permissionFailure($this);
         }
 
         $form = $this->ProfileForm();
@@ -168,7 +169,7 @@ class MemberProfilePageController extends PageController
     /**
      * @return MemberProfileViewer
      */
-    public function show()
+    public function show(): MemberProfileViewer
     {
         if (!$this->AllowProfileViewing) {
             $this->httpError(404);
@@ -181,7 +182,7 @@ class MemberProfilePageController extends PageController
      * @uses   MemberProfilePageController::getProfileFields
      * @return Form
      */
-    public function RegisterForm()
+    public function RegisterForm(): Form
     {
         $form = new Form(
             $this,
@@ -197,16 +198,19 @@ class MemberProfilePageController extends PageController
             && $form->hasExtension(FormSpamProtectionExtension::class)) {
             $form->enableSpamProtection();
         }
+
         $this->extend('updateRegisterForm', $form);
+
         return $form;
     }
 
     /**
      * Handles validation and saving new Member objects, as well as sending out validation emails.
      */
-    public function register($data, Form $form)
+    public function register($data, Form $form): ?HTTPResponse
     {
         $member = $this->addMember($form);
+
         if (!$member) {
             return $this->redirectBack();
         }
@@ -219,13 +223,16 @@ class MemberProfilePageController extends PageController
         if ($this->RegistrationRedirect) {
             if ($this->PostRegistrationTargetID) {
                 $this->redirect($this->PostRegistrationTarget()->Link());
-                return;
+
+                return null;
             }
 
             $session = $this->getRequest()->getSession();
             $sessionTarget = $session->get('MemberProfile.REDIRECT');
+
             if ($sessionTarget) {
                 $session->clear('MemberProfile.REDIRECT');
+
                 if (Director::is_site_url($sessionTarget)) {
                     return $this->redirect($sessionTarget);
                 }
@@ -240,7 +247,7 @@ class MemberProfilePageController extends PageController
      *
      * @return array
      */
-    public function afterregistration()
+    public function afterregistration(): array
     {
         return [
             'Title'   => $this->obj('AfterRegistrationTitle'),
@@ -252,7 +259,7 @@ class MemberProfilePageController extends PageController
      * @uses   MemberProfilePageController::getProfileFields
      * @return Form
      */
-    public function ProfileForm()
+    public function ProfileForm(): Form
     {
         $form = new Form(
             $this,
@@ -264,13 +271,14 @@ class MemberProfilePageController extends PageController
             new MemberProfileValidator($this->Fields(), Security::getCurrentUser())
         );
         $this->extend('updateProfileForm', $form);
+
         return $form;
     }
 
     /**
      * Updates an existing Member's profile.
      */
-    public function save(array $data, Form $form)
+    public function save(array $data, Form $form): HTTPResponse
     {
         $member = Security::getCurrentUser();
 
@@ -292,6 +300,7 @@ class MemberProfilePageController extends PageController
             }
             $validationMessages = implode("; ", $messages);
             $form->sessionMessage($validationMessages, 'bad');
+
             return $this->redirectBack();
         }
 
@@ -307,7 +316,7 @@ class MemberProfilePageController extends PageController
      * Allows members with the appropriate permissions to add/regsiter other
      * members.
      */
-    public function add($request)
+    public function add($request): mixed
     {
         if (!$this->AllowAdding || !Injector::inst()->get(Member::class)->canCreate()) {
             return Security::permissionFailure($this, _t(
@@ -329,7 +338,7 @@ class MemberProfilePageController extends PageController
     /**
      * @return Form
      */
-    public function AddForm()
+    public function AddForm(): Form
     {
         $form = new Form(
             $this,
@@ -342,13 +351,14 @@ class MemberProfilePageController extends PageController
         );
 
         $this->extend('updateAddForm', $form);
+
         return $form;
     }
 
     /**
      * Saves an add member form submission into a new member object.
      */
-    public function doAdd($data, $form)
+    public function doAdd($data, $form): HTTPResponse
     {
         if ($this->addMember($form)) {
             $form->sessionMessage(
@@ -360,7 +370,7 @@ class MemberProfilePageController extends PageController
         return $this->redirectBack();
     }
 
-    public function LoginLink()
+    public function LoginLink(): string
     {
         return Controller::join_links(
             Injector::inst()->get(Security::class)->Link(),
@@ -380,7 +390,7 @@ class MemberProfilePageController extends PageController
      * @param Form   $form
      * @param Member $member
      */
-    protected function getSettableGroupIdsFrom(Form $form, Member $member = null)
+    protected function getSettableGroupIdsFrom(Form $form, Member $member = null): array
     {
         // first off check to see if groups were selected by the user. If so, we want
         // to remove that control from the form list (just in case someone's sent through an
@@ -394,8 +404,10 @@ class MemberProfilePageController extends PageController
         // so that we don't accidentally remove them from the list of groups
         // a user might have been placed in via other means
         $existingIds = [];
+
         if ($member) {
             $existing = $member->Groups();
+
             if ($existing && $existing->count() > 0) {
                 $existingIds = $existing->map('ID', 'ID')->toArray();
                 // remove any that are in the selectable groups map - we only want to
@@ -409,11 +421,14 @@ class MemberProfilePageController extends PageController
         if ($groupField) {
             $givenIds = $groupField->Value();
             $groupIds = [];
+
             if ($givenIds) {
                 foreach ($givenIds as $givenId) {
-                    if (isset($allowedIds[$givenId])) {
-                        $groupIds[] = $givenId;
+                    if (!isset($allowedIds[$givenId])) {
+                        continue;
                     }
+
+                    $groupIds[] = $givenId;
                 }
             }
             $form->Fields()->removeByName('Groups');
@@ -424,9 +439,11 @@ class MemberProfilePageController extends PageController
         }
 
         foreach ($existingIds as $existingId) {
-            if (!in_array($existingId, $groupIds)) {
-                $groupIds[] = $existingId;
+            if (in_array($existingId, $groupIds)) {
+                continue;
             }
+
+            $groupIds[] = $existingId;
         }
 
         return $groupIds;
@@ -439,10 +456,10 @@ class MemberProfilePageController extends PageController
      * @param HTTPRequest $request
      * @return array|HTTPResponse
      */
-    public function confirm(HTTPRequest $request)
+    public function confirm(HTTPRequest $request): array|HTTPResponse
     {
-        if ($this->EmailType !== 'Confirmation' &&
-            $this->EmailType !== 'Validation') {
+        if ($this->EmailType !== 'Confirmation' && $this->EmailType !== 'Validation') {
+
             return $this->httpError(400, 'No confirmation required.');
         }
 
@@ -451,20 +468,20 @@ class MemberProfilePageController extends PageController
         $key = $request->getVar('key');
 
         if ($currentMember) {
-            if ($currentMember->ID == $id) {
+            if ($currentMember->ID === $id) {
                 return Security::permissionFailure($this, _t(
                     'MemberProfiles.ALREADYCONFIRMED',
                     'Your account is already confirmed.'
                 ));
             }
+
             return Security::permissionFailure($this, _t(
                 'MemberProfiles.CANNOTCONFIRMLOGGEDIN',
                 'You cannot confirm account while you are logged in.'
             ));
         }
 
-        if (!$id ||
-            !$key) {
+        if (!$id || !$key) {
             return $this->httpError(404);
         }
 
@@ -474,9 +491,11 @@ class MemberProfilePageController extends PageController
          * @var Member|null $member
          */
         $member = DataObject::get_by_id(Member::class, $id);
+
         if (!$member) {
             return $this->invalidRequest('Member #' . $id . ' does not exist.');
         }
+
         if (!$member->NeedsValidation) {
             // NOTE(Jake): 2018-05-03
             //
@@ -486,9 +505,11 @@ class MemberProfilePageController extends PageController
             //
             return $this->invalidRequest('Member #' . $id . ' does not need validation.');
         }
+
         if (!$member->ValidationKey) {
             return $this->invalidRequest('Member #' . $id . ' does not have a validation key.');
         }
+
         if ($member->ValidationKey !== $key) {
             return $this->invalidRequest('Validation key does not match.');
         }
@@ -498,16 +519,18 @@ class MemberProfilePageController extends PageController
         $member->ValidationKey = null;
 
         $validationResult = $member->validateCanLogin();
+
         if (!$validationResult->isValid()) {
             $this->getResponse()->setStatusCode(500);
             $validationMessages = $validationResult->getMessages();
+
             return [
                 'Title'   => $confirmationTitle,
                 'Content' => $validationMessages ? $validationMessages[0]['message'] : _t('MemberProfiles.ERRORCONFIRMATION', 'An unexpected error occurred.'),
             ];
         }
-        $member->write();
 
+        $member->write();
         $this->extend('onConfirm', $member);
 
         if ($member->canLogin()) {
@@ -525,9 +548,10 @@ class MemberProfilePageController extends PageController
     /**
      * @return array
      */
-    protected function invalidRequest($debugText)
+    protected function invalidRequest($debugText): array
     {
         $additionalText = '';
+
         if (Director::isDev()) {
             // NOTE(Jake): 2018-05-02
             //
@@ -537,6 +561,7 @@ class MemberProfilePageController extends PageController
         }
 
         $this->getResponse()->setStatusCode(500);
+
         return [
             'Title'   => $this->data()->dbObject('ConfirmationTitle'),
             'Content' => _t(
@@ -553,7 +578,7 @@ class MemberProfilePageController extends PageController
      *
      * @return Member|null
      */
-    protected function addMember($form)
+    protected function addMember($form): Member|null
     {
         $member   = new Member();
         $groupIds = $this->getSettableGroupIdsFrom($form);
@@ -568,6 +593,7 @@ class MemberProfilePageController extends PageController
             $member->write();
         } catch (ValidationException $e) {
             $messages = [];
+
             foreach ($e->getResult()->getMessages() as $message) {
                 if (is_array($message) && isset($message['message'])) {
                     $messages[] = $message['message'];
@@ -575,8 +601,10 @@ class MemberProfilePageController extends PageController
                     $messages[] = $message;
                 }
             }
+
             $validationMessages = implode("; ", $messages);
             $form->sessionMessage($validationMessages, 'bad');
+
             return null;
         }
 
@@ -587,19 +615,22 @@ class MemberProfilePageController extends PageController
         // sending an email to the member.
         if ($this->RequireApproval) {
             $groups = $this->ApprovalGroups();
-            if (!$groups ||
-                $groups->count() == 0) {
+
+            if (!$groups || $groups->count() == 0) {
                 // If nothing is configured, fallback to ADMIN
                 $groups = Permission::get_groups_by_permission('ADMIN');
             }
 
             $emails = [];
+
             if ($groups) {
                 foreach ($groups as $group) {
                     foreach ($group->Members() as $_member) {
-                        if ($_member->Email) {
-                            $emails[] = $_member->Email;
+                        if (!$_member->Email) {
+                            continue;
                         }
+
+                        $emails[] = $_member->Email;
                     }
                 }
             }
@@ -656,6 +687,7 @@ class MemberProfilePageController extends PageController
         }
 
         $this->extend('onAddMember', $member);
+
         return $member;
     }
 
@@ -663,26 +695,24 @@ class MemberProfilePageController extends PageController
      * @param string $context
      * @return FieldList
      */
-    protected function getProfileFields($context)
+    protected function getProfileFields(string $context): FieldList
     {
         $profileFields = $this->Fields();
         $fields        = new FieldList();
 
         // depending on the context, load fields from the current member
-        if (($member = Security::getCurrentUser()) && $context != 'Add') {
+        if ($context !=='Add' && ($member = Security::getCurrentUser())) {
             $memberFields = $member->getMemberFormFields();
         } else {
             $memberFields = singleton(Member::class)->getMemberFormFields();
         }
 
         // use the default registration fields for adding members
-        if ($context == 'Add') {
+        if ($context === 'Add') {
             $context = 'Registration';
         }
 
-        if ($this->AllowProfileViewing
-            && $profileFields->find('PublicVisibility', 'MemberChoice')
-        ) {
+        if ($this->AllowProfileViewing && $profileFields->find('PublicVisibility', 'MemberChoice')) {
             $fields->push(new LiteralField(
                 'VisibilityNote',
                 '<p>' . _t(
@@ -703,7 +733,7 @@ class MemberProfilePageController extends PageController
                 $memberField->setSource($availableGroups);
             }
 
-            if (!$memberField || $visibility == 'Hidden') {
+            if (!$memberField || $visibility === 'Hidden') {
                 continue;
             }
 
@@ -715,15 +745,16 @@ class MemberProfilePageController extends PageController
 
             // The follow two if-conditions were added since the SS4 migration because a Password label disappeared
             $fieldTitle = $profileField->getTitle();
+
             if ($fieldTitle) {
                 $field->setTitle($fieldTitle);
             }
+
             if ($profileField->Note) {
                 $field->setDescription($profileField->Note);
             }
 
-            if ($context === 'Registration' &&
-                $profileField->DefaultValue) {
+            if ($context === 'Registration' && $profileField->DefaultValue) {
                 $field->setValue($profileField->DefaultValue);
             }
 
@@ -731,14 +762,12 @@ class MemberProfilePageController extends PageController
                 $field->setCustomValidationMessage($profileField->CustomError);
             }
 
-            $canSetVisibility = (
-                   $this->AllowProfileViewing
-                && $profileField->PublicVisibility != 'Hidden'
-            );
+            $canSetVisibility = ($this->AllowProfileViewing && $profileField->PublicVisibility !== 'Hidden');
+
             if ($canSetVisibility) {
                 $field = new CheckableVisibilityField($field);
 
-                if ($profileField->PublicVisibility == 'Display') {
+                if ($profileField->PublicVisibility === 'Display') {
                     $field->makeAlwaysVisible();
                 } else {
                     $field->getCheckbox()->setValue($profileField->PublicVisibilityDefault);
@@ -749,6 +778,7 @@ class MemberProfilePageController extends PageController
         }
 
         $this->extend('updateProfileFields', $fields);
+
         return $fields;
     }
 }

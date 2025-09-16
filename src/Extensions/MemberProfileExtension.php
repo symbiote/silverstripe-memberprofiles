@@ -4,44 +4,43 @@ namespace Symbiote\MemberProfiles\Extensions;
 
 use Symbiote\MemberProfiles\Pages\MemberProfilePage;
 use Symbiote\MemberProfiles\Email\MemberConfirmationEmail;
+use SilverStripe\Core\Extension;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\DropdownField;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\ValidationResult;
-
 /**
  * Adds validation fields to the Member object, as well as exposing the user's
  * status in the CMS.
  *
  * @package silverstripe-memberprofiles
  */
-class MemberProfileExtension extends DataExtension
+class MemberProfileExtension extends Extension
 {
-    private static $db = [
+    private static array $db = [
         'ValidationKey' => 'Varchar(40)',
         'NeedsValidation' => 'Boolean',
         'NeedsApproval' => 'Boolean',
         'PublicFieldsRaw' => 'Text'
     ];
 
-    private static $has_one = [
+    private static array $has_one = [
         'ProfilePage' => MemberProfilePage::class
     ];
 
-    public function getPublicFields()
+    public function getPublicFields(): array
     {
         return (array) unserialize($this->owner->getField('PublicFieldsRaw') ?? '');
     }
 
-    public function setPublicFields($fields)
+    public function setPublicFields($fields): void
     {
         $this->owner->setField('PublicFieldsRaw', serialize($fields));
     }
 
-    public function canLogIn(ValidationResult $result)
+    public function canLogIn(ValidationResult $result): void
     {
         if ($this->owner->NeedsApproval) {
             $result->addError(_t(
@@ -49,18 +48,21 @@ class MemberProfileExtension extends DataExtension
                 'An administrator must confirm your account before you can log in.'
             ));
         }
-        if ($this->owner->NeedsValidation) {
-            $result->addError(_t(
-                'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
-                'You must validate your account before you can log in.'
-            ));
+
+        if (!$this->owner->NeedsValidation) {
+            return;
         }
+
+        $result->addError(_t(
+            'MemberProfiles.NEEDSVALIDATIONTOLOGIN',
+            'You must validate your account before you can log in.'
+        ));
     }
 
     /**
      * Allows admin users to manually confirm a user.
      */
-    public function saveManualEmailValidation($value)
+    public function saveManualEmailValidation(string $value) : void
     {
         if ($value === 'confirm') {
             $this->owner->NeedsValidation = false;
@@ -70,29 +72,33 @@ class MemberProfileExtension extends DataExtension
         }
     }
 
-    public function populateDefaults()
+    public function populateDefaults(): void
     {
         $this->owner->ValidationKey = sha1(mt_rand() . mt_rand());
     }
 
-    public function onAfterWrite()
+    public function onAfterWrite(): void
     {
         $changed = $this->owner->getChangedFields();
 
-        if (array_key_exists('NeedsApproval', $changed)) {
-            $before = $changed['NeedsApproval']['before'];
-            $after  = $changed['NeedsApproval']['after'];
-            $page   = $this->owner->ProfilePage();
-            $email  = $page->EmailType;
-
-            if ($before == true && $after == false && $email != 'None') {
-                $email = MemberConfirmationEmail::create($page, $this->owner);
-                $email->send();
-            }
+        if (!array_key_exists('NeedsApproval', $changed)) {
+            return;
         }
+
+        $before = $changed['NeedsApproval']['before'];
+        $after = $changed['NeedsApproval']['after'];
+        $page = $this->owner->ProfilePage();
+        $email = $page->EmailType;
+
+        if ($before != true || $after !== false || $email === 'None') {
+            return;
+        }
+
+        $email = MemberConfirmationEmail::create($page, $this->owner);
+        $email->send();
     }
 
-    public function updateMemberFormFields($fields)
+    public function updateMemberFormFields(FieldList $fields): void
     {
         $fields->removeByName('ValidationKey');
         $fields->removeByName('NeedsValidation');
@@ -106,7 +112,7 @@ class MemberProfileExtension extends DataExtension
         $fields->push(new CheckboxSetField('Groups', 'Groups', [], $existing));
     }
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->removeByName('ValidationKey');
         $fields->removeByName('NeedsValidation');
@@ -152,32 +158,34 @@ class MemberProfileExtension extends DataExtension
             ]);
         }
 
-        if ($this->owner->NeedsValidation) {
-            $fields->addFieldsToTab(
-                'Root.Main',
-                [
-                    new HeaderField(
-                        'ConfirmationHeader',
-                        _t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')
-                    ),
-                    new LiteralField(
-                        'ConfirmationNote',
-                        '<p>' . _t(
-                            'MemberProfiles.NOLOGINTILLCONFIRMED',
-                            'The member cannot log in until their account is confirmed.'
-                        ) . '</p>'
-                    ),
-                    new DropdownField(
-                        'ManualEmailValidation',
-                        '',
-                        [
-                            'unconfirmed' => _t('MemberProfiles.UNCONFIRMED', 'Unconfirmed'),
-                            'resend' => _t('MemberProfiles.RESEND', 'Resend confirmation email'),
-                            'confirm' => _t('MemberProfiles.MANUALLYCONFIRM', 'Manually confirm')
-                        ]
-                    )
-                ]
-            );
+        if (!$this->owner->NeedsValidation) {
+            return;
         }
+
+        $fields->addFieldsToTab(
+            'Root.Main',
+            [
+                new HeaderField(
+                    'ConfirmationHeader',
+                    _t('MemberProfiles.EMAILCONFIRMATION', 'Email Confirmation')
+                ),
+                new LiteralField(
+                    'ConfirmationNote',
+                    '<p>' . _t(
+                        'MemberProfiles.NOLOGINTILLCONFIRMED',
+                        'The member cannot log in until their account is confirmed.'
+                    ) . '</p>'
+                ),
+                new DropdownField(
+                    'ManualEmailValidation',
+                    '',
+                    [
+                        'unconfirmed' => _t('MemberProfiles.UNCONFIRMED', 'Unconfirmed'),
+                        'resend' => _t('MemberProfiles.RESEND', 'Resend confirmation email'),
+                        'confirm' => _t('MemberProfiles.MANUALLYCONFIRM', 'Manually confirm')
+                    ]
+                )
+            ]
+        );
     }
 }

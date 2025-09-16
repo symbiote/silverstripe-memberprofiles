@@ -8,14 +8,14 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 
 /**
  * This validator provides the unique and required functionality for {@link MemberProfileField}s.
  *
  * @package silverstripe-memberprofiles
  */
-class MemberProfileValidator extends RequiredFields
+class MemberProfileValidator extends RequiredFieldsValidator
 {
     /**
      * @var FieldList|MemberProfileField[] $fields
@@ -25,12 +25,12 @@ class MemberProfileValidator extends RequiredFields
     /**
      * @var Member
      */
-    protected $member;
+    protected ?Member $member;
 
     /**
      * @var array
      */
-    protected $unique = [];
+    protected array $unique = [];
 
     /**
      * @param FieldList|MemberProfileField[] $fields
@@ -44,14 +44,15 @@ class MemberProfileValidator extends RequiredFields
         $this->member = $member;
 
         foreach ($this->fields as $field) {
-            if ($field->Required) {
-                if ($field->ProfileVisibility !== 'Readonly') {
-                    $this->addRequiredField($field->MemberField);
-                }
+            if ($field->Required && $field->ProfileVisibility !== 'Readonly') {
+                $this->addRequiredField($field->MemberField);
             }
-            if ($field->Unique) {
-                $this->unique[] = $field->MemberField;
+
+            if (!$field->Unique) {
+                continue;
             }
+
+            $this->unique[] = $field->MemberField;
         }
 
         if ($member && $member->ID && $member->Password) {
@@ -62,12 +63,12 @@ class MemberProfileValidator extends RequiredFields
     /**
      * JavaScript validation is disabled on profile forms.
      */
-    public function javascript()
+    public function javascript(): ?string
     {
         return null;
     }
 
-    public function php($data)
+    public function php(array $data): bool
     {
         $member = $this->member;
         $valid  = true;
@@ -83,6 +84,7 @@ class MemberProfileValidator extends RequiredFields
 
             $isEmail = $field === 'Email';
             $emailOK = !$isEmail;
+
             if ($isEmail) {
                 $existing = Member::get()->filter('Email:nocase', $data['Email']);
 
@@ -93,21 +95,24 @@ class MemberProfileValidator extends RequiredFields
                 }
                 $emailOK = !$existing->first();
             }
-            if ($other && (!$member || !$member->exists() || $other->ID != $member->ID) || !$emailOK) {
-                $fieldInstance = $this->form->Fields()->dataFieldByName($field);
 
-                if ($fieldInstance->getCustomValidationMessage()) {
-                    $message = $fieldInstance->getCustomValidationMessage();
-                } else {
-                    $message = sprintf(
-                        _t('MemberProfiles.MEMBERWITHSAME', 'There is already a member with the same %s.'),
-                        $field
-                    );
-                }
-
-                $valid = false;
-                $this->validationError($field, $message, 'required');
+            if ((!$other || ($member && $member->exists() && $other->ID == $member->ID)) && $emailOK) {
+                continue;
             }
+
+            $fieldInstance = $this->form->Fields()->dataFieldByName($field);
+
+            if ($fieldInstance->getCustomValidationMessage()) {
+                $message = $fieldInstance->getCustomValidationMessage();
+            } else {
+                $message = sprintf(
+                    _t('MemberProfiles.MEMBERWITHSAME', 'There is already a member with the same %s.'),
+                    $field
+                );
+            }
+
+            $valid = false;
+            $this->validationError($field, $message, 'required');
         }
 
         // Create a dummy member as this is required for custom password validators
@@ -117,6 +122,7 @@ class MemberProfileValidator extends RequiredFields
 
                 //pass in the Unique Identifier Field (usually Email)
                 $idField = Member::config()->get('unique_identifier_field');
+
                 if (isset($data[$idField])) {
                     $member->$idField = $data[$idField];
                 }
@@ -127,10 +133,13 @@ class MemberProfileValidator extends RequiredFields
 
                 if (!$results->isValid()) {
                     $valid = false;
+
                     foreach ($results->getMessages() as $value) {
-                        if (isset($value['message'])) {
-                            $this->validationError('Password', $value['message'], 'required');
+                        if (!isset($value['message'])) {
+                            continue;
                         }
+
+                        $this->validationError('Password', $value['message'], 'required');
                     }
                 }
             }

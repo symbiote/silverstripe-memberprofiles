@@ -6,13 +6,13 @@ use PageController;
 
 use Exception;
 use SilverStripe\Control\RequestHandler;
-use SilverStripe\ORM\PaginatedList;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\PaginatedList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Security\Security;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Security\Member;
 use SilverStripe\Control\Controller;
-use SilverStripe\View\ViewableData;
+use SilverStripe\Model\ModelData;
 use SilverStripe\Security\Permission;
 
 /**
@@ -59,7 +59,7 @@ class MemberProfileViewer extends PageController
      * Displays a list of all members on the site that belong to the selected
      * groups.
      *
-     * @return ViewableData
+     * @return ModelData
      */
     public function handleList($request)
     {
@@ -126,7 +126,7 @@ class MemberProfileViewer extends PageController
     /**
      * Handles viewing an individual user's profile.
      *
-     * @return \SilverStripe\View\ViewableData_Customised
+     * @return ModelData|Customised
      */
     public function handleView($request)
     {

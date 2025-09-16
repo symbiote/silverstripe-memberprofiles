@@ -33,7 +33,7 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\ORM\HasManyList;
 use SilverStripe\ORM\UnsavedRelationList;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Core\Validation\ValidationResult;
 
 /**
  * A MemberProfilePage allows the administratior to set up a page with a subset of the
@@ -75,7 +75,7 @@ use SilverStripe\ORM\ValidationResult;
 class MemberProfilePage extends Page
 {
 
-    private static $db = [
+    private static array $db = [
         'ProfileTitle'             => 'Varchar(255)',
         'RegistrationTitle'        => 'Varchar(255)',
         'AfterRegistrationTitle'   => 'Varchar(255)',
@@ -93,35 +93,35 @@ class MemberProfilePage extends Page
         'EmailSubject'             => 'Varchar(255)',
         'EmailTemplate'            => 'Text',
         'ConfirmationTitle'        => 'Varchar(255)',
-        'ConfirmationContent'      => 'HTMLText'
+        'ConfirmationContent'      => 'HTMLText',
     ];
 
-    private static $has_one = [
-        'PostRegistrationTarget' => SiteTree::class
+    private static array $has_one = [
+        'PostRegistrationTarget' => SiteTree::class,
     ];
 
-    private static $has_many = [
+    private static array $has_many = [
         'Fields'   => MemberProfileField::class,
-        'Sections' => MemberProfileFieldsSection::class
+        'Sections' => MemberProfileFieldsSection::class,
     ];
 
-    private static $owns = [
-        'Fields',
-        'Sections'
-    ];
-
-    private static $cascade_deletes = [
+    private static array $owns = [
         'Fields',
         'Sections',
     ];
 
-    private static $many_many = [
-        'Groups'           => Group::class,
-        'SelectableGroups' => Group::class,
-        'ApprovalGroups'   => Group::class
+    private static array $cascade_deletes = [
+        'Fields',
+        'Sections',
     ];
 
-    private static $defaults = [
+    private static array $many_many = [
+        'Groups'           => Group::class,
+        'SelectableGroups' => Group::class,
+        'ApprovalGroups'   => Group::class,
+    ];
+
+    private static array $defaults = [
         'ProfileTitle'             => 'Edit Profile',
         'RegistrationTitle'        => 'Register / Log In',
         'AfterRegistrationTitle'   => 'Registration Successful',
@@ -130,17 +130,17 @@ class MemberProfilePage extends Page
         'AllowProfileViewing'      => false,
         'AllowProfileEditing'      => true,
         'ConfirmationTitle'        => 'Account Confirmed',
-        'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>'
+        'ConfirmationContent'      => '<p>Your account is now active, and you have been logged in. Thank you!</p>',
     ];
 
-    private static $table_name = 'MemberProfilePage';
+    private static string $table_name = 'MemberProfilePage';
 
     /**
      * An array of default settings for some standard member fields.
      *
      * @var array
      */
-    public static $profile_field_defaults = [
+    public static array $profile_field_defaults = [
         'Email' => [
             'RegistrationVisibility' => 'Edit',
             'ProfileVisibility'      => 'Edit',
@@ -168,9 +168,9 @@ class MemberProfilePage extends Page
         ]
     ];
 
-    private static $description = '';
+    private static string $description = '';
 
-    private static $icon = 'symbiote/silverstripe-memberprofiles: client/images/memberprofilepage.png';
+    private static string $icon = 'symbiote/silverstripe-memberprofiles: client/images/memberprofilepage.png';
 
     /**
      * If profile editing is disabled, but the current user can add members,
@@ -178,7 +178,7 @@ class MemberProfilePage extends Page
      *
      * @param string $action
      */
-    public function Link($action = null)
+    public function Link(?string $action = null)
     {
         if (!$action
             && Security::getCurrentUser()
@@ -350,7 +350,7 @@ class MemberProfilePage extends Page
         return parent::getCMSFields();
     }
 
-    public function getSettingsFields()
+    public function getSettingsFields(): FieldList
     {
         $fields = parent::getSettingsFields();
 
@@ -409,7 +409,7 @@ class MemberProfilePage extends Page
      *
      * @return string
      */
-    public function getEmailTemplate()
+    public function getEmailTemplate(): string
     {
         return ($t = $this->getField('EmailTemplate')) ? $t : MemberConfirmationEmail::DEFAULT_TEMPLATE;
     }
@@ -419,7 +419,7 @@ class MemberProfilePage extends Page
      *
      * @return string
      */
-    public function getEmailSubject()
+    public function getEmailSubject(): string
     {
         return ($s = $this->getField('EmailSubject')) ? $s : MemberConfirmationEmail::DEFAULT_SUBJECT;
     }
@@ -430,7 +430,7 @@ class MemberProfilePage extends Page
      *
      * @return HasManyList|UnsavedRelationList Fields()
      */
-    public function Fields()
+    public function Fields(): mixed
     {
         $list     = $this->getComponents('Fields');
         $fields   = singleton(Member::class)->getMemberFormFields()->dataFields();
@@ -445,22 +445,24 @@ class MemberProfilePage extends Page
         }
 
         foreach ($fields as $name => $field) {
-            if (!in_array($name, $included)) {
-                $profileField = new MemberProfileField();
-                $profileField->MemberField = $name;
-
-                if (isset(self::$profile_field_defaults[$name])) {
-                    $profileField->update(self::$profile_field_defaults[$name]);
-                }
-
-                $list->add($profileField);
+            if (in_array($name, $included)) {
+                continue;
             }
+
+            $profileField = new MemberProfileField();
+            $profileField->MemberField = $name;
+
+            if (isset(self::$profile_field_defaults[$name])) {
+                $profileField->update(self::$profile_field_defaults[$name]);
+            }
+
+            $list->add($profileField);
         }
 
         return $list;
     }
 
-    public function onAfterWrite()
+    public function onAfterWrite(): void
     {
         if ($this->isChanged('ID', 2)) {
             $section = new MemberProfileFieldsSection();
@@ -474,7 +476,7 @@ class MemberProfilePage extends Page
     /**
      * @return bool
      */
-    public function CanAddMembers()
+    public function CanAddMembers(): bool
     {
         return $this->AllowAdding && singleton(Member::class)->canCreate();
     }

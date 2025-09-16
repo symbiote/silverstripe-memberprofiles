@@ -23,21 +23,22 @@ use Symbiote\MemberProfiles\Extensions\MemberProfileExtension;
 class CheckableVisibilityField extends FormField
 {
     /**
-     * @var FormField
+     * @var ?FormField
      */
-    private $child;
+    private ?FormField $child;
 
     /**
      * @var FormField|CheckboxField|CheckboxField_Readonly
      */
-    private $checkbox;
+    private FormField|CheckboxField|CheckboxField_Readonly $checkbox;
 
     /**
-     * @var boolean
+     * @var bool
      */
-    private $alwaysVisible = false;
+    private bool $alwaysVisible = false;
 
     /**
+     * @inheritDoc
      * @param FormField $child
      */
     public function __construct($child)
@@ -51,7 +52,7 @@ class CheckableVisibilityField extends FormField
     /**
      * @return FormField
      */
-    public function getChild()
+    public function getChild(): ?FormField
     {
         return $this->child;
     }
@@ -59,7 +60,7 @@ class CheckableVisibilityField extends FormField
     /**
      * @return FormField|CheckboxField|CheckboxField_Readonly
      */
-    public function getCheckbox()
+    public function getCheckbox(): FormField|CheckboxField|CheckboxField_Readonly
     {
         return $this->checkbox;
     }
@@ -67,11 +68,12 @@ class CheckableVisibilityField extends FormField
     /**
      * @return $this
      */
-    public function makeAlwaysVisible()
+    public function makeAlwaysVisible(): static
     {
         $this->alwaysVisible = true;
         $this->getCheckbox()->setValue(true);
         $this->checkbox = $this->getCheckbox()->performDisabledTransformation();
+
         return $this;
     }
 
@@ -80,7 +82,7 @@ class CheckableVisibilityField extends FormField
      * @param array|MemberProfileExtension $data {@see Form::loadDataFrom}
      * @return $this
      */
-    public function setValue($value, $data = [])
+    public function setValue(mixed $value, array $data = []): static
     {
         $this->child->setValue($value);
 
@@ -91,16 +93,13 @@ class CheckableVisibilityField extends FormField
                 isset($data['Visible'][$this->name]) && $data['Visible'][$this->name]
             ));
         } else {
-            $this->checkbox->setValue(in_array(
-                $this->name,
-                $data->getPublicFields()
-            ));
+            $this->checkbox->setValue(in_array($this->name, $data->getPublicFields()));
         }
 
         return $this;
     }
 
-    public function saveInto(DataObjectInterface $record)
+    public function saveInto(DataObjectInterface $record): void
     {
         $child = clone $this->child;
         $child->setName($this->name);
@@ -109,17 +108,19 @@ class CheckableVisibilityField extends FormField
             $child->saveInto($record);
         }
 
-        if ($record instanceof Member) {
-            $public = $record->getPublicFields();
-
-            if ($this->checkbox->dataValue()) {
-                $public = array_merge($public, [$this->name]);
-            } else {
-                $public = array_diff($public, [$this->name]);
-            }
-
-            $record->setPublicFields($public);
+        if (!$record instanceof Member) {
+            return;
         }
+
+        $public = $record->getPublicFields();
+
+        if ($this->checkbox->dataValue()) {
+            $public = array_merge($public, [$this->name]);
+        } else {
+            $public = array_diff($public, [$this->name]);
+        }
+
+        $record->setPublicFields($public);
     }
 
     public function validate($validator)
@@ -127,17 +128,17 @@ class CheckableVisibilityField extends FormField
         return $this->child->validate($validator);
     }
 
-    public function Value()
+    public function Value(): ?string
     {
         return $this->child->Value();
     }
 
-    public function dataValue()
+    public function dataValue(): ?string
     {
         return $this->child->dataValue();
     }
 
-    public function setForm($form)
+    public function setForm(mixed $form): static
     {
         $this->child->setForm($form);
         $this->checkbox->setForm($form);
@@ -149,7 +150,7 @@ class CheckableVisibilityField extends FormField
         return parent::setForm($form);
     }
 
-    public function Field($properties = [])
+    public function Field(array $properties = []): DBHTMLText
     {
         return DBHTMLText::create_field(
             'HTMLFragment',
@@ -157,7 +158,7 @@ class CheckableVisibilityField extends FormField
         );
     }
 
-    public function Title()
+    public function Title(): string
     {
         return $this->child->Title();
     }

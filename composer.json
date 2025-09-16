@@ -16,11 +16,12 @@
         }
     ],
     "require": {
-        "silverstripe/cms": "^5"
+        "php": "^8.3",
+        "silverstripe/cms": "^6"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.5",
-        "phpunit/phpunit": "^9.6"
+        "phpunit/phpunit": "^11"
     },
     "scripts": {
         "phpcbf": "phpcbf -n src/ tests/"

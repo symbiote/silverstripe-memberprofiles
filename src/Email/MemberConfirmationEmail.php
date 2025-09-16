@@ -21,12 +21,12 @@ class MemberConfirmationEmail extends Email
     /**
      * @var Member|null
      */
-    private $member = null;
+    private ?Member $member = null;
 
     /**
-     * @var MemberProfilePage
+     * @var ?MemberProfilePage
      */
-    private $page = null;
+    private ?MemberProfilePage $page = null;
 
     /**
      * The default confirmation email subject if none is provided.
@@ -105,11 +105,12 @@ class MemberConfirmationEmail extends Email
 
         $this->page = $page;
         $this->member = $member;
-
         $emailFrom = $page->EmailFrom;
+
         if (!$emailFrom) {
             $emailFrom = Email::config()->get('admin_email');
         }
+
         $this->setFrom($emailFrom);
         $this->setTo($member->Email);
         $this->setSubject($this->getParsedString($page->EmailSubject));
@@ -122,7 +123,7 @@ class MemberConfirmationEmail extends Email
      * @param string $string
      * @return string
      */
-    public function getParsedString($string)
+    public function getParsedString(string $string): string
     {
         $member = $this->getMember();
         $page = $this->getPage();
@@ -150,33 +151,36 @@ class MemberConfirmationEmail extends Email
             ),
             '$Member.Created' => $createdDateObj->Nice()
         ];
+
         foreach (['Name', 'FirstName', 'Surname', 'Email'] as $field) {
             $variables["\$Member.$field"] = $member->$field;
         }
+
         $this->extend('updateEmailVariables', $variables);
 
         return str_replace(array_keys($variables), array_values($variables), $string);
     }
 
-    public function BaseURL()
+    public function BaseURL(): string
     {
         $absoluteBaseURL = Director::absoluteBaseURL();
         $this->extend('updateBaseURL', $absoluteBaseURL);
+
         return $absoluteBaseURL;
     }
 
     /**
-     * @return MemberProfilePage
+     * @return ?MemberProfilePage
      */
-    public function getPage()
+    public function getPage(): ?MemberProfilePage
     {
         return $this->page;
     }
 
     /**
-     * @return Member
+     * @return ?Member
      */
-    public function getMember()
+    public function getMember(): ?Member
     {
         return $this->member;
     }
