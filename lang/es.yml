@@ -1,0 +1,36 @@
+es:
+  MemberProfiles:
+    ALLOWREG: 'Permite el registro a través de esta página'
+    CANNOTCONFIRMLOGGEDIN: 'No se puede confirmar la cuenta mientras se está conectado en el sistema.'
+    CANNOTREGPLEASELOGIN: 'Usted no puede registrarse en esta página de perfil. Por favor, identifíquese para editar su perfil.'
+    CONFIRMCONTENT: 'Confirmación de Contenido'
+    CONTENT: Contenido
+    DEFAULTVALUE: 'Valor predeterminado'
+    EMAILCONFIRMATION: 'Correo de confirmación'
+    EMAILFROM: 'Coreo de'
+    EMAILTEMPLATE: 'Plantilla de correo'
+    EMAILVALIDATION: 'Correo de Validación'
+    GROUPSNOTE: 'Cualquier registro de usuarios a través de esta página se añadirá a los siguientes grupos (si el registro está habilitado). Por el contrario, los miembros deberán pertenecer a estos grupos con el fin de editar su perfil en esta página'
+    LOGIN: 'Si ya tienes una cuenta, puede iniciar sesión <a href={loginLink}">aquí</a>.'
+    MANUALLYCONFIRM: 'Confirmar manualmente'
+    MEMBERFIELD: 'Campo del Miembro'
+    MEMBERWITHSAME: 'Ya existe un miembro con el mismo %s.'
+    NEEDSVALIDATIONTOLOGIN: 'Debe validar su cuenta antes de poder entrar.'
+    NOLOGINTILLCONFIRMED: 'El usuario no puede iniciar sesión hasta que su cuenta sea confirma.'
+    PROFILE: Perfil
+    PROFILEFIELDS: 'Campos de Perfil/Registro'
+    PROFILEUPDATED: 'Su perfil ha sido actualizado.'
+    REDIRECTAFTERREG: 'Redireccionar después de la inscripción?'
+    REDIRECTTOPAGE: 'Redireccionar a la página'
+    REGISTER: Registro
+    RESEND: 'Volver a enviar correo electrónico de confirmación'
+    SAVE: Guardar
+    TITLE: Título
+    UNCONFIRMED: 'Sin confirmar'
+    VALIDATION: Validación
+  Symbiote\MemberProfiles\Model\MemberProfileField:
+    PLURALNAME: 'Campos del Perfil del Miembro'
+    SINGULARNAME: 'Campo del perfil del miembro'
+  Symbiote\MemberProfiles\Pages\MemberProfilePage:
+    PLURALNAME: 'Páginas del Perfil del Miembro'
+    SINGULARNAME: 'Página del Perfil del Miembro'

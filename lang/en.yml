@@ -1,0 +1,165 @@
+en:
+  MemberProfile:
+    Registered: Registered
+  MemberProfiles:
+    ADD: Add
+    ADDMEMBER: 'Add Member'
+    ADDMEMBERLINK: 'You can use this page to <a href="{addLink}">add a new member</a>.'
+    ADDSECTION: 'Add Section'
+    ALLOWADD: 'Allow adding members via this page'
+    ALLOWEDITING: 'Allow users to edit their own profile on this page'
+    ALLOWPROFILEVIEWING: 'Enable public profiles?'
+    ALLOWREG: 'Allow registration via this page'
+    ALREADYAPPROVED: 'Already Approved'
+    ALREADYAPPROVEDNOTE: 'This member has already been approved.'
+    ALREADYCONFIRMED: 'Your account is already confirmed.'
+    ALWAYSDISPLAY: 'Always display'
+    APPROVALGROUPS: 'Approval Groups'
+    APPROVALLINK: 'Please visit the link below to confirm this member. Once approved they will be sent a confirmation email if configured. If you do not approve this member then they will not be able to log in.'
+    APPROVALREQUIRED: 'A new member has registered for {siteTitle}, and requires approval before they can log in:'
+    APPROVETHISMEMBER: 'Approve this member'
+    CANNOTADDMEMBERS: 'You cannot add members via this page.'
+    CANNOTCONFIRMLOGGEDIN: 'You cannot confirm account while you are logged in.'
+    CANNOTEDIT: 'You cannot edit your profile via this page.'
+    CANNOTREGPLEASELOGIN: 'You cannot register on this profile page. Please login to edit your profile.'
+    CHECKVISNOTE: 'Check fields below to make them visible on your public profile.'
+    CONFIRMCONTENT: 'Confirmation Content'
+    CONTENT: Content
+    CONTENTBLOCKS: 'Content Blocks'
+    DEFAULTPUBLIC: 'Mark as public by default?'
+    DEFAULTVALUE: 'Default Value'
+    DONOTCHANGE: 'Do not change'
+    DONTDISPLAY: 'Do not display'
+    EDITPROFILE: 'Edit Profile'
+    EMAILCONFIRMATION: 'Send a confirmation email (confirmation NOT required to login)'
+    EMAILCONTENT: 'Email Content'
+    EMAILFROM: 'Email from'
+    EMAILSETTINGS: 'Email Settings'
+    EMAILSUBJECT: 'Email subject'
+    EMAILTEMPLATE: 'Email template'
+    EMAILVALIDATION: 'Send a confirmation email (confirmation required to login)'
+    ERRORCONFIRMATION: 'An unexpected error occurred.'
+    Email: Email
+    FIELDS: Fields
+    GROUPS: Groups
+    GROUPSNOTE: 'Any users registering via this page will always be added to these groups (if registration is enabled). Conversely, a member must belong to these groups in order to edit their profile on this page.'
+    LOGIN: "If you already have an account, you can <a href='{loginLink}'>log in here</a>."
+    LOGINHEADER: 'Log in'
+    MAIN: Main
+    MANUALLYCONFIRM: 'Manually confirm'
+    MEMBERADDED: 'The new member has been added.'
+    MEMBERAPPROVED: 'Member Approved'
+    MEMBERAPPROVEDCONTENT: 'The member "%s" has been approved and can now log in.'
+    MEMBERCHOICE: 'Allow the member to choose'
+    MEMBERFIELD: 'Member Field'
+    MEMBERLIST: 'Member List'
+    MEMBERPROFILETITLE: "%s's Profile"
+    MEMBERWITHSAME: 'There is already a member with the same %s.'
+    NEEDSAPPROVALTOLOGIN: 'An administrator must confirm your account before you can log in.'
+    NEEDSVALIDATIONTOLOGIN: 'You must validate your account before you can log in.'
+    NEXT: Next
+    NOLOGINTILLCONFIRMED: 'The member cannot log in until their account is confirmed.'
+    NOLOGINUNTILAPPROVED: 'This user has not yet been approved. They cannot log in until their account is approved.'
+    NONE: None
+    NOTIFYTHESEGROUPS: 'These groups will be notified to approve new registrations.'
+    Name: Name
+    PREV: Prev
+    PROFILE: Profile
+    PROFILEFIELDS: 'Profile Fields'
+    PROFILEFIELDSLIST: 'Profile Fields List'
+    PROFILESECTIONS: 'Profile Sections'
+    PROFILEUPDATED: 'Your profile has been updated.'
+    PUBLICPROFILE: 'Public Profile'
+    PUBLICPROFILEDISABLED: 'Public profiles are currently disabled, you can enable them in the "Settings" tab.'
+    REDIRECTAFTERREG: 'Redirect after registration?'
+    REDIRECTTOPAGE: 'Redirect To Page'
+    REGAPPROVAL: 'Registration Approval'
+    REGISTER: Register
+    REQUIREREGAPPROVAL: 'Require registration approval by an administrator?'
+    REQUIREREGAPPROVALDESC: 'NOTE: If no Approval Groups are configured, all users with administrative permissions will be notified.'
+    RESEND: 'Resend confirmation email'
+    SAVE: Save
+    SECTIONTYPE: 'Section type'
+    SELECTABLEGROUPS: 'Selectable Groups'
+    SELECTABLENOTE: 'Users can choose to belong to these groups, if the  "Groups" field is enabled in the "Fields" tab.'
+    THISISYOURPROFILE: 'This is your profile!'
+    TITLE: Title
+    UNCONFIRMED: Unconfirmed
+    VALIDATION: Validation
+    VISIBILITY: Visibility
+    VISIBLEMEMLISTINGPAGE: 'Visible on the member listing page?'
+    YOURPROFILE: 'Your Profile'
+  Symbiote\MemberProfiles\Extensions\MemberProfileExtension:
+    db_NeedsApproval: 'Needs approval'
+    db_NeedsValidation: 'Needs validation'
+    db_PublicFieldsRaw: 'Public fields raw'
+    db_ValidationKey: 'Validation key'
+    has_one_ProfilePage: 'Profile page'
+  Symbiote\MemberProfiles\Model\MemberProfileField:
+    PLURALNAME: 'Member Profile Fields'
+    PLURALS:
+      one: 'A Member Profile Field'
+      other: '{count} Member Profile Fields'
+    SINGULARNAME: 'Member Profile Field'
+    db_CustomError: 'Custom error'
+    db_CustomTitle: 'Custom title'
+    db_DefaultValue: 'Default value'
+    db_MemberField: 'Member field'
+    db_MemberListVisible: 'Member list visible'
+    db_Note: Note
+    db_ProfileVisibility: 'Profile visibility'
+    db_PublicVisibility: 'Public visibility'
+    db_PublicVisibilityDefault: 'Public visibility default'
+    db_RegistrationVisibility: 'Registration visibility'
+    db_Required: Required
+    db_Sort: Sort
+    db_Unique: Unique
+    db_Version: Version
+    has_one_ProfilePage: 'Profile page'
+  Symbiote\MemberProfiles\Model\MemberProfileFieldsSection:
+    PLURALNAME: 'Member Profile Fields Sections'
+    PLURALS:
+      one: 'A Member Profile Fields Section'
+      other: '{count} Member Profile Fields Sections'
+    SINGULARNAME: 'Member Profile Fields Section'
+  Symbiote\MemberProfiles\Model\MemberProfileSection:
+    PLURALNAME: 'Member Profile Sections'
+    PLURALS:
+      one: 'A Member Profile Section'
+      other: '{count} Member Profile Sections'
+    SINGULARNAME: 'Member Profile Section'
+    db_CustomTitle: 'Custom title'
+    db_Version: Version
+    has_one_Parent: Parent
+  Symbiote\MemberProfiles\Pages\MemberProfilePage:
+    CLASS_DESCRIPTION: 'Allows members to register and edit their profile'
+    DESCRIPTION: 'Allows members to register and edit their profile'
+    PLURALNAME: 'Member Profile Pages'
+    PLURALS:
+      one: 'A Member Profile Page'
+      other: '{count} Member Profile Pages'
+    SINGULARNAME: 'Member Profile Page'
+    db_AfterRegistrationContent: 'After registration content'
+    db_AfterRegistrationTitle: 'After registration title'
+    db_AllowAdding: 'Allow adding'
+    db_AllowProfileEditing: 'Allow profile editing'
+    db_AllowProfileViewing: 'Allow profile viewing'
+    db_AllowRegistration: 'Allow registration'
+    db_ConfirmationContent: 'Confirmation content'
+    db_ConfirmationTitle: 'Confirmation title'
+    db_EmailFrom: 'Email from'
+    db_EmailSubject: 'Email subject'
+    db_EmailTemplate: 'Email template'
+    db_EmailType: 'Email type'
+    db_ProfileContent: 'Profile content'
+    db_ProfileTitle: 'Profile title'
+    db_RegistrationContent: 'Registration content'
+    db_RegistrationRedirect: 'Registration redirect'
+    db_RegistrationTitle: 'Registration title'
+    db_RequireApproval: 'Require approval'
+    has_many_Fields: Fields
+    has_many_Sections: Sections
+    has_one_PostRegistrationTarget: 'Post registration target'
+    many_many_ApprovalGroups: 'Approval groups'
+    many_many_Groups: Groups
+    many_many_SelectableGroups: 'Selectable groups'

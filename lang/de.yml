@@ -1,45 +1,47 @@
 de:
+  MemberProfile:
+    Registered: Registriert
   MemberProfiles:
     ADD: hinzufügen
     ADDMEMBER: 'Mitglied hinzufügen'
     ADDMEMBERLINK: 'Sie können diese Seite benutzen, um <a href="{addLink}">einen neuen Benutzer hinzuzufügen</a>.'
-    AFTERREGISTRATION: 'Nach Anmeldung'
+    ADDSECTION: 'Abschnitt hinzufügen'
     ALLOWADD: 'Hinzufügen erlauben'
     ALLOWEDITING: 'Bearbeiten erlauben'
     ALLOWPROFILEVIEWING: 'Profil ansehen erlauben'
-    ALLOWREG: 'Registrierung erlauben auf dieser Seite'
+    ALLOWREG: 'Registrierung erlauben'
     ALREADYAPPROVED: 'Bereits bestätigt'
     ALREADYAPPROVEDNOTE: 'Dieses Mitglied wurde bereits bestätigt'
+    ALREADYCONFIRMED: 'Ihr Account wurde bereits bestätigt.'
     ALWAYSDISPLAY: 'Immer anzeigen'
     APPROVALGROUPS: Bestätigungsgruppen
     APPROVALLINK: 'Bitte besuchen Sie den folgenden Link um das neue Mitglied zu bestätigen. Sobald es bestätigt wurde, bekommt dieses eine E-Mail, sofern dies konfiguriert wurde. Wenn Sie das Mitglied nicht bestätigen, wird es sich nicht einloggen können.'
     APPROVALREQUIRED: 'Ein neues Mitglied hat sich für {siteTitle} registriert und benötigt eine Bestätigung um sich einloggen zu können:'
+    APPROVETHISMEMBER: 'Approve this member'
     CANNOTADDMEMBERS: 'Sie können keine Nutzer hinzufügen'
     CANNOTCONFIRMLOGGEDIN: 'Sie können die Anmeldung nicht bestätigen solange sie angemeldet sind.'
     CANNOTEDIT: 'Sie können Ihr Profil nicht über diese Seite bearbeiten.'
     CANNOTREGPLEASELOGIN: 'Bitte loggen Sie sich ein, um Ihr Profil zu bearbeiten.'
     CHECKVISNOTE: 'Markiere diese Felder, um sie im öffentlichen Profil anzuzeigen.'
     CONFIRMCONTENT: 'Inhalt der Bestätigung'
-    CONFIRMNOTE: 'Diese Meldung wird gezeigt, wenn der User sein Konto bestätigt.'
     CONTENT: Inhalt
     CONTENTBLOCKS: Inhaltsblöcke
     DEFAULTPUBLIC: 'Öffentlich als Standardeinstellung?'
     DEFAULTVALUE: Standardwert
+    DONOTCHANGE: 'Nicht ändern'
     DONTDISPLAY: 'Nicht anzeigen'
     EDITPROFILE: 'Profil bearbeiten'
-    EMAIL: E-Mail
-    EMAILCONFIRMATION: 'Bestätigung per E-Mail'
+    EMAILCONFIRMATION: 'Per E-Mail bestätigen'
     EMAILCONTENT: E-Mail-Inhalt
     EMAILFROM: E-Mail-Absender
     EMAILSETTINGS: E-Mail-Einstellungen
     EMAILSUBJECT: E-Mail-Betreff
     EMAILTEMPLATE: E-Mail-Vorlage
-    EMAILVALID: 'E-Mail-Validierung einschalten'
     EMAILVALIDATION: E-Mail-Validierung
-    FIELDOPTIONS: 'Felder Optionen'
+    ERRORCONFIRMATION: 'Ein unerwarteter Fehler ist aufgetreten.'
+    Email: 'E-Mail'
     FIELDS: Felder
     GROUPS: Guppen
-    GROUPSETTINGS: 'Gruppen Einstellungen'
     GROUPSNOTE: 'Jedes Mitglied, der sich über diese Seite registriert, wird diesen Gruppen zugefügt (wenn Registrierung eingeschaltet ist). Zudem muss ein Mitglied dieser Gruppe angehören, um sein Profil auf dieser Seite bearbeiten zu können.'
     LOGIN: 'Wenn Sie bereits ein Konto besitzen, können Sie sich <a href="{loginLink}">hier einloggen</a>.'
     LOGINHEADER: Einloggen
@@ -50,46 +52,114 @@ de:
     MEMBERAPPROVEDCONTENT: 'Das Mitglied "%s" wurde bestätigt und kann sich nun anmelden.'
     MEMBERCHOICE: 'Erlaube dem Mitglied zu wählen'
     MEMBERFIELD: Mitglieds-Feld
-    MEMBERWITHSAME: 'Es ist bereits ein Mitglied mit dem selben %s vorhanden.'
-    NAME: Name
+    MEMBERLIST: 'Mitgliederliste'
+    MEMBERPROFILETITLE: "%s's Profil"
+    MEMBERWITHSAME: 'Es gibt bereits ein Mitglied mit derselben/demselben %s.'
+    NEEDSAPPROVALTOLOGIN: 'Ein Administrator muss Ihr Konto bestätigen, bevor Sie sich anmelden können.'
     NEEDSVALIDATIONTOLOGIN: 'Sie müssen Ihre Anmeldung zuerst bestätigen, bevor Sie sich einloggen können.'
+    NEXT: Nächste
     NOLOGINTILLCONFIRMED: 'Das Konto wird erst aktiv nachdem es bestätigt wurde.'
+    NOLOGINUNTILAPPROVED: 'Dieser Benutzer wurde noch nicht genehmigt. Er kann sich erst anmelden, wenn sein Konto genehmigt wurde.'
     NONE: Keine
     NOTIFYTHESEGROUPS: 'Diese Gruppen werden benachrichtigt'
-    PAGESETTINGS: Seiten-Einstellungen
+    Name: Name
+    PREV: Zurück
     PROFILE: Profil
     PROFILEFIELDS: Profil-Felder
-    PROFILEREGFIELDS: Profil-/Registrierungs-Felder
+    PROFILEFIELDSLIST: 'Profilfeldliste'
     PROFILESECTIONS: Profil-Abschnitte
     PROFILEUPDATED: 'Ihr Profil wurde aktualisiert.'
     PUBLICPROFILE: 'Öffentliches Profil'
     PUBLICPROFILEDISABLED: 'Öffentliches Profil ist inaktiv'
-    REDIRECT: Umleiten
     REDIRECTAFTERREG: 'Nach Anmeldung umleiten'
     REDIRECTTOPAGE: 'Zu Seite umleiten'
-    REDIRECT_TARGET: 'Zu dieser Seite umleiten'
+    REGAPPROVAL: 'Registrierungsgenehmigung'
     REGISTER: Registrieren
-    REGISTERED: Registriert
-    REGISTRATION: Registrierung
-    REGSETTINGS: Registrierungseinstellungen
     REQUIREREGAPPROVAL: 'Benötigt Bestätigung zur Registrierung'
+    REQUIREREGAPPROVALDESC: 'HINWEIS: Wenn keine Genehmigungsgruppen konfiguriert sind, werden alle Benutzer mit Administratorberechtigungen benachrichtigt.'
     RESEND: 'nochmals versenden'
     SAVE: Speichern
+    SECTIONTYPE: 'Abschnittstyp'
     SELECTABLEGROUPS: 'wählbare Gruppen'
     SELECTABLENOTE: 'Mitglieder können wählen in welche Gruppe sie gehören, wenn "Gruppen" aktiv ist für dieses Feld'
     THISISYOURPROFILE: 'Dies ist ihr Profil!'
     TITLE: Titel
     UNCONFIRMED: Unbestätigt
     VALIDATION: Validierung
-    VALIDEMAILSUBJECT: 'Betreff Validierungs-E-Mail'
-    VALIDOPTIONS: Validierungsoptionen
     VISIBILITY: Sichtbarkeit
     VISIBLEMEMLISTINGPAGE: 'Auf der Mitgliedsliste anzeigen?'
     YOURPROFILE: 'Ihr Profil'
+  Symbiote\MemberProfiles\Extensions\MemberProfileExtension:
+    db_NeedsApproval: 'Benötigt Genehmigung'
+    db_NeedsValidation: 'Benötigt Validierung'
+    db_PublicFieldsRaw: 'Öffentliche Felder'
+    db_ValidationKey: 'Validierungsschlüssel'
+    has_one_ProfilePage: 'Profilseite'
   Symbiote\MemberProfiles\Model\MemberProfileField:
-    PLURALNAME: 'Mitglieds-Profil Felder'
-    SINGULARNAME: 'Mitglieds-Profil Feld'
+    PLURALNAME: 'Mitgliederprofilfelder'
+    PLURALS:
+      one: 'Ein Mitgliederprofilfeld'
+      other: '{count} Mitgliederprofilfelder'
+    SINGULARNAME: 'Mitgliederprofilfeld'
+    db_CustomError: 'Benutzerdefinierter Fehler'
+    db_CustomTitle: 'Benutzerdefinierter Titel'
+    db_DefaultValue: 'Standardwert'
+    db_MemberField: 'Mitgliederfeld'
+    db_MemberListVisible: 'Mitgliederliste sichtbar'
+    db_Note: 'Notiz'
+    db_ProfileVisibility: 'Profil-Sichtbarkeit'
+    db_PublicVisibility: 'Öffentliche Sichtbarkeit'
+    db_PublicVisibilityDefault: 'Standard öffentliche Sichtbarkeit'
+    db_RegistrationVisibility: 'Registrierungs-Sichtbarkeit'
+    db_Required: 'Erforderlich'
+    db_Sort: 'Sortierung'
+    db_Unique: 'Eindeutig'
+    db_Version: 'Version'
+    has_one_ProfilePage: 'Profilseite'
+  Symbiote\MemberProfiles\Model\MemberProfileFieldsSection:
+    PLURALNAME: 'Abschnitte der Mitgliederprofilfelder'
+    PLURALS:
+      one: 'Ein Abschnitt der Mitgliederprofilfelder'
+      other: '{count} Abschnitte der Mitgliederprofilfelder'
+    SINGULARNAME: 'Abschnitt der Mitgliederprofilfelder'
+  Symbiote\MemberProfiles\Model\MemberProfileSection:
+    PLURALNAME: 'Mitgliederprofilabschnitte'
+    PLURALS:
+      one: 'Ein Mitgliederprofilabschnitt'
+      other: '{count} Mitgliederprofilabschnitte'
+    SINGULARNAME: 'Mitgliederprofilabschnitt'
+    db_CustomTitle: 'Benutzerdefinierter Titel'
+    db_Version: 'Version'
+    has_one_Parent: 'Übergeordnetes Element'
   Symbiote\MemberProfiles\Pages\MemberProfilePage:
-    DESCRIPTION: 'Profil & Registrierungsseiten für Mitglieder'
-    PLURALNAME: 'Mitglieds-Profil Seiten'
-    SINGULARNAME: 'Mitglieds-Profil Seite'
+    CLASS_DESCRIPTION: 'Ermöglicht Mitgliedern die Registrierung und Bearbeitung ihres Profils'
+    DESCRIPTION: 'Ermöglicht Mitgliedern die Registrierung und Bearbeitung ihres Profils'
+    PLURALNAME: 'Mitgliederprofilseiten'
+    PLURALS:
+      one: 'Eine Mitgliederprofilseite'
+      other: '{count} Mitgliederprofilseiten'
+    SINGULARNAME: 'Mitgliederprofilseite'
+    db_AfterRegistrationContent: 'Inhalt nach der Registrierung'
+    db_AfterRegistrationTitle: 'Titel nach der Registrierung'
+    db_AllowAdding: 'Hinzufügen erlauben'
+    db_AllowProfileEditing: 'Profilbearbeitung erlauben'
+    db_AllowProfileViewing: 'Profilanzeige erlauben'
+    db_AllowRegistration: 'Registrierung erlauben'
+    db_ConfirmationContent: 'Bestätigungsinhalt'
+    db_ConfirmationTitle: 'Bestätigungstitel'
+    db_EmailFrom: 'E-Mail von'
+    db_EmailSubject: 'E-Mail-Betreff'
+    db_EmailTemplate: 'E-Mail-Vorlage'
+    db_EmailType: 'E-Mail-Typ'
+    db_ProfileContent: 'Profilinhalt'
+    db_ProfileTitle: 'Profiltitel'
+    db_RegistrationContent: 'Registrierungsinhalt'
+    db_RegistrationRedirect: 'Registrierungsweiterleitung'
+    db_RegistrationTitle: 'Registrierungstitel'
+    db_RequireApproval: 'Genehmigung erforderlich'
+    has_many_Fields: 'Felder'
+    has_many_Sections: 'Abschnitte'
+    has_one_PostRegistrationTarget: 'Ziel nach Registrierung'
+    many_many_ApprovalGroups: 'Genehmigungsgruppen'
+    many_many_Groups: 'Gruppen'
+    many_many_SelectableGroups: 'Auswählbare Gruppen'
