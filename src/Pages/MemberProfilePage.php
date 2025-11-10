@@ -168,6 +168,8 @@ class MemberProfilePage extends Page
         ]
     ];
 
+    private static $class_description = 'Allows members to register and edit their profile';
+    
     private static $description = '';
 
     private static $icon = 'symbiote/silverstripe-memberprofiles: client/images/memberprofilepage.png';
